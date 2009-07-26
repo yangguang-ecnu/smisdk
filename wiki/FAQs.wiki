@@ -1,0 +1,15 @@
+#summary Frequently Asked Questions (FAQs).
+#labels Featured,Phase-Support
+
+===What is SMISDK?===
+ SMISDK is a free Software Development Kit for applications in medical imaging. Please check the project main page for any licensing restrictions.
+
+
+===How can I obtain the source code?===
+ Navigate to the source code page by selecting the 'Source' tab in the project's menu above. You will find instructions there.
+
+
+===Can I use parts of SMISDK in a proprietary and/or commercial product, upon properly attributing the credits?===
+ (As of 07/26/2009 01:16 PM PDT): In short, the answer is: *NO*. If you use SMISDK in part or whole to create a new product, the result MUST be free, and opensource. To confirm this and any other licensing restrutions, and the current license details, check the project's main page, or contact the admin at pixel.to.life@gmail.com.
+
+
