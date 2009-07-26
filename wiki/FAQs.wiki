@@ -14,5 +14,4 @@
 
 
 ===How can I build the source code?===
- Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file SMISDK-Installation-ReadMe.txt. Any questions, email pixel.to.life@gmail.com.
-
+ Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file SMISDK-Installation-ReadMe. Any questions, email pixel.to.life@gmail.com.
