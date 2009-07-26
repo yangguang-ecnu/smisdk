@@ -1,15 +1,15 @@
-// -*- C++ -*-
-// © [2006-2016] Science.Medical.Imaging Group [(unpublished)] /**/Rights Reserved.
+// -*- C++ -*- http://groups.google.com/group/medicalimagingscience
+// © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved under GPL.
 //
-// UNPUBLISHED -- Rights reserved under the copyright laws of the United
-// States.   Use of a copyright notice is precautionary only and does not
-// imply publication or disclosure.
+// This program is a free software: you may redistribute and/or modify it under the
+// terms of the GNU General Public License (GPL) as published by the Free Software
+// Foundation, version 3 or greater, as long as the result is kept free and opensource.
 //
-// THE CONTENT OF THIS WORK CONTAINS TECHNICAL AND INTELLECTUAL PROPERTY OF
-// SCIENCE.MEDICAL.IMAGING (groups.google.com/group/medicalimagingscience). 
-// THIS SOFTWARE IS MADE AVAILABLE 'AS IS' AND SCIENCE.MEDICAL.IMAGING GROUP
-// MAKES NO WARRANTY REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY
-// SPECIFIC USE. ENTIRE RISK TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
+// A copy of the GNU General Public License can be found at http://www.gnu.org/licenses/.
+// 
+/// THIS SOFTWARE IS MADE AVAILABLE 'AS IS' AND THE AUTHOR MAKES NO WARRANTY
+// REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY SPECIFIC USE. ENTIRE RISK
+// TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
 //
 // Filename:	DiffOfGaussianDerivativeKernel.h
 // Author:		Prashant Chopra
