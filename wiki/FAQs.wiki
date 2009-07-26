@@ -23,3 +23,11 @@
 
 ===The current source code in the trunk doesnt build/is unstable. Where can I get a stable build?===
  Navigate to the downloads tab using this link: http://code.google.com/p/smisdk/downloads/list. That is your source for any last stable/released binaries.
+
+
+===I want to become a contributor. How can I join the development team? ===
+ Email the admin at pixel.to.life@gmail.com with your affiliation, and intent. In most cases, the request will be approved and you will start contributing to the project within 2-3 days of your request.
+
+
+===Can I link to this project's page from my webpage?===
+ Sure. We encourage any/all efforts to spread the word. It's an opensource effort to free the best medical imaging software, and will surely benefit from being part of free discussions/blogs.
