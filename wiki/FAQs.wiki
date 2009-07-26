@@ -17,4 +17,4 @@
  Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file with text SMISDK-Installation in its name. Any questions, email pixel.to.life@gmail.com.
 
 ===How can I build the source code for Examples?===
- Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file with text SMISDK-Installation in its name. Any questions, email pixel.to.life@gmail.com.
+ Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Examples/docs. From there, open the file with text Readme in its name. Any questions, email pixel.to.life@gmail.com.
