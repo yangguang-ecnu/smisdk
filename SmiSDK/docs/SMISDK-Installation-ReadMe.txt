@@ -18,7 +18,7 @@
 This file provides a help resource accompanying the SMISDK setup program.
 
 To install SMISDK, follow the following steps:
-
+ 
 
 [1] Obtain an installer for SMISDK by one of the following two steps:
 
