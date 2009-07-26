@@ -1,0 +1,486 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <!-- SGI_COMMENT COSMOCREATE -->
+    <!-- SGI_COMMENT VERSION NUMBER="1.0.1" -->
+    <TITLE>Title</TITLE>
+    <meta http-equiv="Job" content="jobnumber">
+    <meta http-equiv="Keywords" content="">
+    <meta http-equiv="Owner" content="sitemanager">
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+<P>
+<IMG SRC="images/opengl-logo.gif" ALT="Silicon Graphics, Inc." SGI_SRC="./images/opengl-logo.gif">
+ </P>
+<P>
+</P>
+<P>
+</P>
+<H1>
+OpenGL<SUP><EM><FONT SIZE="2">&#174;</FONT></EM></SUP> for Windows<SUP><EM><FONT
+ SIZE="2">&#174;</FONT></EM></SUP> from Silicon Graphics<SUP><EM><FONT
+ SIZE="2">&#174;</FONT></EM></SUP><BR>
+ <I>Release Notes for Manufacturing Release 2</I></H1>
+<P>
+</P>
+<P>
+These release notes describe the second manufacturing release of OpenGL 
+for Windows by Silicon Graphics. The following sections are included: </P>
+<OL>
+    <LI>
+    <A HREF="#legalnotices">Legal Notices</A> 
+    <LI>
+    <A HREF="#installation">Installing OpenGL</A> 
+    <LI>
+    <A HREF="#hwconfig">Supported Hardware Configurations</A> 
+    <LI>
+    <A HREF="#usingopengl">How to Use Silicon Graphics' OpenGL library</A>
+     
+    <LI>
+    <A HREF="#relatedprog">Where to Find Additional Demos and Utilities</A>
+     
+    <LI>
+    <A HREF="#bugs">Known Bugs and Limitations</A> 
+    <LI>
+    <A HREF="#reportingBugs">Reporting Bugs</A> 
+</OL>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="legalnotices">1. Legal Notices</A></H2>
+<H3>
+Software License Agreement</H3>
+<P>
+<B>1. Grant Of Limited License; Software Use Restrictions.</B> In 
+consideration for your acceptance of the terms and conditions of this 
+Agreement, SGI will grant to you a personal, non-transferable and 
+non-exclusive right to use and execute the Software on a 
+personal computer (a &#147;&quot;PC&quot;&#148;), without right to 
+sublicense or distribute the Software (except as provided in Section 3 
+below). You agree that you will not modify, reverse engineer, decompile 
+or disassemble any portion of the Software. </P>
+<P>
+<B>2. Duplication Restrictions.</B> In order to effect your license 
+rights hereunder, you may install the Software by duplicating it onto 
+the hard disk drive or into the CPU memory of a PC for use thereon, and 
+you may make full or partial copies of the Software, but only as 
+necessary for backup or archival purposes or for purposes of 
+distribution pursuant to Section 3 below. You agree that (i) your use 
+and possession of such copies shall be solely under the terms and 
+conditions of this Agreement, and (ii) you shall place the same 
+proprietary and copyright notices and legends on all such copies as 
+included by SGI on any media containing an authorized copy of the 
+Software originally provided by SGI. </P>
+<P>
+<B>3. Distribution of the Software to Others</B>. You may duplicate and 
+distribute copies of the Software to others, or allow copies of the 
+Software to be made by someone else, provided that all such copies 
+include a copy of this License Agreement. </P>
+<P>
+<B>4. Ownership of Software.</B> You agree and acknowledge that SGI 
+transfers no ownership interest in the Software, in the intellectual 
+property in any Software or in any Software copy, to you under this 
+Agreement or otherwise, and that SGI and its licensors reserve all 
+rights not expressly granted to you hereunder. </P>
+<P>
+<B>5. Transfer Restrictions.</B> This license is personal to you. 
+Except as expressly provided in Section 3 above, you may not transfer 
+the Software and/or assign this License to any third party. If you 
+attempt to transfer or assign this License, such transfer or assignment 
+will be void and without effect. </P>
+<P>
+<B>6. Export Restrictions.</B> You may not export or reexport any 
+Software or other technology received under this Agreement except in 
+full compliance with all United States and other applicable laws and 
+regulations. In particular, none of such Software or technology may be 
+exported or reexported into (or to a national or resident of) any 
+country to which the U.S. embargoes goods, or to anyone on the U.S. 
+Treasury Department's list of Specially Designated Nationals or the 
+U.S. Commerce Department's Table of Denial Orders. </P>
+<P>
+<B>7. Term; Termination.</B> The term of this Agreement shall commence 
+when you electronically download or receive (if SGI delivers the 
+Software to you by email or alternative means) and shall continue 
+thereafter. If you fail to fulfill any of your material obligations 
+under this Agreement, SGI and/or its licensors may pursue all available 
+legal remedies to enforce this Agreement, and SGI may, at any time 
+after your default of this Agreement, terminate this Agreement and all 
+licenses and rights granted to you under this Agreement. You agree that 
+SGI&#146;'s licensors referenced in the Software are third-party 
+beneficiaries of this Agreement, and may enforce this Agreement as it 
+relates to their intellectual property. You further agree that, if SGI 
+terminates this Agreement for your default, you will, within thirty 
+(30) days after any such termination, deliver to SGI or render unusable 
+all Software originally provided to you hereunder and any copies 
+thereof embodied in any medium. </P>
+<P>
+<B>8. Governing Law.</B> This Agreement shall be governed by and 
+interpreted in accordance with the laws of the State of California, 
+excluding its choice of law rules. </P>
+<P>
+<B>U. S. GOVERNMENT USERS. </B>If the Software is acquired by or on 
+behalf of an entity of government of the United States of America, the 
+following provision applies: U. S. GOVERNMENT RESTRICTED RIGHTS LEGEND 
+Use, duplication or disclosure of Software by the Government is subject 
+to restrictions as set forth in FAR 52.227-19(c)(2) or subparagraph 
+(c)(1)(ii) of the Rights in Technical Data and Computer Software clause 
+at DFARS 252.227-7013 and/or in similar or successor clauses in the 
+FAR, or the DOD or NASA FAR Supplement. Unpublished- rights reserved 
+under the Copyright Laws of the United States. Contractor/manufacturer 
+is SILICON GRAPHICS, INC., 2011 N. Shoreline Blvd., Mountain View, CA 
+94039- 7311. </P>
+<P>
+<B>9. Disclaimer Of Software Warranty</B>. SGI PROVIDES THE SOFTWARE TO 
+YOU &#147;&quot;AS IS&quot;&#148; AND WITHOUT WARRANTY OF ANY KIND, 
+EXPRESS, STATUTORY, IMPLIED OR OTHERWISE, INCLUDING WITHOUT LIMITATION 
+ANY WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE OR 
+INFRINGEMENT. NO ORAL OR WRITTEN INFORMATION OR ADVICE GIVEN TO YOU BY 
+ANY SGI EMPLOYEE, REPRESENTATIVE OR DISTRIBUTOR WILL CREATE A WARRANTY 
+FOR THE SOFTWARE, AND YOU MAY NOT RELY ON ANY SUCH INFORMATION OR 
+ADVICE. </P>
+<P>
+<B>10. Limitation Of Liability.</B> IN NO EVENT SHALL SGI OR IT 
+LICENSORS BE LIABLE TO YOU FOR ANY SPECIAL, CONSEQUENTIAL, INCIDENTAL 
+OR INDIRECT DAMAGES OF ANY KIND (INCLUDING WITHOUT LIMITATION THE COST 
+OF COVER, DAMAGES ARISING FROM LOSS OF DATA, USE, PROFITS OR GOODWILL, 
+OR PROPERTY DAMAGE), WHETHER OR NOT SGI HAS BEEN ADVISED OF THE 
+POSSIBILITY OF SUCH LOSS, HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY 
+ARISING OUT OF THIS AGREEMENT. THESE LIMITATIONS SHALL APPLY 
+NOTWITHSTANDING THE FAILURE OF ESSENTIAL PURPOSE OF ANY LIMITED REMEDY. 
+05/31/96 </P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="installation">2. Installing OpenGL</A></H2>
+<P>
+You can download <B>OPENGL2.EXE</B> from the OpenGL for Windows web site.
+After you have obtained <B>OPENGL2.EXE</B>, copy it into a 
+temporary directory, then run it. This will create the following directories
+under <B>C:\OGLSDK</B> (unless you asked setup to install OpenGL for Windows
+under a different top level directory): </P>
+<UL>
+    <LI>
+    <B>DEMOS\</B><BR>
+     This contains executables for a few OpenGL demo programs. 
+    <LI>
+    <B>DOC\</B><BR>
+     This contains a copy of the the user guide, and documentation on the
+    OpenGL for Windows extensions. To look at the documentation, use your
+    favorite html browser and open up the file <B>INDEX.HTML</B>. 
+    <LI>
+    <B>EXAMPLES\</B><BR>
+     This contains OpenGL sample source code. You will find the following 
+    programs: 
+    <UL>
+	<B>MISC\</B><BR>
+	<UL>
+	    <LI>
+	    <B>CUBE.C</B> - A simple example of how to write an OpenGL 
+	    program with Windows. This program is described in the <A
+	     HREF="UserGuide/OpenGLonWin-1.html">User Guide </A>. 
+	    <LI>
+	    <B>INDEXFNC.C</B> - Draws a triangle, a line, and an image 
+	    using the SGI_index_func extension. 
+	    <LI>
+	    <B>INDEXMAT.C</B> - Draws two lit objects with color index 
+	    materials using the SGI_index_material extension. 
+	    <LI>
+	    <B>INDEXTEX.C</B> - Draws a textured object in color index mode 
+	    using the SGI_index_texture extension. 
+	    <LI>
+	    <B>SIMPLECI.C</B> - A simple color index program. 
+	    <LI>
+	    <B>TEXENV.C</B> - Shows how to use texture internal formats and 
+	    all the texture environments. 
+	    <LI>
+	    <B>TORUS.C</B> - Renders a torus in rgb mode. It uses the 
+	    vertex culling extension (SGI_cull_vertex) and the compile
+	    vertex array extension (SGI_compiled_vertex_array) to define
+	    the torus. 
+	    <LI>
+	    <B>VCULL.C</B> - Another example of using the SGI_cull_vertex 
+	    and SGI_compiled_vertex_array extensions. 
+	    <LI>
+	    <B>WGLINFO.C</B> - Displays information about supported pixel
+	    formats.
+	</UL>
+	<LI>
+	<B>FULLSCREEN\</B><BR>
+	 An example of a full screen OpenGL application which can change
+	video display modes.  This example requires the use of the
+	<A HREF="http://reality.sgi.com/mjk_asd/glut3/glut3.html">GLUT</A>
+	library.
+	<LI>
+	<B>SPHERE\</B><BR>
+	 A simple throughput benchmark; it renders a spinning lit sphere.
+	<LI>
+	<B>RB\</B><BR>
+	 A rasterization benchmark; it renders screen coordinate tristrips. 
+    </UL>
+    <LI>
+    <B>INCLUDE\GL\</B><BR>
+     This contains <B>GL.H</B> and <B>GLU.H</B>.
+    <LI>
+    <B>LIB\</B><BR>
+     This contains the OpenGL and GLU link libraries for Microsoft Visual C++ 
+    (ie., <B>OPENGL.LIB</B> and <B>GLU.LIB</B>). 
+    <LI>
+    <B>BCLIB\</B><BR>
+     This contains the OpenGL and GLU link libraries for Borland C++ version 
+    4.52.
+</UL>
+<P>
+The OpenGL Dynamic Link Libraries <B>OPENGL.DLL</B> and <B>GLU.DLL</B>
+ will be installed in the windows system directory. </P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="hwconfig">3. Supported Hardware Configurations</A></H2>
+<P>
+OpenGL for Windows has been successfully tested on PC's with Pentium, 
+Pentium Pro, Pentium II, AMD K6 and Cyrix 6x86 processors that are running the 
+Windows 95 or Windows NT 4.0 operating systems. It is recommended (but 
+not required) that you have at least 16MB of RAM. </P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="usingopengl">4. How to Use OpenGL for Windows</A></H2>
+<P>
+To use SGI's OpenGL for Windows you must link with <B>OPENGL.LIB</B> and <B>GLU.LIB</B>
+ instead of <B>OPENGL32.LIB</B> and <B>GLU32.LIB</B> respectively. Also make
+sure that <B>OPENGL.LIB</B> and <B>GLU.LIB</B> precede
+<B>GDI32.lib</B> in the library list. Since SGI's OpenGL for Windows library
+overloads the <I>ChoosePixelFormat()</I> function in GDI you need to make sure
+that you link the libraries in the right order so you don't pick up the wrong
+version of <I>ChoosePixelFormat()</I>.
+<P>
+You should also set your include path so that SGI's header 
+files have precedence over Microsoft's. This is required if you wish to 
+use any of the extensions provided in SGI's OpenGL library for Windows. </P>
+<P>
+If an application linked to SGI's OpenGL library is running on a system 
+with hardware acceleration (ie., a system that has an OpenGL ICD or MCD
+installed), the library will automatically fall 
+back to using Microsoft's OpenGL implementation. You can change this 
+behaviour by creating a value in the Registry as a DWORD: </P>
+<P>
+HKEY_LOCAL_MACHINE\Software\Silicon Graphics\OpenGL\OverrideDispatch </P>
+<P>
+</P>
+<UL>
+    <LI>
+    0: default (use OpenGL for Windows unless hardware accelerated) 
+    <LI>
+    1: force use of OpenGL for Windows
+    <LI>
+    2: force use of Microsoft's OpenGL Implementation 
+</UL>
+<P>
+You can find out whether you are using SGI's OpenGL library or
+Microsoft's OpenGL library, by running <B>WGLINFO.EXE</B>. Source for
+<B>WGLINFO.EXE</B> can be found in the <B>EXAMPLES\MISC</B> directory. </P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="relatedprog">5. Where to Find Additional Demos and Utilities</A></H2>
+<P>
+<B>GLUT</B><BR>
+ You can download the glut source code along with more example programs 
+written with glut from <A
+ HREF="http://reality.sgi.com/mjk_asd/glut3/glut3.html">Mark Kilgard's 
+GLUT Page</A> or <A HREF="http://www.cs.utah.edu/~narobins/opengl.html">Nate 
+Robin's OpenGL Page</A>. </P>
+<P>
+<B>Example Programs</B><BR>
+ If you want additional example code, you can ftp the <A
+ HREF="ftp://sgigate.sgi.com/pub/opengl/contrib/samples.tar.Z">SampleGL 
+Example Programs</A>. </P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="changes">6. Changes in Release 2</A></H2>
+<P>
+The following problems have been fixed:
+</P>
+<UL>
+    <LI>
+    OpenGL could crash during initialization when run on a system with
+    an Intel 486 or Cyrix 6x86 processor because of the sequence of
+    instructions used to identify the CPU.
+    <LI>
+    There could be unexpected rendering artifacts resulting from overflow
+    of the color interpolants when dithering was enabled in a 16-bit display
+    mode.
+    <LI>
+    Texels could be selected from the wrong mipmap level due to a floating
+    point underflow when computing the level of detail during perspective
+    correct texture mapping.
+    <LI>
+    The PFD_SWAP_COPY bit was not being set in the dwFlags field of
+    double buffered pixel formats.
+    <LI>
+    OpenGL could crash following a window resize.
+    <LI>
+    There was an occasional memory leak when deleting texture objects.
+    <LI>
+    The space character was displayed incorrectly for some fonts created
+    by calling wglUseFontBitmaps().
+    <LI>
+    COLOR_MATERIAL did not always work correctly when used with vertex arrays.
+    <LI>
+    OpenGL could crash when redirecting to OpenGL32.dll
+    <LI>
+    The OpenGL DLL did not have a VS_VERSION_INFO resource.
+    <LI>
+    When used in conjunction with SciTech Software's MGL, problems
+    relating to back buffer initialization and resizing have been fixed.
+</UL>
+<P>
+The following optimizations have been made:
+</P>
+<UL>
+    <LI>
+    Lighting for directional light sources and state changes affecting
+    lighting have been made faster.
+    <LI>
+    Certain internal caching algorithms have been tuned, providing better
+    geometry pipeline performance for some programs. In particular, the 
+    overhead for <I>glBegin()/glEnd()</I> and the overhead for state changes 
+    was reduced.
+</UL>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="bugs">7. Known Bugs and Limitations</A></H2>
+<P>
+</P>
+<UL>
+<P>
+</P>
+    <LI>
+    Outline fonts drawn via <I>wglUseOutlineFonts()</I> with extrusion 
+    produce correct geometry but the edge normals are incorrect. 
+<P>
+</P>
+    <LI>
+    Color index rendering to a windows only works in 8 bit framebuffer 
+    modes. Color index rendering to an 8-bit DIB works correctly regardless 
+    of the framebuffer setting.
+<P>
+</P>
+    <LI>
+    Rendering to the front buffer with an 8-bit pixel format (i.e., 8 bit 
+    color index rendering or 8 bit RGB rendering) requires the identity 
+    palette. 
+<P>
+</P>
+    <LI>
+    There is no support for destination alpha. 
+<P>
+</P>
+    <LI>
+    Polygon offset does not work when the polygon mode is GL_POINT or 
+    GL_LINE. (i.e., polygon offset only works for polygon mode GL_FILL.) 
+<P>
+</P>
+    <LI>
+    The anti-aliased point and anti-aliased polygon conformance tests
+    do not pass.
+<P>
+</P>
+    <LI>
+    OpenGL for Windows has only been tested on the following graphics chip 
+    sets: 
+    <UL>
+        <LI>
+        ATI Rage II
+        <LI>
+        IGS 1682 
+        <LI>
+        Matrox Mystique and Millenium
+        <LI>
+        S3 968 and Virge/VX
+        <LI>
+        3DLabs Permediat NT and Permedia II
+        <LI>
+        Rendition Verite 
+    </UL>
+<P>
+</P>
+    <LI>
+    The following extensions are implemented in SGI's OpenGL library for Windows: 
+    <UL>
+        <LI>
+        GL_SGI_cull_vertex 
+        <LI>
+        GL_SGI_compiled_vertex_array 
+        <LI>
+        GL_SGI_index_array_formats 
+        <LI>
+        GL_SGI_index_func 
+        <LI>
+        GL_SGI_index_material 
+        <LI>
+        GL_SGI_index_texture 
+    </UL>
+    The interface to these extensions may change after they have been 
+    reviewed by the OpenGL ARB. Also, some of them may become EXT 
+    extensions (i.e., use EXT as the suffix instead of SGI) after they have 
+    been reviewed. 
+<P>
+</P>
+    <LI>
+    The following paths are not optimized:  
+    <UL>
+        <LI>
+        polygon offset (i.e., <I>glEnable(GL_POLYGON_OFFSET_FILL)</I>) 
+        <LI>
+        drawbuffer front and back (i.e., <I>glDrawBuffer(GL_FRONT_AND_BACK)</I>) 
+        <LI>
+        blending functions other than GL_ZERO, GL_ONE, GL_SRC_ALPHA, 
+        GL_ONE_MINUS_SRC_ALPHA (see <I>glBlendFunc()</I>), except on 
+        systems with MMX extensions in 16-bit framebuffers.
+        <LI>
+        texture borders 
+        <LI>
+        texture filters other than GL_NEAREST (see <I>glTexParameter()</I>) 
+        <LI>
+        stencil, stipple, and alpha test
+    </UL>
+</UL>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="reportingBugs">8. Reporting Bugs</A></H2>
+<P>
+OpenGL for Windows is free, unsupported software. However, if you find 
+bugs, or have other comments about the software, you can report them to 
+the OpenGL for Windows development team by using the <A
+ HREF="feedback.html">feedback form</A> on the SGI OpenGL for 
+Windows web site or by sending mail to <A
+ HREF="mailto:win-opengl@sgi.com"><CITE>win-opengl@sgi.com</CITE></A><CITE>. </CITE></P>
+<P>
+</P>
+<HR>
+<P>
+</P>
+<P>
+ <A HREF="http://www.opengl.org"><IMG
+ SRC="images/opengl-logo.gif" ALT="OpenGL"
+ SGI_SRC="./images/opengl-logo.gif"></A><BR>
+ <FONT SIZE="-1">We welcome feedback and comments at <A
+ HREF="mailto:win-opengl@sgi.com">win-opengl@sgi.com</A>. </FONT></P>
+<P>
+<FONT SIZE="-2">Copyright &#169; 1994, 1995, 1996, 1997 Silicon Graphics, Inc.</FONT> <FONT SIZE="-3">All Rights 
+Reserved.<A HREF="http://www.sgi.com/Misc/external.list.html">Trademark Information</A></FONT>
+ </P>
+</BODY>
+</HTML>

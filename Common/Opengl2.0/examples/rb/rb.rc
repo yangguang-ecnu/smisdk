@@ -1,0 +1,272 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    IDD_DIALOG1, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 225
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 191
+    END
+
+    IDD_STATS_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 152
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 148
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MENU1 MENU DISCARDABLE 
+BEGIN
+    POPUP "&Attributes"
+    BEGIN
+        MENUITEM "&Dither",                     IDM_DITHER
+        POPUP "Draw &Buffer"
+        BEGIN
+            MENUITEM "&Front",                      IDM_DRAW_FRONT, CHECKED
+            MENUITEM "&Back",                       IDM_DRAW_BACK
+        END
+        POPUP "&Shade Model"
+        BEGIN
+            MENUITEM "GL_FLAT",                     IDM_GL_FLAT, CHECKED
+            MENUITEM "GL_SMOOTH",                   IDM_GL_SMOOTH
+        END
+        POPUP "Si&ze"
+        BEGIN
+            MENUITEM "3",                           IDM_SIZE_3
+            MENUITEM "10",                          IDM_SIZE_10
+            MENUITEM "25",                          IDM_SIZE_25
+            MENUITEM "50",                          IDM_SIZE_50, CHECKED
+            MENUITEM "100",                         IDM_SIZE_100
+            MENUITEM "1000",                        IDM_SIZE_1000
+            MENUITEM "10000",                       IDM_SIZE_10000
+        END
+        POPUP "&Primitive"
+        BEGIN
+            MENUITEM "GL_TRIANGLES",                IDM_TRIANGLES, CHECKED
+            MENUITEM "GL_TRIANGLE_STRIP",           IDM_TRIANGLE_STRIP
+            MENUITEM "glDraw&Elements",             IDM_DRAW_ELEMENTS
+        END
+        POPUP "&Color Mode"
+        BEGIN
+            MENUITEM "RGB",                         IDM_COLORMODE_RGB
+            MENUITEM "Color Index",                 IDM_COLORMODE_INDEX
+        END
+    END
+    POPUP "&Depth Buffer"
+    BEGIN
+        MENUITEM "&Enable",                     IDM_DEPTHBUFFER_ENABLE
+        MENUITEM "&Mask",                       IDM_DEPTHMASK, CHECKED
+        POPUP "&Func"
+        BEGIN
+            MENUITEM "GL_LESS",                     IDM_GL_LESS, CHECKED
+            MENUITEM "GL_LEQUAL",                   IDM_GL_LEQUAL
+            MENUITEM "GL_EQUAL",                    IDM_GL_EQUAL
+            MENUITEM "GL_GEQUAL",                   IDM_GL_GEQUAL
+            MENUITEM "GL_GREATER",                  IDM_GL_GREATER
+            MENUITEM "GL_ALWAYS",                   IDM_GL_ALWAYS
+            MENUITEM "GL_NEVER",                    IDM_GL_NEVER
+            MENUITEM "GL_NOTEQUAL",                 IDM_GL_NOTEQUAL
+        END
+        POPUP "&Size"
+        BEGIN
+            MENUITEM "16-bit",                      IDM_DEPTHSIZE_16
+            , CHECKED
+            MENUITEM "32-bit",                      IDM_DEPTHSIZE_32
+        END
+        POPUP "&Clear"
+        BEGIN
+            MENUITEM "0.0",                         IDM_DEPTHBUFFER_CLEAR0
+            MENUITEM "1.0",                         IDM_DEPTHBUFFER_CLEAR1
+            , CHECKED
+        END
+    END
+    POPUP "&Fog"
+    BEGIN
+        MENUITEM "&Enable",                     IDM_FOG_ENABLE
+        MENUITEM "&Cheap",                      IDM_FOG_CHEAP
+        POPUP "&Curve"
+        BEGIN
+            MENUITEM "GL_LINEAR",                   IDM_FOG_LINEAR, CHECKED
+            MENUITEM "GL_EXP",                      IDM_FOG_EXP
+            MENUITEM "GL_EXP2",                     IDM_FOG_EXP2
+        END
+    END
+    POPUP "&Texture"
+    BEGIN
+        MENUITEM "&Enable",                     IDM_TEXTURE_ENABLE
+        MENUITEM "&Perspective Correct",        IDM_TEXTURE_PERSPECTIVE_CORRECT
+
+        POPUP "&Width"
+        BEGIN
+            MENUITEM "1",                           IDM_TEXTURE_WIDTH_1
+            MENUITEM "2",                           IDM_TEXTURE_WIDTH_2
+            MENUITEM "4",                           IDM_TEXTURE_WIDTH_4
+            MENUITEM "8",                           IDM_TEXTURE_WIDTH_8
+            MENUITEM "16",                          IDM_TEXTURE_WIDTH_16
+            MENUITEM "32",                          IDM_TEXTURE_WIDTH_32
+            MENUITEM "64",                          IDM_TEXTURE_WIDTH_64
+            , CHECKED
+            MENUITEM "128",                         IDM_TEXTURE_WIDTH_128
+            MENUITEM "256",                         IDM_TEXTURE_WIDTH_256
+            MENUITEM "512",                         IDM_TEXTURE_WIDTH_512
+        END
+        POPUP "&Height"
+        BEGIN
+            MENUITEM "1",                           IDM_TEXTURE_HEIGHT_1
+            MENUITEM "2",                           IDM_TEXTURE_HEIGHT_2
+            MENUITEM "4",                           IDM_TEXTURE_HEIGHT_4
+            MENUITEM "8",                           IDM_TEXTURE_HEIGHT_8
+            MENUITEM "16",                          IDM_TEXTURE_HEIGHT_16
+            MENUITEM "32",                          IDM_TEXTURE_HEIGHT_32
+            MENUITEM "64",                          IDM_TEXTURE_HEIGHT_64
+            , CHECKED
+            MENUITEM "128",                         IDM_TEXTURE_HEIGHT_128
+            MENUITEM "256",                         IDM_TEXTURE_HEIGHT_256
+            MENUITEM "512",                         IDM_TEXTURE_HEIGHT_512
+        END
+        POPUP "En&vironment"
+        BEGIN
+            MENUITEM "&Decal",                      IDM_TEXTURE_DECAL
+            MENUITEM "&Modulate",                   IDM_TEXTURE_MODULATE
+            MENUITEM "&Replace",                    IDM_TEXTURE_REPLACE
+            , CHECKED
+            MENUITEM "&Add",                        IDM_TEXTURE_ADD
+        END
+        POPUP "&Orientation"
+        BEGIN
+            MENUITEM "&0°",                         IDM_TEXTURE_0, CHECKED
+            MENUITEM "&90°",                        IDM_TEXTURE_90
+            MENUITEM "&180°",                       IDM_TEXTURE_180
+            MENUITEM "&270°",                       IDM_TEXTURE_270
+        END
+        POPUP "P&arameters"
+        BEGIN
+            MENUITEM "Clamp &S",                    IDM_CLAMP_S
+            MENUITEM "Clamp &T",                    IDM_CLAMP_T
+        END
+        POPUP "&Zoom (Texel-to-Pixel)"
+        BEGIN
+            MENUITEM "1:1",                         IDM_ZOOM_1x1, CHECKED
+            MENUITEM "1:2",                         IDM_ZOOM_1x2
+            MENUITEM "1:4",                         IDM_ZOOM_1x4
+            MENUITEM "1:8",                         IDM_ZOOM_1x8
+        END
+        POPUP "Fi&lter"
+        BEGIN
+            MENUITEM "&Nearest",                    IDM_TEXTURE_NEAREST
+            , CHECKED
+            MENUITEM "&Linear",                     IDM_TEXTURE_LINEAR
+        END
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_DIALOG1 DIALOGEX 0, 0, 232, 198
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+EXSTYLE WS_EX_CLIENTEDGE
+CAPTION "OpenGL RasterBench 1.00,  © 1997 Silicon Graphics, Inc."
+MENU IDR_MENU1
+FONT 10, "System", 0, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,175,10,50,14
+    PUSHBUTTON      "Quit",IDCANCEL,175,30,50,14
+    LTEXT           "Iterations",IDC_STATIC,10,15,65,10
+    EDITTEXT        IDC_ITERATIONS,10,25,35,10,ES_AUTOHSCROLL | ES_NUMBER
+    GROUPBOX        "Test Parameters",IDC_STATIC,5,5,165,105
+    LTEXT           "OEM:          Silicon Graphics, Inc.\nVersion:     1.1.0\nRenderer: GDI Generic\nLocation:   c:/windows/system/opengl32.dll",
+                    IDC_OEMINFO,5,140,220,50,SS_SUNKEN
+END
+
+IDD_STATS_DIALOG DIALOG DISCARDABLE  0, 0, 159, 155
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Statistics"
+FONT 10, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,55,135,50,14
+    LTEXT           "Static",IDC_STATS,5,5,150,120,SS_SUNKEN
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

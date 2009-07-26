@@ -1,0 +1,786 @@
+<!DOCTYPE HTML PUBLIC "-//Netscape Comm. Corp.//DTD HTML//EN">
+<HTML>
+<HEAD>
+    <!-- SGI_COMMENT COSMOCREATE -->
+    <!-- SGI_COMMENT VERSION NUMBER="1.0" -->
+    <TITLE>OpenGL For Windows From Silicon Graphics</TITLE>
+</HEAD>
+<!--<BODY ALINK="#0033BB" VLINK="#0033BB" LINK="#0033BB" BGCOLOR="#FFFFFF" TEXT="#771155">-->
+<BODY BGCOLOR="#FFFFFF">
+<P>
+ <IMG SRC="images/opengl-logo.gif" ALT="SGI Logo"
+ SGI_SRC="./images/opengl-logo.gif"></P>
+<P>
+</P>
+<CENTER><H1 ALIGN="CENTER">
+OpenGL<SUP><FONT SIZE="2">&#174;</FONT></SUP> For 
+Windows<SUP><FONT SIZE="2">&#174;</FONT></SUP> 
+From Silicon Graphics<SUP><FONT SIZE="2">&#174;</FONT></SUP><BR>
+<I>Frequently Asked Questions</I></H1>
+</CENTER><HR>
+<P>
+<BR>
+ </P>
+<H2>
+<A NAME="top">Contents</A></H2>
+<P>
+<FONT SIZE="3"><A HREF="#update">Update</A></FONT><A HREF="#update"></A><BR>
+<FONT SIZE="3"> <A HREF="#qanda">Questions and Answers</A></FONT><A
+ HREF="#qanda"></A><BR>
+<FONT SIZE="3"> <A HREF="#extensions">Extensions for Silicon Graphics OpenGL Library for Windows</A></FONT><A
+ HREF="#extensions"></A><BR>
+<FONT SIZE="3"> </FONT></P>
+<P>
+</P>
+<HR>
+<H2>
+<A NAME="update">Update</A></H2>
+<P>
+    <FONT SIZE="3">At SIGGRAPH '97, Silicon Graphics announced that they will 
+    release a driver kit
+    for OpenGL.  <A HREF="#hwaccel">Click here</A> for more information . </FONT>
+<HR>
+<H2>
+<FONT SIZE="3"><A NAME="qanda">Questions and Answers</A></FONT><A
+ NAME="qanda"></A></H2>
+<P ALIGN="RIGHT">
+<B><FONT SIZE="3"><A HREF="#top">[ Return to top ]</A></FONT></B><A
+ HREF="#top"></A></P>
+<P>
+<BR>
+<FONT SIZE="3"> </FONT></P>
+<OL>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#cogl">What is included in the OpenGL release for
+     Windows from SGI?</A></FONT></B><FONT SIZE="3"><A HREF="#cogl"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#change">Why has the name changed from
+    Cosmo OpenGL?</A></FONT></B><FONT SIZE="3"><A HREF="#change"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#describe">Can you describe SGI's OpenGL
+    library for Windows?</A></FONT></B><FONT SIZE="3"><A
+     HREF="#describe"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#create">Why did Silicon Graphics feel 
+    the need to release an OpenGL implementation for Windows?</A></FONT></B><FONT SIZE="3"><A
+     HREF="#create"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#perf">What kind of performance are we 
+    talking about?</A></FONT></B><FONT SIZE="3"><A HREF="#perf"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#care">There are numerous 3D PC 
+    APIs available. Why should developers care about OpenGL? </A></FONT></B><A
+     HREF="#care"></A>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#quality">You say OpenGL has the best 
+    image quality. Why?</A></FONT></B><FONT SIZE="3"><A HREF="#quality"></A>
+     </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#slow">OpenGL has a reputation for being 
+    high-end and slow. How is top performance achieved?</A></FONT></B><FONT
+     SIZE="3"><A HREF="#slow"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#vaunted">Has SGI's OpenGL library for Windows given 
+    up any of its vaunted image quality to achieve this performance? </A></FONT></B><A
+     HREF="#vaunted"></A>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#web">You say OpenGL works for the Web. 
+    What does this mean?</A></FONT></B><FONT SIZE="3"><A HREF="#web"></A>
+     </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#pervasive">What is SGI doing to make sure that
+    OpenGL runs well on systems from other hardware vendors? </A></FONT></B><A
+     HREF="#pervasive"></A>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#pervasive">What is SGI doing to make sure that
+    there are good OpenGL drivers for accelerated PC's running Windows?</A></FONT></B><A
+     HREF="#hwaccel"></A>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3"><A HREF="#microsoft">Microsoft licensed OpenGL 
+    from Silicon Graphics and offers OpenGL for both Windows 95 and Windows 
+    NT. How does SGI's OpenGL offering on Windows fit with Microsoft's OpenGL implementations?</A></FONT></B><FONT
+     SIZE="3"><A HREF="#microsoft"></A> </FONT>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#choosepixelformat">Why does ChoosePixelFormat always 
+    return zero?</A></B><A HREF="#choosepixelformat"></A>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#cosmogl-nt">Does SGI's implementation of OpenGL for Windows work 
+    with both Windows 95 and Windows NT?</A></B><A HREF="#cosmogl-nt"></A>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#cosmogl-accel">How can I run an application linked 
+    with SGI's OpenGL library on a system with hardware acceleration? Will the 
+    application take advantage of the hardware acceleration?</A></B><A
+     HREF="#cosmogl-accel"></A>
+     <P>
+    </P>
+    <LI>
+    <B><A HREF="#ogl-example">I'm new to OpenGL. Where can I find out more on
+    how to write OpenGL programs for Windows?</A></B><A
+     HREF="#ogl-example"></A>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#fullscreen">How can I get my Windows-based OpenGL program to run 
+    in fullscreen, exclusive mode? </A></B><A
+     HREF="#fullscreen"></A>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#raster-only">How do I use OpenGL as a rasterization-only library?
+    </A></B><A HREF="#raster-only"></A>
+    <P>
+    </P>
+    <LI>
+    <B><A HREF="#peak-performance">How do I tune my application for OpenGL?
+    </A></B><A HREF="#peak-performance"></A>
+
+</OL>
+<HR>
+<P>
+</P>
+<P ALIGN="RIGHT">
+<B><FONT SIZE="3"><A HREF="#qanda" NAME="cogl">[ Return to Q&amp;A ]</A></FONT></B><A
+ HREF="#qanda" NAME="cogl"></A></P>
+<P>
+</P>
+<OL>
+    <LI>
+    <B><FONT SIZE="3">What is included in the OpenGL release for Windows from SGI?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> The distribution includes an OpenGL library that runs
+    at exceptional levels of performance on Intel-based PC's running Windows.
+    Also included is the GLU library, some example programs, some demos and
+    a user guide.</FONT>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="change">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="change"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">Why has the name changed from Cosmo OpenGL?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> A major reason for creating &quot;Cosmo OpenGL&quot; 
+    was to ensure that there would be a fast, full-featured rendering API 
+    for the PC versions of SGI's <A HREF="http://cosmo.sgi.com">Cosmo</A></FONT>
+    </A><sup><FONT SIZE="-2">TM</FONT></sup><FONT
+     SIZE="3"> cross-platform Web development tools. </FONT>
+    <P>
+    <FONT SIZE="3">However, many developers did not understand that Cosmo
+    OpenGL was a fully compliant OpenGL implementation tuned for a wide range of
+    applications, including games. Changing the name to <B>&quot;OpenGL
+    for Windows from Silicon Graphics&quot;</B> will help developers understand 
+    that any OpenGL application, whether related to the other Cosmo products 
+    or not, can take advantage of this implementation on PC platforms.
+    <P>
+    <FONT SIZE="3">Note that the DLL names were changed also. The OpenGL library
+    DLL is called OPENGL.DLL (it was previously named COSMOGL.DLL) and the
+    GLU library DLL is called GLU.DLL (it was previously named COSMOGLU.DLL).
+    You will need to relink your application to take advantage of the new DLLs.
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="describe">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="describe"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">Can you describe SGI's OpenGL library for Windows?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> OpenGL is a 3D graphics programming specification. 
+    OpenGL licensees have a fair degree of freedom in creating their OpenGL 
+    implementations, as long as they adhere to the specification and pass 
+    the conformance tests. </FONT>
+    <P>
+    <FONT SIZE="3">SGI's OpenGL library implementation for Windows,
+    features optimizations that PCs require for 
+    rendering Web and games-oriented 3D applications efficiently.</FONT></P>
+    <P>
+    <FONT SIZE="3">The optimizations include: </FONT></P>
+    <P>
+    </P>
+    <OL>
+        <LI>
+        <FONT SIZE="3">Pentium-specific tuning in both the geometry and 
+        rasterization portions of the OpenGL graphics pipeline.</FONT>
+        <LI>
+	<FONT SIZE="3">MMX tuning in the rasterization portion of the pipeline,
+   	improving fill rates 3X-7X on processors supporting the MMX 
+        instruction set.</FONT>
+        <LI>
+        <FONT SIZE="3">Seven <A HREF="#extensions">new extensions</A>
+         have been added.</FONT>
+    </OL>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="create">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="create"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">Why did Silicon Graphics feel the need to 
+    release an OpenGL implementation for Windows?</FONT></B><BR>
+    <BR>
+    <P>
+    <FONT SIZE="3">Silicon Graphics has made a substantial 
+    commitment to creating Web Products - the Cosmo suite of authoring and 
+    development tools and <A HREF="http://cosmo.sgi.com/player/index.html">Cosmo 
+    Player</A>, a VRML browser. SGI's OpenGL library ensures that 
+    applications perform well when the target platform is an 
+    unaccelerated Windows PC or a PC with MMX acceleration.</FONT>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="perf">[ Return to Q&amp;A ]</A></FONT></B><A
+     HREF="#qanda" NAME="perf"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">What kind of performance are we talking about?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> The best way to measure the performance of any 
+    graphics library is to run it against your application. That said, 
+    there are a couple of simple benchmarks that will be provided in
+    SGI's OpenGL distribution for Windows to help you characterize the performance of 
+    the OpenGL implementation you are using: </FONT>
+    <OL>
+        <LI>
+        <B><FONT SIZE="3">RB.C</FONT></B><FONT SIZE="3"> measures the 
+        performance of OpenGL rasterization for a wide variety of modes. </FONT>
+        <LI>
+        <B><FONT SIZE="3">SPHERE.C</FONT></B><FONT SIZE="3"> measures 
+        the performance of rendering RGB, lit tristrips with different 
+        attribute settings. </FONT>
+    </OL>
+    <P>
+    <LI/></P>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="care">[ Return to Q&amp;A ]</A></FONT></B><A
+     HREF="#qanda" NAME="care"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">There are numerous 3D PC APIs available. Why 
+    should developers care about OpenGL?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> There are many reasons why developers should care 
+    about OpenGL: </FONT>
+    <P>
+    </P>
+    <OL>
+        <LI>
+        <FONT SIZE="3">OpenGL has been available for over 5 years. It 
+        has a track record of stability and success.</FONT>
+        <LI>
+        <FONT SIZE="3">There are thousands of OpenGL-based applications 
+        available today.</FONT>
+        <LI>
+        <FONT SIZE="3">OpenGL is a truly open standard and available on 
+        virtually every Unix workstation, PC and Mac.</FONT>
+        <LI>
+        <FONT SIZE="3">OpenGL scales very well. There are OpenGL 
+        implementations for unaccelerated PCs, for accelerated PCs
+        and workstations, and for very high-performance graphics 
+        workstations such as the InfiniteReality from Silicon Graphics. </FONT>
+        <LI>
+        <FONT SIZE="3">OpenGL allows developers to create applications 
+        with exceptional image quality while delivering top performance.</FONT>
+        <LI>
+        <FONT SIZE="3">OpenGL will be the dominant rendering interface 
+        for 3D on the Web.</FONT>
+    </OL>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="quality">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="quality"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">You say OpenGL has the best image quality. Why?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> The other PC graphics APIs were initially designed 
+    for games development. The standard for a games API is to minimize 
+    visual detail in order to achieve high performance. At the time these 
+    APIs appeared, both CPU and graphics capability on the PC were very 
+    limited. Even though PC technology has improved, the inherent image 
+    quality limitations in the APIs remain as a legacy. </FONT>
+    <P>
+    <FONT SIZE="3">One of OpenGL's design goals was to make image 
+    quality a priority. It was developed in an environment that expected 
+    reasonable system performance. OpenGL's design is very well suited for 
+    today's PC capabilities. </FONT></P>
+    <P>
+    <FONT SIZE="3">As a result, SGI's OpenGL library for Windows delivers 
+    high performance 
+    without exhibiting the annoying rendering artifacts found with other 
+    APIs. </FONT></P>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="slow">[ Return to Q&amp;A ]</A></FONT></B><A
+     HREF="#qanda" NAME="slow"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">OpenGL has a reputation for being high-end and 
+    slow. How is top performance achieved?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> Top performance is achieved by creating an 
+    implementation that is based on a thorough knowledge of graphics 
+    technology and the underlying microprocessor. </FONT>
+    <P>
+    <FONT SIZE="3">The poor reputation that OpenGL has found in the 
+    low-end PC market was due to the lack of a well-tuned implementation. 
+    SGI's OpenGL library for Windows will improve this reputation greatly. </FONT></P>
+    <P>
+    <FONT SIZE="3">SGI had not applied its extensive 3D API knowledge 
+    to the PC platform previously. SGI's OpenGL library for Windows demonstrates 
+    that high-end 
+    is a desirable quality and that it is not synonymous with being slow. </FONT></P>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="vaunted">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="vaunted"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">Has SGI's OpenGL library for Windows given up any of its vaunted 
+    image quality to achieve this performance?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> No. However, the application developer may choose 
+    to make trade-offs between image quality and performance if desired. 
+    This is done at the discretion of the developer, not because the API 
+    limits their choices. </FONT>
+    <P>
+    <FONT SIZE="3">SGI's OpenGL library for Windows passes the OpenGL conformance 
+    tests. This assures developers that it provides a defined minimum level of 
+    image quality. </FONT></P>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="web">[ Return to Q&amp;A ]</A></FONT></B><A
+     HREF="#qanda" NAME="web"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">You say OpenGL works for the Web. What does this 
+    mean?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> OpenGL has a number of features that make it the 
+    premier low level graphics API for the Web: </FONT>
+    <P>
+    </P>
+    <OL>
+        <LI>
+        <FONT SIZE="3">It is the rendering layer for <A
+         HREF="http://cosmo.sgi.com/player/index.html">Cosmo Player</A>, 
+        the premier VRML browser for interactive, 3D worlds. </FONT>
+        <LI>
+        <FONT SIZE="3">OpenGL Java bindings will soon be available. </FONT>
+        <LI>
+        <FONT SIZE="3">The OpenGL API is available on almost any 
+        computer system, from PCs to workstations. Java is also designed to be 
+        platform independent. For an API to be successful in this market, it 
+        must be available on all platforms.</FONT>
+    </OL>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="pervasive">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="pervasive"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">What is SGI doing to make
+    sure that OpenGL runs well on systems from other hardware vendors?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> Hardware and system vendors can license the source code
+    for SGI's OpenGL library for Windows. This source code is an excellent 
+    starting point for creating an OpenGL driver for accelerated 3D systems
+    or for creating a fast OpenGL implementation for systems with no 
+    dedicated graphics hardware.
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="hwaccel">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="hwaccel"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">What is SGI doing to make sure that there are good
+    OpenGL drivers for accelerated PCs running Windows?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> As mentioned above, SGI is licensing the source for their
+    OpenGL implementation for Windows to hardware vendors providing
+    3D graphics acceleration for the PC. Since the first MR of their OpenGL
+    on Windows implementation, SGI has put their energy into developing a driver
+    kit that would allow hardware vendors to develop ICD drivers quickly.
+    The beta release of this ICD driver kit was sent out in November.
+    The driver kit has a simple 
+    rasterization interface, making it easy for hardware vendors to quickly
+    write OpenGL drivers for 3D cards that accelerate rasterization.
+    The driver kit also supports hardware that accelerates transforms and 
+    lighting and contains a comprehensive OpenGL test suite to 
+    ensure that the resulting drivers are high quality.
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="microsoft">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="microsoft"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B><FONT SIZE="3">Microsoft licensed OpenGL from Silicon Graphics 
+    and offers OpenGL for both Windows 95 and Windows NT. How does SGI's
+    OpenGL offering for Windows fit with Microsoft's OpenGL implementations?</FONT></B><BR>
+    <BR>
+    <FONT SIZE="3"> SGI's OpenGL library for Windows complements the latest Microsoft 
+    implementations of OpenGL. All are based on OpenGL version 1.1. 
+    However, Silicon Graphics' focus for their OpenGL library has been on 
+    extremely high rendering performance when there is no dedicated 3D 
+    graphics hardware present. Specifically SGI's OpenGL library for Windows 
+    accelerates indexed rendering, improves the fill rate for RGB rendering and 
+    provides extensions (SGI_cull_vertex and SGI_compiled_vertex_array) to 
+    improve polygon throughput. SGI's OpenGL library also takes advantage of
+    the MMX processor, which greatly improves the fill rate on unaccelerated
+    PC's. In addition, SGI is licensing the source for their library, providing
+    an excellent starting point for hardware vendors that wish to provide OpenGL
+    ICD drivers. </FONT>
+    <P>
+    <FONT SIZE="3">Although SGI's library is faster for triangle rendering, 
+    Microsoft's library
+    renders points and lines faster. Also, Microsoft has done an excellent job of 
+    creating an environment that allows 3D graphics hardware vendors to 
+    accelerate OpenGL on Windows 95 and Windows NT. Microsoft supports two driver
+    models for OpenGL: the installable client driver (ICD) which works on both
+    Windows 95 and Windows NT and the mini client driver (MCD) which works on Windows 
+    NT only. Click here for more information on <A 
+    HREF="http://www.microsoft.com/hwdev/devdes/openGL.HTM">
+    OpenGL from Microsoft.</A>
+    </FONT></P>
+    <P>
+    <FONT SIZE="3">We have been very careful to make sure that both 
+    SGI's OpenGL library and Microsoft's OpenGL library will coexist on the 
+    same PC. </FONT></P>
+    <P>
+    </P>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="choosepixelformat">[ 
+    Return to Q&amp;A ]</A></FONT></B><A HREF="#qanda"
+     NAME="choosepixelformat"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>Why does ChoosePixelFormat always return zero?</B><BR>
+    <BR>
+    SGI's OpenGL library for Windows overloads the ChoosePixelFormat 
+    function in GDI in order 
+    to return the proper format information. The application must link 
+    opengl.lib and glu.lib before gdi32.lib in the library list or 
+    the wrong version of ChoosePixelFormat will be called.<FONT
+     SIZE="3"> </FONT>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="cosmogl-nt">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="cosmogl-nt"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>Does SGI's implementation of OpenGL for Windows work with both
+    Windows 95 and Windows NT?</B><BR>
+    <BR>
+    Yes. The beta release of the software did not work with Windows NT unless
+    Microsoft's OpenGL library for Windows NT was installed. In the beta
+    release, function calls to SGI's OpenGL library pass through to Microsoft's 
+    version. However, in the latest MR release of SGI's software, Windows NT
+    is directly supported.
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="cosmogl-accel">[ Return to 
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="cosmogl-accel"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>How can I run an application linked with SGI's OpenGL library on a 
+    system with hardware acceleration? Will the application take advantage 
+    of the hardware acceleration?</B><BR>
+    <BR>
+    SGI's OpenGL library normally runs without acceleration. However, on systems 
+    with an OpenGL driver for hardware acceleration, the library will 
+    defer to the Microsoft version of OpenGL which uses the hardware 
+    acceleration. 
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="ogl-example">[ Return to
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="ogl-example"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>I'm new to OpenGL. Where can I find out more on how to write OpenGL
+     programs for Windows? </B><BR>
+    <BR>
+    The <A HREF="./UserGuide/OpenGLonWin-1.html">Guide to OpenGL on Windows from
+    Silicon Graphics</A> contains some simple examples
+    showing how to write windows-based OpenGL applications. There are also quite
+    a few books and articles on OpenGL. These are detailed on the
+    <A HREF="http://www.opengl.org/Developers/developers.html">OpenGL web site</A>.
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="fullscreen">[ Return to
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="fullscreen"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>How can I get my Windows-based OpenGL program to run in fullscreen, exclusive
+     mode? </B><BR>
+    <BR>
+     You need to call the GDI function <I>ChangeDisplaySettings</I>.
+     <A HREF="examples/fullscreen/fullscreen.c">Click here</A> to look at an
+     example program that does this.
+     You can also use MGL which is available from from 
+     <A HREF="http://www.scitechsoft.com"> SciTech Software Inc.</A>
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="raster-only">[ Return to
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="raster-only"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>How do I use OpenGL as a rasterization-only library? </B><BR>
+    <BR>
+    Since many PC systems perform the transform and lighting calculations on the host,
+    you may prefer to transform and light the geometry yourself and just use OpenGL
+    for rasterization. This is easy to do. 
+    <A HREF="http://reality.sgi.com/gold/OpenGL/examples/rasonly.c">
+    Click Here</A> to read about how to do this and get some example code.
+    <P>
+    If exact two-dimensional rasterization is desired, you must carefully
+    specify the orthographic projection matrix, as detailed on the web site
+    given above. You must also carefully specify the vertices of primitves
+    that are to be rasterized. If the
+    orthographic projection is specified as <I>gluOrtho2D(0, width, 0, height)</I>
+    (where width and height are the viewport dimensions), then polygon vertices and 
+    pixel image positions need to be placed at integer coordinates to rasterize 
+    predictably. For example, <I>glRecti(0, 0, 1, 1)</I> reliably fills the lower 
+    left pixel of the viewport, and <I>glRasterPos2i(0, 0)</I> reliably positions 
+    an unzoomed image at the lower left of the viewport. Point vertices, line vertices
+    and bitmap positions should be placed at half-integer locations, however. For 
+    example, a line drawn from (x1, 0.5) to (x2, 0.5) will be reliably rendered along 
+    the bottom row of pixels into the veiwport, and a point drawn at (0.5, 0.5) will 
+    reliably fill the same pixel as <I>glRecti(0, 0, 1, 1)</I>.
+    <P>
+    If you want to specify all primitives at integer postions, while still ensuring 
+    predictable rasterization, then you can simply translate x and y by 0.375. That 
+    is, instead of setting the model-view matrix to identity, load a translation 
+    matrix that translates 0.375 in x and y.
+    <P>
+    </P>
+    <P ALIGN="RIGHT">
+    <B><FONT SIZE="3"><A HREF="#qanda" NAME="peak-performance">[ Return to
+    Q&amp;A ]</A></FONT></B><A HREF="#qanda" NAME="peak-performance"></A></P>
+    <P>
+    </P>
+    <LI>
+    <B>How do I tune my application for OpenGL?</B><BR>
+    <BR>
+    The <A HREF="./UserGuide/OpenGLonWin-26.html">Guide to OpenGL on Windows from
+    Silicon Graphics</A> covers the steps you should follow when tuning your 
+    application for
+    OpenGL. In addition you may want to characterize the performance of 
+    OpenGL for the particular system you are on and adjust your program accordingly.
+    (For example, you may want to change which texture filter mode you are using 
+    depending on the performance.) 
+    <A HREF="http://reality.sgi.com/gold/OpenGL/isfast.html">libisfast</A>
+    provides an example and starting point for doing this.
+
+</OL>
+<P>
+</P>
+<HR>
+<H2>
+<FONT SIZE="3"><A NAME="extensions">Extensions for Silicon Graphics OpenGL Library for Windows </A></FONT><A
+ NAME="extensions"></A></H2>
+<P>
+</P>
+<P>
+<FONT SIZE="3">As mentioned above, the performance for SGI's OpenGL library is achieved 
+through a combination of tuning and new extensions. The first six of 
+the following seven OpenGL extensions were developed specifically for 
+SGI's OpenGL library for Windows. 
+The seventh, EXT_paletted_texture, was previously introduced as a 
+standard OpenGL extension by Microsoft. </FONT></P>
+<P>
+</P>
+<UL>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/index_array_formats.spec">index_array_formats</A>
+     </FONT>
+    <P>
+    <FONT SIZE="3">This extension increases the number of packed vertex 
+    formats accepted by InterleavedArrays to include formats which specify 
+    color indexes rather than RGBA colors.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/index_func.spec">index_func</A> </FONT>
+    <P>
+    <FONT SIZE="3">This extension provides a way to discard fragments 
+    when a comparison between the fragment's index value and a reference 
+    index fails. This may be used similarly to the alpha test which is 
+    available in RGBA mode.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/index_material.spec">index_material</A> </FONT>
+    <P>
+    <FONT SIZE="3">This extends color index lighting to include a way 
+    for the current index to contribute to the color index produced by 
+    lighting. This works much like ColorMaterial does for RGBA lighting by 
+    allowing one or more color index material properties to be attached to 
+    the current index. </FONT></P>
+    <P>
+    <FONT SIZE="3">The color index lighting formula is also modified so 
+    that the lit color index may be bitwise shifted in order to allow 
+    greater control when using lighting and fog together in color index 
+    mode.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/index_texture.spec">index_texture</A> </FONT>
+    <P>
+    <FONT SIZE="3">This extension enhances the definition of texturing 
+    to include color index mode. This extension builds on the notion of 
+    texture images which have color index internal formats which was 
+    introduced in EXT_paletted_texture. </FONT></P>
+    <P>
+    <FONT SIZE="3">This extension also introduces a new texture 
+    environment function ADD which is useful for combining lighting and 
+    texturing in color index mode.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/compiled_vertex_array.spec">compiled_vertex_array</A>
+     </FONT>
+    <P>
+    <FONT SIZE="3">This extension defines an interface which allows 
+    static vertex array data to be cached or pre-compiled for more 
+    efficient rendering. This is useful for implementations which can cache 
+    the transformed results of array data for reuse by several DrawArrays, 
+    ArrayElement, or DrawElements commands. It is also useful for 
+    implementations which can transfer array data to fast memory for more 
+    efficient processing.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/cull_vertex.spec">cull_vertex</A> </FONT>
+    <P>
+    <FONT SIZE="3">This extension introduces a method for culling 
+    vertexes in object space based on the value of the dot product between 
+    the normal at the vertex and a culling eye direction. </FONT></P>
+    <P>
+    <FONT SIZE="3">Culling a polygon by examining its vertexes in 
+    object space can be more efficient than screen space polygon culling 
+    since the transformation to screen space (which may include a division 
+    by w) can be avoided for culled vertexes. Also, vertex culling can be 
+    computed before vertexes are assembled into primitives. This is a 
+    useful property when drawing meshes with shared vertexes, since a 
+    vertex can be culled once, and the resulting state can be used for all 
+    primitives which share the vertex.</FONT></P>
+    <P>
+    </P>
+    <LI>
+    <FONT SIZE="3"><A HREF="specs/paletted_texture.spec">EXT_paletted_texture</A>
+     </FONT>
+    <P>
+    <FONT SIZE="3">This extension defines new texture formats and new 
+    calls to support the use of paletted textures in OpenGL. A paletted 
+    texture is defined by giving both a palette of colors and a set of 
+    image data which is composed of indices into the palette. The paletted 
+    texture cannot function properly without both pieces of information so 
+    it increases the work required to define a texture. This is offset by 
+    the fact that the overall amount of texture data can be reduced 
+    dramatically by factoring redundant information out of the logical view 
+    of the texture and placing it in the palette. </FONT></P>
+    <P>
+    <FONT SIZE="3">Paletted textures provide several advantages over 
+    full-color textures: As mentioned above, the amount of data required to 
+    define a texture can be greatly reduced over what would be needed for 
+    full-color specification. For example, consider a source texture that 
+    has only 256 distinct colors in a 256 by 256 pixel grid. Full-color 
+    representation requires three bytes per pixel, taking 192K of texture 
+    data. By putting the distinct colors in a palette only eight bits are 
+    required per pixel, reducing the 192K to 64K plus 768 bytes for the 
+    palette. Now add an alpha channel to the texture. The full-color 
+    representation increases by 64K while the paletted version would only 
+    increase by 256 bytes. This reduction in space required is particularly 
+    important for hardware accelerators where texture space is limited. </FONT></P>
+    <P>
+    <FONT SIZE="3">Paletted textures allow easy reuse of texture data 
+    for images which require many similar but slightly different colored 
+    objects. Consider a driving simulation with heavy traffic on the road. 
+    Many of the cars will be similar but with different color schemes. If 
+    full-color textures are used a separate texture would be needed for 
+    each color scheme, while paletted textures allow the same basic index 
+    data to be reused for each car, with a different palette to change the 
+    final colors. </FONT></P>
+    <P>
+    <FONT SIZE="3">Paletted textures also allow use of all the palette 
+    tricks developed for paletted displays. Simple animation can be done, 
+    along with strobing, glowing and other palette-cycling effects. All of 
+    these techniques can enhance the visual richness of a scene with very 
+    little data.</FONT></P>
+</UL>
+<P>
+</P>
+<P>
+</P>
+<HR SIZE="6">
+<P>
+<A HREF="http://www.opengl.org">
+<IMG SRC="./images/opengl-logo.gif" ALT="OpenGL"></A> <BR>
+<FONT SIZE="-1">We welcome feedback and comments at <A HREF="mailto:win-opengl@sgi.com">win-opengl@sgi.com</A>. </FONT></P>
+<P>
+</BODY>
+</HTML>

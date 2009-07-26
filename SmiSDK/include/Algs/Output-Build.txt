@@ -1,0 +1,42 @@
+1>------ Build started: Project: Core, Configuration: Release Win32 ------
+1>Compiling...
+1>Voxel3D.cpp
+1>Volume.cpp
+1>TriangleMesh.cpp
+1>TransferFunctionLUT.cpp
+1>ThreadedProcess.cpp
+1>Thread.cpp
+1>Stack3D.cpp
+1>Stack.cpp
+1>Polygon.cpp
+1>PixelBase.cpp
+1>MultiDataBase.cpp
+1>MetaData.cpp
+1>LoggerBase.cpp
+1>Logger.cpp
+1>LaplacianKernel.cpp
+1>Kernel.cpp
+1>Image.cpp
+1>GaussianKernel.cpp
+1>Functional.cpp
+1>ErosionKernel.cpp
+1>Generating Code...
+1>Compiling...
+1>DrawHelper.cpp
+1>DilationKernel.cpp
+1>DiffOfGaussianKernel.cpp
+1>DiffOfGaussianDerivativeKernel.cpp
+1>DerivativeOfGaussianKernel.cpp
+1>CentralDifferenceDerivativeKernel.cpp
+1>BitVolume.cpp
+1>BitImage.cpp
+1>BaseDataObject.cpp
+1>AsyncProcess.cpp
+1>Generating Code...
+1>Creating library...
+1>DrawHelper.obj : warning LNK4221: no public symbols found; archive member will be inaccessible
+1>Performing Post-Build Event...
+1>        1 file(s) copied.
+1>Build log was saved at "file://c:\Work\PGViewer\Core\Release\BuildLog.htm"
+1>Core - 0 error(s), 1 warning(s)
+========== Build: 1 succeeded, 0 failed, 0 up-to-date, 0 skipped ==========

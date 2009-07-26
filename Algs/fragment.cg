@@ -1,0 +1,12 @@
+void main(
+                 in float4    volCoord  : TEXCOORD0,
+                 in float2	  cmapCoord : TEXCOORD1,
+            uniform sampler3D vol       : TEXUNIT0,
+            uniform sampler2D cmap      : TEXUNIT1,
+                out float4    color     : COLOR)
+{
+    // First retrieve the voxel value at the specified coordinate
+    cmapCoord = tex3Dproj(vol, volCoord).rr;
+    // Now retrieve the colormap entry (RGBA) for that value.
+    color= tex2D(cmap, cmapCoord);
+}
