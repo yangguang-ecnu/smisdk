@@ -16,8 +16,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Segmentation", "Segmentatio
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thresholding", "Thresholding\Thresholding.vcproj", "{51D115D1-0F5A-4DCA-87D0-324685FF2E02}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "FourierTransform", "FourierTransform\FourierTransform.vcproj", "{B0C075DC-6FE4-4752-AE01-FECEA312292D}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -158,22 +156,6 @@ Global
 		{51D115D1-0F5A-4DCA-87D0-324685FF2E02}.vli3_Debug|Win32.Build.0 = Debug|Win32
 		{51D115D1-0F5A-4DCA-87D0-324685FF2E02}.vli3_Release|Win32.ActiveCfg = Release|Win32
 		{51D115D1-0F5A-4DCA-87D0-324685FF2E02}.vli3_Release|Win32.Build.0 = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Debug|Win32.Build.0 = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Debug32|Win32.ActiveCfg = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Debug32|Win32.Build.0 = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.profile|Win32.ActiveCfg = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.profile|Win32.Build.0 = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Release|Win32.ActiveCfg = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Release|Win32.Build.0 = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Vli3_64_debug|Win32.ActiveCfg = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.Vli3_64_debug|Win32.Build.0 = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_64_release|Win32.ActiveCfg = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_64_release|Win32.Build.0 = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_Debug|Win32.ActiveCfg = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_Debug|Win32.Build.0 = Debug|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_Release|Win32.ActiveCfg = Release|Win32
-		{B0C075DC-6FE4-4752-AE01-FECEA312292D}.vli3_Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
