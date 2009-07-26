@@ -22,4 +22,4 @@
 
 
 ===The current source code in the trunk doesnt build/is unstable. Where can I get a stable build?===
- Navigate to the downloads tab in the repository. That is your source for any last stable/released binaries.
+ Navigate to the downloads tab using this link: http://code.google.com/p/smisdk/downloads/list. That is your source for any last stable/released binaries.
