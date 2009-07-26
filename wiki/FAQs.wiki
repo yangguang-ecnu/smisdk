@@ -19,3 +19,7 @@
 
 ===How can I build the source code for Examples?===
  Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Examples/docs. From there, open the file with text Readme in its name, and follow teh instructions.
+
+
+===The current source code in the trunk doesnt build.is unstable. Where can I get a stable build?===
+ Navigate to the downloads tab in the repository. That is your source for any last stable/released binaries.
