@@ -13,5 +13,8 @@
  Navigate to the source code page by selecting the 'Source' tab in the project's menu above. You will find instructions there.
 
 
-===How can I build the source code?===
+===How can I build the source code for SDK?===
+ Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file with text SMISDK-Installation in its name. Any questions, email pixel.to.life@gmail.com.
+
+===How can I build the source code for Examples?===
  Navigate to the documents folder in the repository using this link: http://code.google.com/p/smisdk/source/browse/#svn/Docs. From there, open the file with text SMISDK-Installation in its name. Any questions, email pixel.to.life@gmail.com.
