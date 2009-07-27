@@ -1,15 +1,15 @@
 // -*- C++ -*- http://groups.google.com/group/medicalimagingscience
-// © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved under GPL.
+// © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved, see below.
 //
-// This program is a free software: you may redistribute and/or modify it under the
-// terms of the GNU General Public License (GPL) as published by the Free Software
-// Foundation, version 3 or greater, as long as the result is kept free and opensource.
+// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
+// this file except in compliance with the License. You may obtain a copy of the License at
+// http://www.apache.org/licenses/LICENSE-2.0
 //
-// A copy of the GNU General Public License can be found at http://www.gnu.org/licenses/.
+// More details about the license can be found here: http://www.apache.org/licenses
 // 
-// THIS SOFTWARE IS MADE AVAILABLE 'AS IS' AND THE AUTHOR MAKES NO WARRANTY
-// REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY SPECIFIC USE. ENTIRE RISK
-// TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
+// Unless required by applicable law or agreed to in writing, software distributed under the License is 
+// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
+// See the License for the specific language governing permissions and limitations under the License.
 //
 // Filename:	ImageBinarizer.hpp
 // Author:		Prashant Chopra
