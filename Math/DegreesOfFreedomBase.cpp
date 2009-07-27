@@ -1,4 +1,4 @@
-// -*- C++ -*- http://groups.google.com/group/medicalimagingscience
+// -*- C++ -*-
 // © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved, see below.
 // 
 // Licensed under the Apache License, Version 2.0 (the "License"); you may not use
