@@ -1,0 +1,12 @@
+#summary Resources and community information.
+#labels Featured,Phase-Support
+
+= The SMI discussion group =
+
+[http://groups.google.com/group/medicalimagingscience Science.Medical.Imaging]: 
+A platform to share, brainstorm, and learn, 
+
+
+= What others are saying =
+
+SMIViewer, a viewer based on SMISDK, [http://www.radrounds.com/profiles/blogs/1791588:BlogPost:18450 featured on RadRounds.com].
