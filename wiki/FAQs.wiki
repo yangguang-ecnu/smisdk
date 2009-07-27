@@ -6,7 +6,7 @@
 
 
 ===Can I use parts of SMISDK in a proprietary and/or commercial product, upon properly attributing the credits?===
- (As of 07/26/2009 01:16 PM PDT): The best answer to this question is contained in the definition of Apache 2.0 license here: http://www.apache.org/licenses/LICENSE-2.0.html. In short, the answer is: YES, but ONLY under the terms of the Apache 2.0 license. If you use SMISDK in part or whole to create a new product, you MUST attribute its use by including the original Apache 2.0 license file and a notice along with your redistribution. You are also NOT required to include the modified source code in the redistribution. To confirm this and any other licensing restrictions, and the current license details, check the project's main page, or contact the admin at pixel.to.life@gmail.com.
+ (As of 07/26/2009 01:16 PM PDT): The best answer to this question is contained in the definition of Apache 2.0 license here: http://www.apache.org/licenses/LICENSE-2.0.html. In short, the answer is: YES, but ONLY under the terms of the Apache 2.0 license. If you use SMISDK in part or whole to create a new product, you MUST attribute the use of SMISDK by including the original Apache 2.0 license file and a notice along with your redistribution. You are also NOT required to include the modified source code in the redistribution. To confirm this and any other licensing restrictions, and the current license details, check the project's main page, or contact the admin at pixel.to.life@gmail.com.
 
 
 ===How can I obtain the source code?===
