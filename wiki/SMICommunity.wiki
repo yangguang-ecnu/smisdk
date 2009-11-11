@@ -12,12 +12,10 @@ A platform to share, brainstorm, and learn.
 SMIViewer, a viewer based on SMISDK, [http://www.radrounds.com/profiles/blogs/1791588:BlogPost:18450 featured on RadRounds.com].
 
 10 Open Source Projects Changing Medicine,
-[http://www.smartertechnology.com/c/a/Technology-For-Change/10-OpenSource-Projects-Changing-
-Medicine/ featured on http://www.smartertechnology.com]
+[http://www.smartertechnology.com/c/a/Technology-For-Change/10-OpenSource-Projects-Changing-Medicine/ featured on http://www.smartertechnology.com]
 
 Top 10 Open-Source Health Care Applications,
-[http://www.cobitconsulting.com/index.php/the-news/53-top-10-open-source-health-care-
-applications featured on http://www.cobitconsulting.com]
+[http://www.cobitconsulting.com/index.php/the-news/53-top-10-open-source-health-care-applications featured on http://www.cobitconsulting.com]
 
 Featured on Wikipedia,
 [http://en.wikipedia.org/wiki/List_of_freeware_health_software featured in the list of freeware health software]
