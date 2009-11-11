@@ -20,5 +20,5 @@ Top 10 Open-Source Health Care Applications,
 Featured on Wikipedia,
 [http://en.wikipedia.org/wiki/List_of_freeware_health_software featured in the list of freeware health software]
 
-On VizWorld.com,
+On VizWorld dot com,
 [http://www.vizworld.com/2009/07/open-source-dicom-analysis-toolkit-smisdk/ featured on http://www.vizworld.com]
