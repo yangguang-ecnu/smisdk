@@ -2,7 +2,7 @@
 #labels Featured,Phase-Support
 
 ===What is SMISDK?===
- SMISDK is a free Software Development Kit for applications in medical imaging. Please check the project main page for any licensing restrictions.
+ SMISDK is a free (source code) Software Development Kit for applications in medical imaging. Please check the project main page for any licensing restrictions. Any derivative software and/or installer binaries may assess a minimal charge, but the source code is completely free.
 
 
 ===Can I use parts of SMISDK in a proprietary and/or commercial product, upon properly attributing the credits?===
@@ -22,7 +22,7 @@
 
 
 ===The current source code in the trunk doesnt build/is unstable. Where can I get a stable build?===
- Navigate to the downloads tab using this link: http://www.shodhamitra.com/downloads. That is your source for any last stable/released installer binaries. Note that there may be a minimal charge for the installer kits. The source code is available for free via the 'Source' tab.
+ Navigate to the downloads page using this link: http://www.shodhamitra.com/downloads. That is your source for any last stable/released installer binaries. Note that there may be a minimal charge for the installer kits. The source code is available for free via the 'Source' tab.
 
 
 ===I want to become a contributor. How can I join the development team? ===
