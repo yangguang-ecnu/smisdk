@@ -22,7 +22,7 @@
 
 
 ===The current source code in the trunk doesnt build/is unstable. Where can I get a stable build?===
- Navigate to the downloads tab using this link: http://code.google.com/p/smisdk/downloads/list. That is your source for any last stable/released binaries.
+ Navigate to the downloads tab using this link: http://www.shodhamitra.com/downloads. That is your source for any last stable/released installer binaries. Note that there may be a minimal charge for the installer kits. The source code is available for free via the 'Source' tab.
 
 
 ===I want to become a contributor. How can I join the development team? ===
