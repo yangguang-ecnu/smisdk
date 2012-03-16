@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Math"
 	ProjectGUID="{F83D3655-1A41-4C58-AC69-289DC50550E9}"
 	RootNamespace="Math"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -42,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Work\PGViewer\SmiSDK\include;"
+				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -79,7 +80,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\Math.lib&quot; &quot;..\\\SMISDK\\lib\\MathD.lib&quot;"
+				CommandLine="copy &quot;Debug\\Math.lib&quot;  $(SMISDK_LIB)\MathD.lib"
 			/>
 		</Configuration>
 		<Configuration
@@ -108,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Work\PGViewer\SmiSDK\include;"
+				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -143,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\Math.lib&quot; &quot;..\\\SMISDK\\lib\\Math.lib&quot;"
+				CommandLine="copy &quot;Release\\Math.lib&quot;  $(SMISDK_LIB)\Math.lib"
 			/>
 		</Configuration>
 	</Configurations>
