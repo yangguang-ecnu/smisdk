@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="Core"
 	ProjectGUID="{F15308CC-3222-49A3-87F9-701957EE9769}"
 	RootNamespace="Core"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="C:\Work\PGViewer\SmiSDK\include;"
+				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -78,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\Core.lib&quot; &quot;..\\\SMISDK\\lib\\CoreD.lib&quot;"
+				CommandLine="copy &quot;Debug\\Core.lib&quot; $(SMISDK_LIB)\CoreD.lib"
 			/>
 		</Configuration>
 		<Configuration
@@ -107,7 +108,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="C:\Work\PGViewer\SmiSDK\include;"
+				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -142,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\Core.lib&quot; &quot;..\\\SMISDK\\lib\\Core.lib&quot; &#x0D;&#x0A;"
+				CommandLine="copy &quot;Release\\Core.lib&quot; $(SMISDK_LIB)\Core.lib"
 			/>
 		</Configuration>
 	</Configurations>

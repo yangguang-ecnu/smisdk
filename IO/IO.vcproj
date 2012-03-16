@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="IO"
 	ProjectGUID="{9062C1E5-A391-49A8-B466-320F63655F01}"
 	RootNamespace="IO"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -42,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;C:\Work\PGViewer\Common\gdcm\include\gdcm-2.0&quot;;C:\Work\PGViewer\SmiSDK\include"
+				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -82,7 +83,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\IO.lib&quot; &quot;..\\\SMISDK\\lib\\IOD.lib&quot;"
+				CommandLine="copy &quot;Debug\\IO.lib&quot; $(SMISDK_LIB)\IOD.lib"
 			/>
 		</Configuration>
 		<Configuration
@@ -111,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;C:\Work\PGViewer\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;C:\Work\PGViewer\Common\gdcm\include\gdcm-2.0&quot;; C:\Work\PGViewer\SmiSDK\include"
+				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -147,7 +148,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\IO.lib&quot; &quot;..\\SMISDK\\lib\\IO.lib&quot;"
+				CommandLine="copy &quot;Release\\IO.lib&quot; $(SMISDK_LIB)\IO.lib"
 			/>
 		</Configuration>
 	</Configurations>

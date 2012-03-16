@@ -43,6 +43,7 @@ typedef enum eSegRetCode
 	SegRetCodeAlreadyMarked = 5
 } _eSegRetCode;
 
+using namespace PGCore;
 
 template <class T>
 class ThreadedSegmentationParams : public AsyncProcessParams

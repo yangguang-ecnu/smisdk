@@ -25,7 +25,7 @@
 #include "Core/DilationKernel.h"
 #include "Core/MultiDataBase.h"
 
-
+using namespace PGCore;
 
 namespace PGAlgs
 {
