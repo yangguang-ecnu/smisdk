@@ -1,15 +1,15 @@
 // -*- C++ -*-
-// © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved, see below.
+// © [2006-2016] Science.Medical.Imaging Group [(unpublished)] /**/Rights Reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-// this file except in compliance with the License. You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
+// UNPUBLISHED -- Rights reserved under the copyright laws of the United
+// States.   Use of a copyright notice is precautionary only and does not
+// imply publication or disclosure.
 //
-// More details about the license can be found here: http://www.apache.org/licenses
-// 
-// Unless required by applicable law or agreed to in writing, software distributed under the License is 
-// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and limitations under the License.
+// THE CONTENT OF THIS WORK CONTAINS TECHNICAL AND INTELLECTUAL PROPERTY OF
+// SCIENCE.MEDICAL.IMAGING (groups.google.com/group/medicalimagingscience). 
+// THIS SOFTWARE IS MADE AVAILABLE 'AS IS' AND SCIENCE.MEDICAL.IMAGING GROUP
+// MAKES NO WARRANTY REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY
+// SPECIFIC USE. ENTIRE RISK TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
 //
 // Filename:	IOMhd3D.cpp
 // Author:		Prashant Chopra
@@ -149,6 +149,23 @@ bool IOMhd3D<T>::ParseDefinitionFile(const std::string &iDefSourceName,
 	AnatomicalOrientation = ???
 	ElementType = MET_UCHAR
 	ElementDataFile = test.raw
+
+	ObjectType = Image
+	NDims = 4
+	BinaryData = True
+	BinaryDataByteOrderMSB = False
+	CompressedData = True
+	CompressedDataSize = 10767902
+	TransformMatrix = 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+	Offset = 0 0 0 0
+	CenterOfRotation = 0 0 0 0
+	ElementSpacing = 0.740234 0.740234 2 1
+	DimSize = 512 512 69 1
+	AnatomicalOrientation = ????
+	ElementType = MET_SHORT
+	ElementDataFile = NYU-20081103-1133.zraw
+
+
 	---------------------------------------------------------------------------*/
 	
 	std::string line, inStr;
@@ -171,14 +188,14 @@ bool IOMhd3D<T>::ParseDefinitionFile(const std::string &iDefSourceName,
 	int nDims=0;
 	getline(ifs, line);
 	_snscanf(line.c_str(), 255, "NDims = %d", &nDims); 
-	if (nDims<2 || nDims>3)
+	if (nDims<2 || nDims>4)
 	{
 		LOG0("IOMhd3D::Read failed: Invalid dimension count");
 		ifs.close();
 		return false;
 	}
 
-	ioSrcType = (nDims==3) ? kPgIOSourceTypeFile : kPgIOSourceTypeFolder;
+	ioSrcType = (nDims>=3) ? kPgIOSourceTypeFile : kPgIOSourceTypeFolder;
 	
 
 

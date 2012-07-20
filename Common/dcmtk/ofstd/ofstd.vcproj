@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
+				AdditionalIncludeDirectories="&quot;..\dcmtk-3.5.4\config\include&quot;;&quot;..\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\dcmtk-3.5.4\ofstd\include&quot;;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -80,7 +80,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;debug\\ofstd.lib&quot;  $(SMISDK_LIB)\\ofstdD.lib"
+				CommandLine="copy &quot;debug\\ofstd.lib&quot; &quot;..\\..\\..\\SMISDK\\Lib\\ofstdD.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -109,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
+				AdditionalIncludeDirectories="&quot;..\dcmtk-3.5.4\config\include&quot;;&quot;..\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\dcmtk-3.5.4\ofstd\include&quot;;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;release\\ofstd.lib&quot;  $(SMISDK_LIB)\\ofstd.lib"
+				CommandLine="copy &quot;release\\ofstd.lib&quot; &quot;..\\..\\..\\SMISDK\\Lib\\ofstd.lib&quot;"
 			/>
 		</Configuration>
 	</Configurations>

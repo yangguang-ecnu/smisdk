@@ -6,7 +6,7 @@
 // http://www.apache.org/licenses/LICENSE-2.0
 //
 // More details about the license can be found here: http://www.apache.org/licenses
-// 
+//
 // Unless required by applicable law or agreed to in writing, software distributed under the License is 
 // distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
 // See the License for the specific language governing permissions and limitations under the License.
@@ -999,7 +999,7 @@ namespace PGAlgs
 #if (_DEBUG_DUMP_IMG)
 				{
 					char imgPath[255] = {0};
-					_snprintf(imgPath, 254, "C:/Tmp/Dump/RenderedImage_%02d_%03d.ppm", iRendererIndex, gDumpedImage);
+					_snprintf(imgPath, 254, "C:/Work/PGViewer/SmiSDK/Temp/RenderedImage_%02d_%03d.ppm", iRendererIndex, gDumpedImage);
 					imgPath[254] = '\0';						
 					DumpImageAsPPM(*m_oImageObject, imgPath);
 					gDumpedImage++;

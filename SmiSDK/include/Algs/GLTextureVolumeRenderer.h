@@ -68,8 +68,7 @@ namespace PGAlgs
 		std::vector<float>		gXTexTrans, gYTexTrans, gZTexTrans; 
 
 		ObjectBase						m_voxelChunk[2];
-
-		
+				
 		void	renderSingleVolume(const int iVolumeIndex=0);
 		
 		

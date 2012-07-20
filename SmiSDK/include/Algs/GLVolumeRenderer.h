@@ -145,6 +145,7 @@ public:
 		std::vector<PGCore::Voxel3D<T> *>	m_voxel3DList;
 		std::vector<PGCore::Volume< T > *>	m_volumeAccessor;
 		std::vector<PGMath::Point3D<long> >	m_voxelDims;
+		std::vector<int> m_voxelDimsSkipZ;
 		std::vector<PGCore::TransferFunctionLUT<U> *> m_MaskLUT;
 		std::vector<PGCore::TransferFunctionLUT<U> *> m_LuT;		
 		

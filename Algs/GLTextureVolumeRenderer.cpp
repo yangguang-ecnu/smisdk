@@ -1,15 +1,15 @@
 // -*- C++ -*-
-// © [2006-2018] Prashant Chopra [pixel.to.life@gmail.com] /**/Rights Reserved, see below.
+// © [2006-2016] Science.Medical.Imaging Group [(unpublished)] /**/Rights Reserved.
 //
-// Licensed under the Apache License, Version 2.0 (the "License"); you may not use
-// this file except in compliance with the License. You may obtain a copy of the License at
-// http://www.apache.org/licenses/LICENSE-2.0
+// UNPUBLISHED -- Rights reserved under the copyright laws of the United
+// States.   Use of a copyright notice is precautionary only and does not
+// imply publication or disclosure.
 //
-// More details about the license can be found here: http://www.apache.org/licenses
-// 
-// Unless required by applicable law or agreed to in writing, software distributed under the License is 
-// distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. 
-// See the License for the specific language governing permissions and limitations under the License.
+// THE CONTENT OF THIS WORK CONTAINS TECHNICAL AND INTELLECTUAL PROPERTY OF
+// SCIENCE.MEDICAL.IMAGING (groups.google.com/group/medicalimagingscience). 
+// THIS SOFTWARE IS MADE AVAILABLE 'AS IS' AND SCIENCE.MEDICAL.IMAGING GROUP
+// MAKES NO WARRANTY REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY
+// SPECIFIC USE. ENTIRE RISK TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
 //
 // Filename:	GLTextureVolumeRenderer.cpp
 // Author:		Prashant Chopra
@@ -67,7 +67,6 @@ namespace PGAlgs
 			break;
 		}
 
-	
 		gDrSparse = 1.0f; gDrFull = 1.0f;  
 		gDz = 1.0f;//, gDzFull = 1.0f, gDzSparse = 8.0f; 	
 
@@ -204,24 +203,44 @@ namespace PGAlgs
 				return false;
 			}						
 
-			long totalTxSize =  m_max3DTextureSize*m_max3DTextureSize*m_max3DTextureSize;
+			long totalTxSize =  _PG_MAX_GL_TX_XY_SIZE_*_PG_MAX_GL_TX_XY_SIZE_*m_max3DTextureSize;
 
 			LOG2("GLTextureVolumeRenderer: Maximum dimension: %d / %d", maxVoxelDim, m_max3DTextureSize);
 			long totalVxSize =  m_voxelDims[i][0] * m_voxelDims[i][1] * m_voxelDims[i][2];
 			
+			PGCore::MetaData< T > iMetaData = inVolume->GetMetaData();
+			gTexScale[i] = iMetaData.GetSpacing();	
+			float txScaleZ = gTexScale[i].Z();
+			
 			if (totalVxSize > totalTxSize)
+			{				
+				m_voxelDimsSkipZ[i]=0;						
+				int m_volDimZBck = m_voxelDims[i][2];
+				float txScaleZBck = txScaleZ;
+
+				while (totalVxSize > totalTxSize)
+				{
+					m_voxelDimsSkipZ[i]+=2;
+					m_voxelDims[i][2] = m_volDimZBck/m_voxelDimsSkipZ[i];
+					txScaleZ = txScaleZBck*float(m_voxelDimsSkipZ[i]);					
+					totalVxSize = m_voxelDims[i][0] * m_voxelDims[i][1] * m_voxelDims[i][2];
+				}				
+
+				gVolumeScope[i] = PGMath::Point3D<long>(gVolumeScope[i].X(), gVolumeScope[i].Y(), gVolumeScope[i].Z()/m_voxelDimsSkipZ[i]); 
+				gTexScale[i] = PGMath::Vector3D<float>(gTexScale[i].X(), gTexScale[i].Y(), txScaleZ);
+
+				LOG3("WARNING: GLTextureVolumeRenderer: Too big for total texture: %d / %d. Will reduce Z resolution by %d.", totalVxSize, totalTxSize, m_voxelDimsSkipZ[i]);
+				//m_ready = false;
+				//return false;
+			} else
 			{
-				LOG2("GLTextureVolumeRenderer: Too big for total texture: %d / %d", totalVxSize, totalTxSize);
-				m_ready = false;
-				return false;
+				m_voxelDimsSkipZ[i] = 1;
 			}
 
 			m_ready = true;			
 
-			LOG2("GLTextureVolumeRenderer: Needed texture size : %d, remaining: %d", totalVxSize, m_remaining3DTextureSize);
-
-			int iSize = totalVxSize;//m_max3DTextureSize*m_max3DTextureSize*m_max3DTextureSize;
-			if (!m_voxelChunk[i].Alloc(iSize*m_numChannels*
+			LOG2("GLTextureVolumeRenderer: Needed texture size : %d, remaining: %d", totalVxSize, m_remaining3DTextureSize);			
+			if (!m_voxelChunk[i].Alloc(totalVxSize*m_numChannels*
 #if (PG_USE_RGBA16)
 				sizeof(short)
 #else
@@ -231,11 +250,9 @@ namespace PGAlgs
 			{
 				LOG0("GLTextureVolumeRenderer: Error: failure to allocate voxel memory");
 				return false;
-			}
+			}		
 
-			PGCore::MetaData< T > iMetaData = inVolume->GetMetaData();
-			gTexScale[i] = iMetaData.GetSpacing();	
-
+			m_remaining3DTextureSize-=totalVxSize; 
 
 			std::vector<float> spacingVec, sortedSpacingVec;
 			spacingVec.push_back(gTexScale[i].X() * m_voxelDims[i][0]);//gVolumeScope[0]);
@@ -244,8 +261,7 @@ namespace PGAlgs
 			sortedSpacingVec = spacingVec;
 			std::sort(sortedSpacingVec.begin(), sortedSpacingVec.end());	
 			gTexScale[i] = PGMath::Vector3D<float>(sortedSpacingVec[2]/spacingVec[0], sortedSpacingVec[2]/spacingVec[1], 
-				sortedSpacingVec[2]/spacingVec[2]);
-
+				sortedSpacingVec[2]/spacingVec[2]);		
 
 			LOG4("GLTextureVolumeRenderer: Relative scaling[%d] : %3.2f %3.2f %3.2f", i, gTexScale[i].X(), gTexScale[i].Y(), gTexScale[i].Z());
 			
@@ -430,7 +446,7 @@ namespace PGAlgs
 		unsigned int alphaOffsetVisible=0, alphaOffsetHidden=6;
 #else
 		unsigned char *voxelArray = (unsigned char *)(m_voxelChunk[iVolumeIndex].GetBuffer());//voxelChunk.Alloc(iSize*m_numChannels*sizeof(char));
-		unsigned int alphaOffsetVisible=0, alphaOffsetHidden=5;
+		unsigned int alphaOffsetVisible=0, alphaOffsetHidden=6;
 #endif
 		if (!voxelArray)
 		{
@@ -441,6 +457,7 @@ namespace PGAlgs
 		int superSamplingPow = int(log(gSuperSampligFactorZ)/log(2.0f) + 0.5f);
 		alphaOffsetVisible+= superSamplingPow;
 		alphaOffsetVisible = min(4, alphaOffsetVisible);
+		alphaOffsetVisible = max(7, alphaOffsetVisible);
 		LOG2("GLTextureVolumeRenderer: loadVolumeWithMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
 
 
@@ -526,7 +543,7 @@ namespace PGAlgs
 
 		T minThForNoise = rangeMin + T(float(range*monNoiseTh) + 0.5f);
 
-		float alphaFactor = 3*(m_blendRatio[iVolumeIndex]);
+		float alphaFactor = (m_blendRatio[iVolumeIndex]);
 
 		if (range<=0) 
 		{
@@ -551,10 +568,15 @@ namespace PGAlgs
 		}
 
 
+		register int zSkip = (m_skipFactor==1) ? 1 : 1;
+
 		int totalZ = m_voxelDims[iVolumeIndex][2];
 
 		//for (int z=1; z<m_voxelDims.Z()-1; z++) {
-		for (int z=1; z<(m_voxelDims[iVolumeIndex][2]-1); z++, pOffset+=iSliceSize) 
+		//for (int z=1; z<(m_voxelDims[iVolumeIndex][2]-1); z+=m_voxelDimsSkipZ[iVolumeIndex], pOffset+=iSliceSize) 
+		for (int z=1; 
+			z<(m_voxelDims[iVolumeIndex][2]-1); 
+			z++, pOffset+=zSkip*iSliceSize) 
 		{
 #if (PG_USE_RGBA16)
 			short* oBuffer = (short *)tImage.GetBuffer();//m_volumeAccessor->GetImage( z ).GetBuffer();
@@ -565,11 +587,13 @@ namespace PGAlgs
 			{
 				continue;
 			}
-			if (z>0 && z<iDims.Z()) 
+
+			int zOrg = z*(m_voxelDimsSkipZ[iVolumeIndex]*zSkip);
+			if (zOrg>0 && zOrg<iDims.Z()) 			
 			{
 				// fetch image and add to the voxelarray		
 
-				T* iBuffer = m_volumeAccessor[iVolumeIndex]->GetImage( z ).GetBuffer();
+				T* iBuffer = m_volumeAccessor[iVolumeIndex]->GetImage( zOrg ).GetBuffer();
 				if (!iBuffer) 
 				{
 					continue;
@@ -629,7 +653,7 @@ namespace PGAlgs
 
 
 							{			
-								int inMaskVal	=	m_volumeAccessor[iVolumeIndex]->GetBitVolume().GetValue(y, x, z);
+								int inMaskVal	=	m_volumeAccessor[iVolumeIndex]->GetBitVolume().GetValue(y, x, zOrg);
 								if (inMaskVal)
 								{
 									xferLuT = m_LuTBuf;											
@@ -638,6 +662,7 @@ namespace PGAlgs
 										*(pValue+j) = xferLuT[oValue][j];								
 									}
 									alphaVal = (xferLuT[oValue][j])<<alphaOffsetVisible;
+									alphaVal = alphaVal*alphaFactor;
 								}
 								else
 								{
@@ -666,7 +691,7 @@ namespace PGAlgs
 
 								//#define _USE_GRADIENT 					
 #ifdef _USE_GRADIENT
-								PGMath::Vector3D<float> gradVec = gradient(x, y, z);
+								PGMath::Vector3D<float> gradVec = gradient(x, y, zOrg);
 								if ( gradVec.Length()> 0.1f && (oValue >  130))
 								{
 									float gradVal = gradVec.Length()-0.1f;
@@ -674,6 +699,7 @@ namespace PGAlgs
 									*pValue = (unsigned char)floor(gradVal*255.0f);
 								}
 #else							
+								
 								//if (m_numChannels>1)
 								{
 									
@@ -683,11 +709,13 @@ namespace PGAlgs
 #else
 										(unsigned char)
 #endif	
-										(alphaVal*alphaFactor); // m_LuTBuf[oValue][j]
+										(alphaVal); // m_LuTBuf[oValue][j]
 
 									//minTransValue = minTransValue > oValue ? oValue : minTransValue;
 									//maxTransValue = maxTransValue < oValue ? oValue : maxTransValue;
 								}
+								
+
 #endif
 							}
 
@@ -710,7 +738,7 @@ namespace PGAlgs
 
 		// last empty slice
 		{
-			memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
+			//memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
 		}
 
 		//	glTexImage3D  ( target , level , internalformat , 
@@ -819,8 +847,9 @@ namespace PGAlgs
 		}
 
 		int superSamplingPow = int(log(gSuperSampligFactorZ)/log(2.0f) + 0.5f);
-		alphaOffsetVisible+= superSamplingPow;
+		alphaOffsetVisible+= superSamplingPow;		
 		alphaOffsetVisible = min(4, alphaOffsetVisible);
+		alphaOffsetVisible = max(7, alphaOffsetVisible);
 		LOG2("GLTextureVolumeRenderer: loadVolumeWithoutMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
 
 		if (!m_volumeAccessor[iVolumeIndex]) 
@@ -882,7 +911,8 @@ namespace PGAlgs
 		maxTransValue = maxTransValue==-1 ? (lutDim-1) : maxTransValue;
 		*/
 
-		long pOffset=0, sizeXY = m_voxelDims[iVolumeIndex][0]*m_voxelDims[iVolumeIndex][1];
+		long pOffset=0, sizeXY = m_voxelDims[iVolumeIndex][0]*m_voxelDims[iVolumeIndex][1], sizeXYZ = sizeXY*m_voxelDims[iVolumeIndex][2];		
+		
 		PGMath::Point3D<long> iDims;
 		m_volumeAccessor[iVolumeIndex]->GetDimensions(iDims);
 #if (PG_USE_RGBA16)
@@ -897,7 +927,7 @@ namespace PGAlgs
 		m_volumeAccessor[iVolumeIndex]->GetDataRange(&rangeMin, &rangeMax);	
 		T range = (rangeMax-rangeMin);
 
-		float alphaFactor = 3*(m_blendRatio[iVolumeIndex]);
+		float alphaFactor = (m_blendRatio[iVolumeIndex]);
 
 		
 
@@ -930,7 +960,9 @@ namespace PGAlgs
 		int totalZ = m_voxelDims[iVolumeIndex][2];
 
 		//for (int z=1; z<m_voxelDims.Z()-1; z++) {
-		for (int z=1; z<(m_voxelDims[iVolumeIndex][2]-1); z+=zSkip, pOffset+=zSkip*iSliceSize) 
+		for (int z=1; 
+			z<(m_voxelDims[iVolumeIndex][2]-1); 
+			z++, pOffset+=zSkip*iSliceSize) 
 		{
 #if (PG_USE_RGBA16)
 			short* oBuffer = (short *)tImage.GetBuffer();//m_volumeAccessor->GetImage( z ).GetBuffer();
@@ -941,20 +973,24 @@ namespace PGAlgs
 			{
 				continue;
 			}
-			if (z>0 && z<iDims.Z()) 
+			int maxVal=-1;
+		    float maxAlpha=-1.0f;
+
+			int zOrg = z*(m_voxelDimsSkipZ[iVolumeIndex]*zSkip);
+			if (zOrg>0 && zOrg<iDims.Z()) 
 			{
 				// fetch image and add to the voxelarray		
 
-				T* iBuffer = m_volumeAccessor[iVolumeIndex]->GetImage( z ).GetBuffer();
+				T* iBuffer = m_volumeAccessor[iVolumeIndex]->GetImage( zOrg ).GetBuffer();
 				if (!iBuffer) 
 				{
 					continue;
 				}
 
 				//		memset(oBuffer, 
-				//			1, //((z%4)==0 ? 1 : 0), 
+				//			1, //((zOrg%4)==0 ? 1 : 0), 
 				//			 m_voxelDims.X() * m_voxelDims.Y() * sizeof(T));
-				if (1)//threshold)// && z%2==0) 
+				if (1)//threshold)// && zOrg%2==0) 
 				{	
 					//#define _DUMMY_DATA
 #ifdef _DUMMY_DATA
@@ -970,6 +1006,7 @@ namespace PGAlgs
 #else
 					unsigned char* pValue = (unsigned char* )(oBuffer);
 #endif
+					
 					for (int y=0; y<m_voxelDims[iVolumeIndex][1]; y++, yOffset+=m_max3DTextureSize, yBufOffset+=m_voxelDims[iVolumeIndex][0]) 
 					{
 
@@ -1031,7 +1068,7 @@ namespace PGAlgs
 
 								//#define _USE_GRADIENT 					
 #ifdef _USE_GRADIENT
-								PGMath::Vector3D<float> gradVec = gradient(x, y, z);
+								PGMath::Vector3D<float> gradVec = gradient(x, y, zOrg);
 								if ( gradVec.Length()> 0.1f && (oValue >  130))
 								{
 									float gradVal = gradVec.Length()-0.1f;
@@ -1039,6 +1076,9 @@ namespace PGAlgs
 									*pValue = (unsigned char)floor(gradVal*255.0f);
 								}
 #else							
+								//maxVal=max(maxVal, xferLuT[oValue][0]+xferLuT[oValue][1]+xferLuT[oValue][2]);
+								//maxAlpha=max(maxAlpha, alphaVal*alphaFactor);
+
 								//if (m_numChannels>1)
 								{
 									
@@ -1068,7 +1108,12 @@ namespace PGAlgs
 				memset(oBuffer, 0, gSliceSize);
 			}
 			//pOffset = z*sizeXY;
-			memcpy(voxelArray+pOffset, oBuffer,  gSliceSize);		
+
+			//if (pOffset+gSliceSize<sizeXYZ) 
+			{
+				memcpy(voxelArray+pOffset, oBuffer,  gSliceSize);		
+				//LOG4("\tTex[Z:%d, Offset: %d]: Max Val: %d, maxAlpha: %3.2f!\n", z, pOffset, maxVal, maxAlpha); 
+			} 
 
 			int progressValue=(int)(70.0f*((float)(z)/(float)totalZ) + 0.5f);				
 			UpdateProgress(progressValue);
@@ -1076,8 +1121,11 @@ namespace PGAlgs
 
 		// last empty slice
 		{
-			memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
+			//memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
 		}
+
+		LOG2("GLTextureVolumeRenderer:: pOffset+gSliceSize: %d, sizeXYZ: %d\n", pOffset+gSliceSize, sizeXYZ*m_numChannels); 
+
 
 		//	glTexImage3D  ( target , level , internalformat , 
 		//		width , height , depth , border , format , type , pixels )
@@ -1102,7 +1150,7 @@ namespace PGAlgs
 		glTexImage3D(GL_TEXTURE_3D, 
 			0, 
 			m_textureFormat,
-			m_voxelDims[iVolumeIndex][0], m_voxelDims[iVolumeIndex][1], m_voxelDims[iVolumeIndex][2]/zSkip, 
+			m_voxelDims[iVolumeIndex][0], m_voxelDims[iVolumeIndex][1], m_voxelDims[iVolumeIndex][2]/(zSkip), 
 			0, 
 			m_rawFormat, 
 #if (PG_USE_RGBA16)
@@ -1118,7 +1166,7 @@ namespace PGAlgs
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 			return 0;
 		}		
-		//LOG0("} GLTextureVolumeRenderer::end text init");
+		//LOG0("} GLTextureVolumeRenderer::end text init");		
 
 		if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 
@@ -1126,7 +1174,7 @@ namespace PGAlgs
 
 		//cout<<"Texture initialized..."<<endl;	
 		//LOG2("} GLTextureVolumeRenderer::loadVolume: [%d -> %d]", minTransValue, maxTransValue);
-		LOG0("} GLTextureVolumeRenderer::loadVolumeWithoutMask");
+		LOG4("} GLTextureVolumeRenderer::loadVolumeWithoutMask: Uploaded Vol (%d) with Dims [%d, %d, %d]", voxelArray, m_voxelDims[iVolumeIndex][0], m_voxelDims[iVolumeIndex][1], m_voxelDims[iVolumeIndex][2]/(zSkip));
 		return 1;
 	}
 
@@ -1157,9 +1205,9 @@ namespace PGAlgs
 			gXTexTrans[iVolumeIndex] = 0.5f*(1.0 - gVolumeScope[iVolumeIndex].X()/((float)m_voxelDims[iVolumeIndex][0]));
 			//gDrSparse = 1.0f/gVolumeScope.Z(), gDrFull = 1.0/gVolumeScope.Z();
 			gDrSparse = 1.0f/m_voxelDims[iVolumeIndex][2], gDrFull = 1.0/m_voxelDims[iVolumeIndex][2];
-			gDz = 1.0f/((float)m_voxelDims[iVolumeIndex][2]/*m_max3DTextureSize*/);  
+			gDz = 0.25f/((float)m_voxelDims[iVolumeIndex][2]/*m_max3DTextureSize*/);  
 			gDzFull = gDz/(gSuperSampligFactorZ); 	
-			gDzSparse = 8.0f*gDzFull; 	
+			gDzSparse = 2.0f*gDzFull; 	
 			gDrSparse = gDzSparse;
 			gDrFull = gDzFull;
 		}
@@ -1563,7 +1611,7 @@ namespace PGAlgs
 			if (m_max3DTextureSize<=0) return 0;
 
 			// in KB
-			m_remaining3DTextureSize = m_max3DTextureSize*m_max3DTextureSize*m_max3DTextureSize/(kPg3DTexBufferFactor*kPgBytesInKB);
+			m_remaining3DTextureSize = m_max3DTextureSize*m_max3DTextureSize*m_max3DTextureSize;///(kPg3DTexBufferFactor*kPgBytesInKB);
 		}
 
 		{
@@ -1623,7 +1671,7 @@ namespace PGAlgs
 
 		glTranslatef(-zFac, -zFac, -zFac);		
 
-		float blendValue = 2.0f*m_blendRatio[iVIndex];
+		float blendValue = m_blendRatio[iVIndex];
 		float zFactor = 1.0f/float(m_zoomFactor);
 		float initialZ = gZMin;
 		float finalZ   = (2.0f*m_coronalCutPlanePosition);
@@ -1666,9 +1714,7 @@ namespace PGAlgs
 
 
 					r += gDrSparse;				
-				}
-
-			
+				}			
 
 		} 
 

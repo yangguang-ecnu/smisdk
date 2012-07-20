@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -80,7 +80,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\Algs.lib&quot; $(SMISDK_LIB)\AlgsD.lib"
+				CommandLine="copy &quot;Debug\\Algs.lib&quot; &quot;..\\\SMISDK\\lib\\AlgsD.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -109,10 +109,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
+				ProgramDataBaseFileName="$(IntDir)\Algs.pdb"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
 				DebugInformationFormat="3"
@@ -144,7 +145,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\Algs.lib&quot; $(SMISDK_LIB)\Algs.lib"
+				CommandLine="copy &quot;Release\\Algs.lib&quot; &quot;..\\\SMISDK\\lib\\Algs.lib&quot;"
 			/>
 		</Configuration>
 	</Configurations>
