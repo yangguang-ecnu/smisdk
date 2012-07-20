@@ -22,7 +22,7 @@
 //#define _USE_GLEW "_USE_GLEW"
 #define _PG_GLSL_VR_ 1
 #define _PG_MAX_GL_TX_SIZE_ 512
-
+#define _PG_MAX_GL_TX_XY_SIZE_ 256
 
 #include "DeviceRendererBase.h"
 #include "VoxelToMPRRenderer.h"

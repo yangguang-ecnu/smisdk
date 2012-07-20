@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="0"
@@ -79,7 +79,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\Core.lib&quot; $(SMISDK_LIB)\CoreD.lib"
+				CommandLine="copy &quot;Debug\\Core.lib&quot; &quot;..\\\SMISDK\\lib\\CoreD.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -108,7 +108,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -143,7 +143,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\Core.lib&quot; $(SMISDK_LIB)\Core.lib"
+				CommandLine="copy &quot;Release\\Core.lib&quot; &quot;..\\\SMISDK\\lib\\Core.lib&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

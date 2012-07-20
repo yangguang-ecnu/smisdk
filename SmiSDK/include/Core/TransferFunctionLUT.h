@@ -33,7 +33,8 @@ namespace PGCore
 		kPgLUTTypeUnknown=-1,
 		kPgLUTTypeVIBGYOR=0,
 		kPgLUTTypeGrayScale=1,
-		kPgLUTTypeIronHot=2
+		kPgLUTTypeIronHot=2,
+		kPgLUTTypeMAX=3
 	} ePgLUTType;
 
 	template <class T>

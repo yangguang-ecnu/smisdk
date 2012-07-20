@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -80,7 +80,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Debug\\Math.lib&quot;  $(SMISDK_LIB)\MathD.lib"
+				CommandLine="copy &quot;Debug\\Math.lib&quot; &quot;..\\\SMISDK\\lib\\MathD.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -109,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SMISDK_INC)/;"
+				AdditionalIncludeDirectories="..\SmiSDK\include;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -144,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;Release\\Math.lib&quot;  $(SMISDK_LIB)\Math.lib"
+				CommandLine="copy &quot;Release\\Math.lib&quot; &quot;..\\\SMISDK\\lib\\Math.lib&quot;"
 			/>
 		</Configuration>
 	</Configurations>

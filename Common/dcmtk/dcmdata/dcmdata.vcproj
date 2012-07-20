@@ -43,12 +43,11 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
+				AdditionalIncludeDirectories="&quot;..\dcmtk-3.5.4\config\include&quot;;&quot;..\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\dcmtk-3.5.4\ofstd\include&quot;;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
-				TreatWChar_tAsBuiltInType="true"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -81,7 +80,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;debug\\dcmdata.lib&quot; $(SMISDK_LIB)\dcmdataD.lib"
+				CommandLine="copy &quot;debug\\dcmdata.lib&quot; &quot;..\\..\\..\\\SMISDK\\Lib\\dcmdataD.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration
@@ -110,7 +109,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="$(SMISDK_INC)\;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\config\include;$(SMISDK_INC)\dcmtk\dcmtk-3.5.4\dcmdata\include;$(SMISDK_INC)\Common\dcmtk\dcmtk-3.5.4\ofstd\include;"
+				AdditionalIncludeDirectories="&quot;..\dcmtk-3.5.4\config\include&quot;;&quot;..\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\dcmtk-3.5.4\ofstd\include&quot;;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -145,7 +144,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;release\\dcmdata.lib&quot; $(SMISDK_LIB)\dcmdata.lib"
+				CommandLine="copy &quot;release\\dcmdata.lib&quot; &quot;..\\..\\..\\SMISDK\\lib\\dcmdata.lib&quot;"
 			/>
 		</Configuration>
 	</Configurations>
