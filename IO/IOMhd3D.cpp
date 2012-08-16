@@ -168,194 +168,36 @@ bool IOMhd3D<T>::ParseDefinitionFile(const std::string &iDefSourceName,
 
 	---------------------------------------------------------------------------*/
 	
-	std::string line, inStr;
-
-	
-	
+	std::string line, inStr;	
 	char cBuffer[256] = {0};
 
-	// get object type 
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "ObjectType = %s", cBuffer); cBuffer[255] = '\0';
-	if (strcmp(cBuffer, "Image")!=0)
+	while(getline(ifs, line)) 
 	{
-		LOG0("IOMhd3D::Read failed: Invalid object type");
-		ifs.close();
-		return false;
-	}
+			cout << "[ " << line << " ]" << endl;
+			LOG1("IOMhd3D<T>::ParseDefinitionFile: Read line %s", line.c_str());	
 
-	// get ndims
-	int nDims=0;
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "NDims = %d", &nDims); 
-	if (nDims<2 || nDims>4)
+			if (strstr ( line.c_str(), kPGMHD3DTagElementDataFile))
+			{
+				std::string FileStr = getValueS(line, std::string(kPGMHD3DTagElementDataFile));
+				ioMetaData.SetSourceTypeSingleFile(true);			
+				ioSrcType = kPgIOSourceTypeFile;
+				ioFileNames.push_back(FileStr);
+				ioFormatString = "RAW";
+			}
+
+			if(!fillMetaValue(line, &ioMetaData))
+			{
+				LOG1("IOMhd3D<T>::ParseDefinitionFile: line %s is a comment.", line.c_str());	
+				continue;
+			}		
+		}
+
+	if (ioMetaData.GetCompressedDataFlag())
 	{
-		LOG0("IOMhd3D::Read failed: Invalid dimension count");
-		ifs.close();
-		return false;
-	}
-
-	ioSrcType = (nDims>=3) ? kPgIOSourceTypeFile : kPgIOSourceTypeFolder;
-	
-
-
-	// BinaryData = True
-	memset(cBuffer, 0, 255); cBuffer[255] = '\0';
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "BinaryData = %s", cBuffer); cBuffer[255] = '\0';
-	if (strcmp(cBuffer, "True")!=0)
-	{
-		LOG0("IOMhd3D::Read failed: Invalid binary data type");
-		ifs.close();
-		return false;
-	}
-	ioFormatString = "RAW";
-
-
-	// BinaryDataByteOrderMSB = False
-	bool ioMsbFirstFlag=false;
-	memset(cBuffer, 0, 255); cBuffer[255] = '\0';
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "BinaryDataByteOrderMSB = %s", cBuffer); cBuffer[255] = '\0';
-	if (strcmp(cBuffer, "True")==0)
-	{
-		ioMsbFirstFlag = true;
-
-	} else if (strcmp(cBuffer, "False")==0)
-	{
-		ioMsbFirstFlag = false;
-
-	} else
-	{
-		LOG0("IOMhd3D::Read failed: Invalid MSB flag");
-		ifs.close();
-		return false;
-	}
-	ioMetaData.SetMSBFirst(ioMsbFirstFlag);
-	
-
-	// TransformMatrix = 1 0 0 0 1 0 0 0 1
-	float xOrientation[3] = {1, 0, 0}, yOrientation[3] = {0, 1, 0}, zOrientation[3] = {0, 0, 1};
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "TransformMatrix = %f %f %f %f %f %f %f %f %f", 
-		&(xOrientation[0]), &(xOrientation[1]), &(xOrientation[2]),
-		&(yOrientation[0]), &(yOrientation[1]), &(yOrientation[2]),
-		&(zOrientation[0]), &(zOrientation[1]), &(zOrientation[2])
-		); 
-	
-	
-	
-
-	// Offset = 0 0 0
-	int offsets[3]= {0, 0, 0};
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "Offset = %d %d %d", &(offsets[0]), &(offsets[1]), &(offsets[2])); 
-	if (offsets[0]+offsets[1]+offsets[2]>0)
-	{
-		LOG0("IOMhd3D::Read failed: Invalid offsets");
-		ifs.close();
+		LOG0("IOMhd3D<T>::ParseDefinitionFile: ERROR: This dataset is compressed. Please unzip the raw data file!");	
 		return false;
 	}
 	
-
-	// CenterOfRotation = 0 0 0
-	int centerRtn[3]= {0, 0, 0};
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "CenterOfRotation = %d %d %d", &(centerRtn[0]), &(centerRtn[1]), &(centerRtn[2])); 
-	if (centerRtn[0]+centerRtn[1]+centerRtn[2]>0)
-	{
-		LOG0("IOMhd3D::Read failed: Invalid CenterOfRotation");
-		ifs.close();
-		return false;
-	}
-	
-
-	// ElementSpacing = 0.5 0.5 0.5
-	float spacings[3]= {0, 0, 0};
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "ElementSpacing = %f %f %f", &(spacings[0]), &(spacings[1]), &(spacings[2])); 
-	if (spacings[0]*spacings[1]*spacings[2]<=0)
-	{
-		LOG0("IOMhd3D::Read failed: Invalid spacing");
-		ifs.close();
-		return false;
-	}
-	ioMetaData.SetSpacing(PGMath::Vector3D<float>(spacings[0], spacings[1], spacings[2]));
-
-
-	// DimSize = 256 256 256
-	int dims[3]= {0, 0, 0};
-	getline(ifs, line);
-	_snscanf(line.c_str(), 255, "DimSize = %d %d %d", &(dims[0]), &(dims[1]), &(dims[2])); 
-	if (dims[0]*dims[1]*dims[2]<=0)
-	{
-		LOG0("IOMhd3D::Read failed: Invalid Dimensions");
-		ifs.close();
-		return false;
-	}
-	ioMetaData.SetSize(PGMath::Vector3D<int>(dims[0], dims[1], dims[2]));
-	ioMetaData.SetFrameCount(dims[2]);
-
-	// AnatomicalOrientation = ???
-	memset(cBuffer, 0, 255); cBuffer[255] = '\0';
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "AnatomicalOrientation = %s", cBuffer); cBuffer[255] = '\0';
-	if (strcmp(cBuffer, "???")==0)
-	{
-		LOG1("IOMhd3D::Read Warning: Invalid AnatomicalOrientation: %s", cBuffer);		
-	}
-
-
-	// ElementType = MET_UCHAR
-	int bytesPerPixel = 0;
-	memset(cBuffer, 0, 255); cBuffer[255] = '\0';
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "ElementType = %s", cBuffer); cBuffer[255] = '\0';
-	if (strcmp(cBuffer, "MET_UCHAR")==0 || strcmp(cBuffer, "MET_CHAR")==0)
-	{
-		bytesPerPixel = 1;
-
-	} else if (strcmp(cBuffer, "MET_USHORT")==0 || strcmp(cBuffer, "MET_SHORT")==0)
-	{
-		bytesPerPixel = 2;
-	} else
-	{
-		LOG0("IOMhd3D::Read failed: Invalid ElementType");
-		ifs.close();
-		return false;
-	}
-	LOG1("IOMhd3D::Read: Bits per pixel: %d", bytesPerPixel);		
-	ioMetaData.SetSamplesPerPixel(bytesPerPixel);
-	ioMetaData.SetNumberOfBits(8*bytesPerPixel);
-
-	// ElementDataFile = test.raw
-	memset(cBuffer, 0, 255); cBuffer[255] = '\0';
-	getline(ifs, line); 
-	_snscanf(line.c_str(), 255, "ElementDataFile = %s", cBuffer); cBuffer[255] = '\0';
-	ioFileNames.push_back(std::string(cBuffer));
-	
-
-	// now also set orientation vectors
-	// now also set position vectors
-	std::vector<PGMath::Vector3D<float>> orXs, orYs, poSs;
-	PGMath::Vector3D<float> orX(xOrientation[0], xOrientation[1], xOrientation[2]);
-	PGMath::Vector3D<float> orY(yOrientation[0], yOrientation[1], yOrientation[2]);
-	PGMath::Vector3D<float> orZ = orX^orY;
-
-	for (int z=0; z<dims[2]; z++)
-	{
-		orXs.push_back(orX);
-		orYs.push_back(orY);
-
-		PGMath::Vector3D<float> posVec = orZ*z;
-
-		poSs.push_back(posVec);
-	}
-
-	ioMetaData.SetImagePositionsPatient(poSs);
-	ioMetaData.SetImageOrientationsPatientX(orXs);
-	ioMetaData.SetImageOrientationsPatientY(orYs);
-
 	return true;		
 }
 
@@ -375,6 +217,271 @@ void IOMhd3D<T>::StartExecution(void *iParam)
 	
 	return;
 }
+
+template <class T>
+	bool IOMhd3D<T>::fillMetaValue(const std::string &iStr, PGCore::MetaData<T> *oMetaData) const
+	{
+		/*-------------------------------------------------------------------------
+	.def metadata file format:
+	==========================
+	ObjectType = Image
+	NDims = 3
+	BinaryData = True
+	BinaryDataByteOrderMSB = False
+	TransformMatrix = 1 0 0 0 1 0 0 0 1
+	Offset = 0 0 0
+	CenterOfRotation = 0 0 0
+	ElementSpacing = 0.5 0.5 0.5
+	DimSize = 256 256 256
+	AnatomicalOrientation = ???
+	ElementType = MET_UCHAR
+	ElementDataFile = test.raw
+
+	ObjectType = Image
+	NDims = 4
+	BinaryData = True
+	BinaryDataByteOrderMSB = False
+	CompressedData = True
+	CompressedDataSize = 10767902
+	TransformMatrix = 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+	Offset = 0 0 0 0
+	CenterOfRotation = 0 0 0 0
+	ElementSpacing = 0.740234 0.740234 2 1
+	DimSize = 512 512 69 1
+	AnatomicalOrientation = ????
+	ElementType = MET_SHORT
+	ElementDataFile = NYU-20081103-1133.zraw
+
+	static const char* kPGMHD3DTagObjectType			=	"ObjectType";
+static const char* kPGMHD3DTagNDims					=	"NDims";
+static const char* kPGMHD3DTagBinaryData			=	"BinaryData";
+static const char* kPGMHD3DTagBinaryDataByteOrderMSB=	"BinaryDataByteOrderMSB";
+static const char* kPGMHD3DTagCompressedData		=	"CompressedData";
+static const char* kPGMHD3DTagCompressedDataSize	=	"CompressedDataSize";
+static const char* kPGMHD3DTagTransformMatrix		=	"TransformMatrix";
+static const char* kPGMHD3DTagOffset				=	"Offset";
+static const char* kPGMHD3DTagCenterOfRotation		=	"CenterOfRotation";
+static const char* kPGMHD3DTagElementSpacing		=	"ElementSpacing";
+static const char* kPGMHD3DTagDimSize				=	"DimSize";
+static const char* kPGMHD3DTagAnatomicalOrientation	=	"AnatomicalOrientation";
+static const char* kPGMHD3DTagElementType			=	"ElementType";
+static const char* kPGMHD3DTagElementDataFile		=	"ElementDataFile";
+
+	---------------------------------------------------------------------------*/
+		if (!oMetaData) 
+		{
+			return false;
+		}
+		bool res = true;		
+		bool binaryData = false;		
+		int binaryDataCompressedSize = 0;
+		if (strstr ( iStr.c_str(), kPGMHD3DTagObjectType))
+		{
+			std::string ObjectTypeStr = getValueS(iStr, std::string(kPGMHD3DTagObjectType));							
+		} 
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagNDims))
+		{
+			int nDims = getValueI(iStr, std::string(kPGMHD3DTagNDims));
+			oMetaData->SetDimensionality(nDims);
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagDimSize))
+		{
+			int nDims = oMetaData->GetDimensionality();
+			if (nDims<=0)
+			{
+				LOG1("IOMhd3D<T>::fillMetaValue: Invalid dimensions : %d!", nDims);		
+				return false;
+			}
+
+			std::vector<int> dimsVec;
+			getVectorI(iStr, kPGMHD3DTagDimSize, nDims, dimsVec);
+			oMetaData->SetSize(PGMath::Vector3D<int>(dimsVec[0], dimsVec[1], dimsVec[2]));		
+
+			// create dummy orientation vectors and set 
+			std::vector< PGMath::Vector3D<float> > orXs, orYs;
+			PGMath::Vector3D<float>	orX(1.0f, 0.0f, 0.0f), orY(0.0f, 1.0f, 0.0f);
+			int i=0;
+			for (i=0; i<dimsVec[2]; i++)
+			{
+				orXs.push_back(orX);
+				orYs.push_back(orY);
+			}
+			oMetaData->SetImageOrientationsPatientX(orXs);
+			oMetaData->SetImageOrientationsPatientY(orYs);				
+
+			// create dummy position vectors and set 				
+			std::vector< PGMath::Vector3D<float> > imagePositions;
+			PGMath::Vector3D<float>	firstImagePos(0.0f, 0.0f, 0.0f), lastImagePos(0.0f, 0.0f, (float)(dimsVec[2]-1));
+			for (i=0; i<dimsVec[2]; i++)
+			{
+				imagePositions.push_back(firstImagePos + PGMath::Vector3D<float>(0.0f, 0.0f, 1.0f));			
+			}
+			oMetaData->SetImagePositionsPatient(imagePositions);	
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagBinaryData))
+		{
+			std::string BinaryDataStr = getValueS(iStr, std::string(kPGMHD3DTagBinaryData));
+			if (strstr ( BinaryDataStr.c_str(), kPGMHD3DValueBoolTrue)) binaryData = true;
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagBinaryDataByteOrderMSB))
+		{
+			bool binaryDataMSB = false;
+			std::string BinaryDataMSBStr = getValueS(iStr, std::string(kPGMHD3DTagBinaryDataByteOrderMSB));
+			if (strstr ( BinaryDataMSBStr.c_str(), kPGMHD3DValueBoolTrue)) binaryDataMSB = true;
+			oMetaData->SetMSBFirst(binaryDataMSB);
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagCompressedData))
+		{
+			int binaryDataCompressed=0;
+			std::string BinaryDataCompressedStr = getValueS(iStr, std::string(kPGMHD3DTagCompressedData));
+			if (strstr ( BinaryDataCompressedStr.c_str(), kPGMHD3DValueBoolTrue)) 
+			{
+				binaryDataCompressed = 1;
+			    oMetaData->SetCompressedDataFlag(binaryDataCompressed);
+			} else if (strstr ( BinaryDataCompressedStr.c_str(), kPGMHD3DValueBoolFalse)) 
+			{
+				binaryDataCompressed = 0;
+				oMetaData->SetCompressedDataFlag(binaryDataCompressed);
+			} else 
+			{
+				LOG1("IOMhd3D<T>::fillMetaValue: Shadowing tag ignored: %s!", BinaryDataCompressedStr.c_str());
+			}			
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagCompressedDataSize))
+		{
+			binaryDataCompressedSize = getValueI(iStr,std::string(kPGMHD3DTagCompressedDataSize));
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagTransformMatrix))
+		{
+			PGMath::Vector3D<int>	dims = oMetaData->GetSize();
+			int nDims = oMetaData->GetDimensionality();
+
+			if (nDims<=0 || nDims >4 || dims.X()<=0 || dims.Y()<=0 || dims.Z()<=0)
+			{
+				LOG4("IOMhd3D<T>::fillMetaValue: Invalid dimensions : %d, %d %d %d!", nDims, dims.X(), dims.Y(), dims.Z());		
+				return false;
+			}
+			
+			std::vector<float> transformMatrix;
+			int matrixOffset=0;
+			if (nDims<=3)
+			{
+				matrixOffset=3;			
+			} else if (nDims==4)
+			{
+				matrixOffset=4;								
+			} 
+
+			getMatrixF(iStr, kPGMHD3DTagTransformMatrix, nDims, transformMatrix);
+
+			// X component
+			std::vector< PGMath::Vector3D<float> > orXs = oMetaData->GetImageOrientationsPatientX();
+			if (orXs.size() < dims.Z())
+			{
+				LOG2("IOMhd3D<T>::fillMetaValue: OrX vecs have not been initialized! %d vs %d!", orXs.size(), dims.Z());		
+				return false;
+			}
+			if (!orXs.empty())
+			{
+				PGMath::Vector3D<float>	orX = orXs[0];
+				orX = PGMath::Vector3D<float>(transformMatrix[0], transformMatrix[1], transformMatrix[2]);							
+				orXs.clear();
+				for (int i=0; i<dims.Z(); i++)
+				{
+					orXs.push_back(orX);				
+				}
+				oMetaData->SetImageOrientationsPatientX(orXs);			
+			}
+
+			// Y component
+			std::vector< PGMath::Vector3D<float> > orYs = oMetaData->GetImageOrientationsPatientY();
+			if (orYs.size() < dims.Z())
+			{
+				LOG2("IOMhd3D<T>::fillMetaValue: OrY vecs have not been initialized! %d vs %d!", orYs.size(), dims.Z());		
+				return false;
+			}
+			if (!orYs.empty())
+			{
+				PGMath::Vector3D<float>	orY = orYs[0];
+				orY = PGMath::Vector3D<float>(transformMatrix[0+matrixOffset], transformMatrix[1+matrixOffset], transformMatrix[2+matrixOffset]);							
+				orYs.clear();
+				for (int i=0; i<dims.Z(); i++)
+				{
+					orYs.push_back(orY);				
+				}
+				oMetaData->SetImageOrientationsPatientY(orYs);			
+			}		
+		}
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagOffset))
+		{
+			int nDims = oMetaData->GetDimensionality();
+			if (nDims<=0)
+			{
+				LOG1("IOMhd3D<T>::fillMetaValue: Invalid dimensions : %d!", nDims);		
+				return false;
+			}
+
+			std::vector<float> offsetVec;
+			getVectorF(iStr, kPGMHD3DTagOffset, nDims, offsetVec);
+			// no one uses it yet	
+		}
+		/*		
+static const char* kPGMHD3DTagAnatomicalOrientation	=	"AnatomicalOrientation";
+static const char* kPGMHD3DTagElementType			=	"ElementType"; 
+static const char* kPGMHD3DTagElementDataFile		=	"ElementDataFile";*/
+
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagCenterOfRotation))
+		{
+			int nDims = oMetaData->GetDimensionality();
+			if (nDims<=0)
+			{
+				LOG1("IOMhd3D<T>::fillMetaValue: Invalid dimensions : %d!", nDims);		
+				return false;
+			}
+
+			std::vector<float> cRotVec;
+			getVectorF(iStr, kPGMHD3DTagCenterOfRotation, nDims, cRotVec);
+			// no one uses it yet	
+		}				
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagElementSpacing))
+		{
+			int nDims = oMetaData->GetDimensionality();
+			if (nDims<=0)
+			{
+				LOG1("IOMhd3D<T>::fillMetaValue: Invalid dimensions : %d!", nDims);		
+				return false;
+			}
+
+			std::vector<float> spcVec;
+			getVectorF(iStr, kPGMHD3DTagElementSpacing, nDims, spcVec);						
+			oMetaData->SetSpacing(PGMath::Vector3D<float>(spcVec[0], spcVec[1], spcVec[2]));		
+		}				
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagElementType))
+		{
+			std::string ElemTypeStr = getValueS(iStr, std::string(kPGMHD3DTagElementType));
+			if (strstr ( ElemTypeStr.c_str(), kPGMHD3DValueElementTypeShort)) 
+			{
+				oMetaData->SetNumberOfBits(8*sizeof (short));
+				oMetaData->SetSamplesPerPixel(sizeof (short));
+			} else
+			{
+				oMetaData->SetNumberOfBits(8*sizeof (unsigned char));
+				oMetaData->SetSamplesPerPixel(sizeof (unsigned char));
+			}
+		} 		
+		else if (strstr ( iStr.c_str(), kPGMHD3DTagElementDataFile))
+		{
+			std::string FileStr = getValueS(iStr, std::string(kPGMHD3DTagElementDataFile));
+			oMetaData->SetSourceTypeSingleFile(true);			
+		}		
+		else
+		{
+			LOG1("IOMhd3D<T>::fillMetaValue: WARNING: Unrecognized tag: %s!!!", iStr.c_str());									
+			res = false;
+		};
+
+		return res;
+	}
 
 
 #ifdef _PG_GENERATE_SDK_LIBS_

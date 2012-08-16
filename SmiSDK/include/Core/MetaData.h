@@ -98,6 +98,12 @@ public:
 
 	void SetMSBFirst(const int& iFlag);
 	const int &GetMSBFirst() const;
+
+	void SetDimensionality(const int& iDim);
+	const int &GetDimensionality() const;
+
+	void SetCompressedDataFlag(const int& iFlag);
+	const int &GetCompressedDataFlag() const;
 	
 	void SetSpacing(const PGMath::Vector3D<float>& iSpacing);
 	const PGMath::Vector3D<float>& GetSpacing() const;
@@ -172,6 +178,9 @@ private:
 	int										m_numberOfBits;
 	int										m_msbFirst;
 	int										m_fileNameNumberDigits;
+	int										m_dimensionality;
+
+	int										m_compressedDataFlag;
 
 	float									m_slope;
 	float									m_intercept;

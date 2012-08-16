@@ -557,6 +557,8 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 	int oSizeZ = oDataObject->GetSize(), readImages = oSize.Z();
 	bool res = (oSizeZ==readImages);
 
+	UpdateProgress(100);
+
 	return res;	
 }
 

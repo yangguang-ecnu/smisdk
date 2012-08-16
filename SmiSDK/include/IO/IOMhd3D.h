@@ -44,7 +44,43 @@
 
 namespace PGIO
 {	
-	
+/*
+	ObjectType = Image
+	NDims = 4
+	BinaryData = True
+	BinaryDataByteOrderMSB = False
+	CompressedData = True
+	CompressedDataSize = 10767902
+	TransformMatrix = 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0 1
+	Offset = 0 0 0 0
+	CenterOfRotation = 0 0 0 0
+	ElementSpacing = 0.740234 0.740234 2 1
+	DimSize = 512 512 69 1
+	AnatomicalOrientation = ????
+	ElementType = MET_SHORT
+	ElementDataFile = NYU-20081103-1133.zraw
+	*/
+static const char* kPGMHD3DTagObjectType			=	"ObjectType";
+static const char* kPGMHD3DTagNDims					=	"NDims";
+static const char* kPGMHD3DTagBinaryData			=	"BinaryData";
+static const char* kPGMHD3DTagBinaryDataByteOrderMSB=	"BinaryDataByteOrderMSB";
+static const char* kPGMHD3DTagCompressedData		=	"CompressedData";
+static const char* kPGMHD3DTagCompressedDataSize	=	"CompressedDataSize";
+static const char* kPGMHD3DTagTransformMatrix		=	"TransformMatrix";
+static const char* kPGMHD3DTagOffset				=	"Offset";
+static const char* kPGMHD3DTagCenterOfRotation		=	"CenterOfRotation";
+static const char* kPGMHD3DTagElementSpacing		=	"ElementSpacing";
+static const char* kPGMHD3DTagDimSize				=	"DimSize";
+static const char* kPGMHD3DTagAnatomicalOrientation	=	"AnatomicalOrientation";
+static const char* kPGMHD3DTagElementType			=	"ElementType";
+static const char* kPGMHD3DTagElementDataFile		=	"ElementDataFile";
+
+static const char* kPGMHD3DValueBoolTrue			=	"True";
+static const char* kPGMHD3DValueBoolFalse			=	"False";
+static const char* kPGMHD3DValueElementTypeShort	=	"MET_SHORT";
+static const char* kPGMHD3DValueElementTypeUchar	=	"MET_UCHAR";
+
+
 template <class T>
 class IOMhd3D : public IOBase<T>, public PGCore::ThreadedProcess
 {
@@ -61,6 +97,8 @@ public:
 
 	virtual void StartExecution(void *iParams);
 
+	virtual bool fillMetaValue(const std::string &iStr, PGCore::MetaData<T> *oMetaData) const;
+
 private:
 	
 	PGIO::ePgIOSourceFormat				m_fileFormat;	
@@ -75,6 +113,7 @@ private:
 		std::string& ioFormatString,
 		PGCore::MetaData<T> &ioMetaData);
 
+	
 
 };
 
