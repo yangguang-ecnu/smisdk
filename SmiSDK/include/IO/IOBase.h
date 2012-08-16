@@ -285,6 +285,17 @@ protected:
 		}
 	};
 
+	virtual bool		fillMetaValue(const std::string &iStr, PGCore::MetaData<T> *oMetaData) const;
+
+	int			getValueI(const std::string &iStr, const std::string &iTag) const;	
+	float		getValueF(const std::string &iStr, const std::string &iTag) const;
+	std::string	getValueS(const std::string &iStr, const std::string &iTag) const;
+
+	bool		getVectorI(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<int>& ioVectorI) const;
+	bool		getVectorF(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<float>& ioVectorF) const;
+
+	// row major
+	bool		getMatrixF(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<float>& ioMatrixF) const;	
 
 private:	
 	mutable		StatusCallBackFunctionD m_CBFn;
@@ -293,11 +304,7 @@ private:
 
 	void		clampToNextPowOfTwo(PGMath::Point3D<int>& ioDim);
 
-	bool		fillMetaValue(const std::string &iStr, PGCore::MetaData<T> *oMetaData) const;
-
-	int			getValueI(const std::string &iStr, const std::string &iTag) const;
-	float		getValueF(const std::string &iStr, const std::string &iTag) const;
-	std::string	getValueS(const std::string &iStr, const std::string &iTag) const;
+	
 };
 
 };

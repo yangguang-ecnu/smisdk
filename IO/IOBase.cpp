@@ -237,6 +237,87 @@ namespace PGIO
 		return std::string(oStr);
 	}
 
+	template <class T>
+	bool IOBase<T>::getVectorI(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<int>& ioVectorI) const
+	{			
+		char oTag[512] = {0};
+		if (iDim<=3)
+		{
+			ioVectorI.resize(3);
+			sscanf(iStr.c_str(), "%s = %d %d %d", oTag, &ioVectorI[0], &ioVectorI[1], &ioVectorI[2]);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		} else
+		{
+			ioVectorI.resize(4);
+			sscanf(iStr.c_str(), "%s = %d %d %d %d", oTag, &ioVectorI[0], &ioVectorI[1], &ioVectorI[2], &ioVectorI[3]);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}
+
+	template <class T>
+	bool IOBase<T>::getVectorF(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<float>& ioVectorF) const
+	{	
+		char oTag[512] = {0};
+		if (iDim<=3)
+		{
+			ioVectorF.resize(3);
+			sscanf(iStr.c_str(), "%s = %f %f %f", oTag, &ioVectorF[0], &ioVectorF[1], &ioVectorF[2]);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		} else
+		{
+			ioVectorF.resize(4);
+			sscanf(iStr.c_str(), "%s = %f %f %f %f", oTag, &ioVectorF[0], &ioVectorF[1], &ioVectorF[2], &ioVectorF[3]);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}	
+
+	// row major
+	template <class T>
+	bool IOBase<T>::getMatrixF(const std::string &iStr, const std::string &iTag, const int& iDim, std::vector<float>& ioMatrixF) const
+	{		
+		char oTag[512] = {0};
+		if (iDim<=3)
+		{
+			ioMatrixF.resize(9);
+			sscanf(iStr.c_str(), "%s = %f %f %f %f %f %f %f %f %f", oTag, 
+				&ioMatrixF[0], &ioMatrixF[1], &ioMatrixF[2],
+				&ioMatrixF[3], &ioMatrixF[4], &ioMatrixF[5],
+				&ioMatrixF[6], &ioMatrixF[7], &ioMatrixF[8]
+				);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		} else
+		{
+			ioMatrixF.resize(16);
+			sscanf(iStr.c_str(), "%s = %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f %f", oTag, 
+				&ioMatrixF[0], &ioMatrixF[1], &ioMatrixF[2], &ioMatrixF[3], 
+				&ioMatrixF[4], &ioMatrixF[5], &ioMatrixF[6], &ioMatrixF[7], 
+				&ioMatrixF[8], &ioMatrixF[9], &ioMatrixF[10], &ioMatrixF[11],
+				&ioMatrixF[12], &ioMatrixF[13], &ioMatrixF[14], &ioMatrixF[15]
+				);
+			if (strcmp(iTag.c_str(), oTag)) 
+			{
+				return false;
+			}
+		}
+		return true;
+	}	
 
 
 	template <class T>

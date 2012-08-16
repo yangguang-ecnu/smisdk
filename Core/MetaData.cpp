@@ -57,6 +57,8 @@ namespace PGCore
 		m_slope = 1;
 		m_intercept = 0;
 		m_numFrames = 0;
+		m_compressedDataFlag = 0;
+		m_dimensionality = 3;
 	}
 
 	template <class T>	
@@ -193,6 +195,18 @@ namespace PGCore
 	{
 		m_msbFirst = iFlag;
 	}
+
+	template <class T>	
+	void MetaData<T>::SetDimensionality(const int& iDim)
+	{
+		m_dimensionality = iDim;
+	}
+	
+	template <class T>	
+	void MetaData<T>::SetCompressedDataFlag(const int& iFlag)
+	{
+		m_compressedDataFlag = iFlag;
+	}	
 
 	template <class T>	
 	void MetaData<T>::SetSpacing(const PGMath::Vector3D<float>& iSpacing)
@@ -391,6 +405,18 @@ namespace PGCore
 	const int & MetaData<T>::GetMSBFirst() const
 	{
 		return m_msbFirst;
+	}
+
+	template <class T>
+	const int & MetaData<T>::GetDimensionality() const
+	{
+		return m_dimensionality;
+	}	
+
+	template <class T>
+	const int & MetaData<T>::GetCompressedDataFlag() const
+	{
+		return m_compressedDataFlag;
 	}
 
 	template <class T>
