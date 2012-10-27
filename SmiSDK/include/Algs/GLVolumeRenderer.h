@@ -23,6 +23,7 @@
 
 #include "GLRendererBase.h"
 #include "../Core/Volume.h"
+#include "../Core/PolygonMesh.h"
 #include "../Core/Timer.h"
 
 
@@ -127,6 +128,7 @@ public:
 
 		virtual bool SetContext(HDC iContext);
 
+		virtual void Clear();
 		
 	protected:
 
@@ -142,6 +144,7 @@ public:
 		PGCore::Logger					m_threadLogger;
 		ThreadedUpdateVRParams<T>		m_updateVRParams;
 
+		std::vector<PGCore::PolygonMesh<float, 3>*> m_polyMeshList;
 		std::vector<PGCore::Voxel3D<T> *>	m_voxel3DList;
 		std::vector<PGCore::Volume< T > *>	m_volumeAccessor;
 		std::vector<PGMath::Point3D<long> >	m_voxelDims;
@@ -159,7 +162,7 @@ public:
 		
 		PGMath::Vector3D<float>	gMinVec, gMaxVec, gCameraCenter;
 		
-		float					gXMin, gXMax, gYMin, gYMax, gZMin, gZMax; 
+		float					gXMin, gXMax, gYMin, gYMax, gZMin, gZMax; 		
 		
 		std::vector<PGMath::Point3D<long> >   gVolumeScope;
 		
@@ -169,10 +172,10 @@ public:
 		virtual void	renderSingleVolume(const int iVolumeIndex=0)=0;
 		virtual int		initGLthread()=0; 
 		virtual int		init(const int iVolumeIndex=0)=0;
+		virtual void	renderVolume()=0;
 
-		void	renderVolume();
 		void	renderAxisPlanes();	
-		void	getGLViewParams (
+		virtual void	getGLViewParams (
 			PGMath::Vector3D< float > &oMinVec,
 			PGMath::Vector3D< float > &oMaxVec,							
 			PGMath::Vector3D< float > &oCameraCenter,

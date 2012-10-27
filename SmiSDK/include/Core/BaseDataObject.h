@@ -37,7 +37,8 @@ typedef enum {
 	kPgDataObjectTypeKernel=4,
 	kPgDataObjectTypeTransferFunctionLUT=5,
 	kPgDataObjectTypeBitImage=6,
-	kPgDataObjectTypeBitVolume=7
+	kPgDataObjectTypeBitVolume=7,	
+	kPgDataObjectTypePolygonMesh=8
 } ePgDataObjectType;
 
 

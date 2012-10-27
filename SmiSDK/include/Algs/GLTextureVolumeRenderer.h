@@ -49,6 +49,8 @@ namespace PGAlgs
 
 		virtual void display();
 
+		virtual void renderVolume();
+
 		virtual bool updateRenderSync(int iIndex=-1, bool iUpdateDisplay=0);
 		virtual bool updateRenderAsync(int iIndex=-1, bool iUpdateDisplay=0);
 

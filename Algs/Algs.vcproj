@@ -182,6 +182,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\GLSurfaceMeshRenderer.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\GLTextureVolumeRenderer.cpp"
 				>
 			</File>
@@ -309,6 +313,10 @@
 			</File>
 			<File
 				RelativePath="..\SmiSDK\include\Algs\GLRendererBase.h"
+				>
+			</File>
+			<File
+				RelativePath="..\SmiSDK\include\Algs\GLSurfaceMeshRenderer.h"
 				>
 			</File>
 			<File

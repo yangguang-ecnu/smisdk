@@ -70,7 +70,7 @@ namespace PGAlgs
 
 		virtual ~SWMPRRenderer(void);
 
-		void Clear() ;		
+		virtual void Clear() ;		
 
 		bool UpdateRender(int iIndex=-1, bool iUpdateDisplay=0);
 

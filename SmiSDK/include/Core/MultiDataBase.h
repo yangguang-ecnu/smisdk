@@ -39,7 +39,7 @@ public:
 
 	BaseDataObject* GetDataObject(unsigned int iIndex) const;	
 
-	unsigned short GetDataCount() const;
+	unsigned short GetDataCount(ePgDataObjectType iQueryType=kPgDataObjectTypeUnknown) const;
 
 	void Clear();
 

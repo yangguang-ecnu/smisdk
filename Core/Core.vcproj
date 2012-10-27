@@ -244,6 +244,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\PolygonMesh.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\Stack.cpp"
 				>
 			</File>
@@ -399,6 +403,10 @@
 			</File>
 			<File
 				RelativePath="..\SmiSDK\include\Core\Polygon.h"
+				>
+			</File>
+			<File
+				RelativePath="..\SmiSDK\include\Core\PolygonMesh.h"
 				>
 			</File>
 			<File

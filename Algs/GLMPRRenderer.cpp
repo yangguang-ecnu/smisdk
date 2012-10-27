@@ -774,6 +774,8 @@ namespace PGAlgs
 		template <class T, class U>
 	    inline bool GLMPRRenderer<T, U>::SetSlicerDirection(ePgSlicingDirection iDirection)
 		{
+			if (m_mprRenderer.empty()) return false;
+
 			for (int iRendererIndex=0; iRendererIndex<m_mprRenderer.size(); iRendererIndex++)
 			{
 				if (!m_mprRenderer[iRendererIndex]) return false;

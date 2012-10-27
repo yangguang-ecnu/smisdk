@@ -40,9 +40,10 @@ namespace PGCore
 
 		bool Clear();
 
-		bool AddVertex(const PGMath::Point3D<T>& iVertex);
+		bool AddVertex(const PGMath::Point3D<T>& iVertex, PGMath::Point3D<T>* iNormal=0);
 
 		const PGMath::Point3D<T>& GetVertex(const unsigned int iIndex) const;
+		const PGMath::Point3D<T>& GetNormal(const unsigned int iIndex) const;
 
 		const PGMath::Point3D<T>& operator[](const int& iIndex) const;
 
@@ -50,6 +51,7 @@ namespace PGCore
 		
 		int										m_maxDimension;
 		std::vector<PGMath::Point3D<T>>			m_vertices;		
+		std::vector<PGMath::Point3D<T>>			m_normals;		
 
 	};
 
