@@ -31,9 +31,20 @@ namespace PGCore
 	};	
 
 	template<class T>
-	unsigned short MultiDataBase<T>::GetDataCount() const
+	unsigned short MultiDataBase<T>::GetDataCount(ePgDataObjectType iQueryType/*=kPgDataObjectTypeUnknown*/) const
 	{
-		return m_dataObjects.size();	
+		if (iQueryType==kPgDataObjectTypeUnknown) return m_dataObjects.size();	
+
+		int objCount=0;
+		for (int i=0; i<m_dataObjects.size(); i++)
+		{
+			if (m_dataObjects[i]->Type()==iQueryType)
+			{
+				objCount++;
+			}
+		}
+
+		return objCount;
 	}
 
 	template<class T>

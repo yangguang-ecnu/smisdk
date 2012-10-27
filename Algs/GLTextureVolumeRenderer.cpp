@@ -102,7 +102,7 @@ namespace PGAlgs
 			return false;
 		}
 
-		int iMultiVolumeCount = inMultiVolume->GetDataCount();
+		int iMultiVolumeCount = inMultiVolume->GetDataCount(kPgDataObjectTypeIsotropicVoxel3D);
 		if (iMultiVolumeCount < 1)
 		{
 			LOG0("GLTextureVolumeRenderer:SetInput Error: Needs at least one volume");
@@ -150,15 +150,18 @@ namespace PGAlgs
 			return false;
 		}
 
-		int iMultiVolumeCount = inMultiVolume->GetDataCount();
+		int iMultiVolumeCount = inMultiVolume->GetDataCount(kPgDataObjectTypeIsotropicVoxel3D);
 		if (iMultiVolumeCount < 1)
 		{
 			LOG0("GLTextureVolumeRenderer:initVolumes Error: Needs at least one volume");
 			return false;
 		}	
 
-		for (int i=0; i<iMultiVolumeCount; i++)
+		int iMultiDataCount   = inMultiVolume->GetDataCount();
+		for (int i=0; i<iMultiDataCount; i++)
 		{
+			if (inMultiVolume->GetDataObject(i)->Type() != kPgDataObjectTypeIsotropicVoxel3D) continue;
+
 			// get the input volume
 			PGCore::Voxel3D< T > *inVolume = (static_cast<PGCore::Voxel3D < T > *>(inMultiVolume->GetDataObject(i)));
 			if (!inVolume) 
@@ -1719,6 +1722,16 @@ namespace PGAlgs
 		} 
 
 		glMatrixMode(GL_MODELVIEW);
+	}
+
+	template <class T, class U>
+	void GLTextureVolumeRenderer<T, U>::renderVolume()
+	{
+		int i=0;
+		for (i=0; i<m_volumeAccessor.size(); i++)
+		{
+			renderSingleVolume(i);
+		}		
 	}
 
 

@@ -75,7 +75,7 @@ namespace PGAlgs
 
 		bool Render();
 
-		void Clear();
+		virtual void Clear();
 
 		virtual ~VoxelToMPRRenderer(void);
 

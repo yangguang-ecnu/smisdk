@@ -150,6 +150,8 @@ namespace PGAlgs
 	template <class T, class U>
 	bool VoxelToMPRRenderer<T, U>::SetBlendWeight(const float iWeight, const int iRendererIndex=0) 
 	{ 
+		if (m_blendWeight.empty()) return false;
+
 		if (iRendererIndex<0 || iRendererIndex>m_blendWeight.size()-1)
 			return false;
 		m_blendWeight[iRendererIndex] = iWeight;		

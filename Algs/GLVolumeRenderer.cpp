@@ -48,15 +48,7 @@ namespace PGAlgs
 		gLowerBound = 100; gLowerEndNoiseBound = 25;
 		gSuperSampligFactorZ = 4.0f;	
 
-
-		gVolumeScope.clear();
-		m_voxelDims.clear();
-		m_voxelDimsSkipZ.clear();
-		
-		m_LuT.clear();
-		m_volumeAccessor.clear();
-		m_voxel3DList.clear();
-		m_MaskLUT.clear();		
+		Clear();		
 	};
 
 	template <class T, class U>
@@ -64,6 +56,22 @@ namespace PGAlgs
 	{ 
 
 	};
+
+	template <class T, class U>
+	void  GLVolumeRenderer<T, U>::Clear() 
+	{ 
+		gVolumeScope.clear();
+		m_voxelDims.clear();
+		m_voxelDimsSkipZ.clear();
+		
+		m_LuT.clear();
+		m_volumeAccessor.clear();
+		m_voxel3DList.clear();
+		m_MaskLUT.clear();	
+		m_polyMeshList.clear();
+
+		GLRendererBase::Clear();
+	}
 
 	//iCursor3D has xyz in [-0.5...0.5] range
 	template <class T, class U>
@@ -112,10 +120,11 @@ namespace PGAlgs
 			return false;
 		}
 
-		int iMultiVolumeCount = inMultiVolume->GetDataCount();
-		if (iMultiVolumeCount < 1)
+		int iMultiVolumeCount = inMultiVolume->GetDataCount(kPgDataObjectTypeIsotropicVoxel3D);
+		int iMultiMeshCount   = inMultiVolume->GetDataCount(kPgDataObjectTypePolygonMesh);
+		if (iMultiVolumeCount < 1 && iMultiMeshCount < 1)		
 		{
-			LOG0("GLVolumeRenderer:SetInput Error: Needs at least one volume");
+			LOG0("GLVolumeRenderer:SetInput Error: Needs at least one rendering target");
 			return false;
 		}
 
@@ -138,6 +147,11 @@ namespace PGAlgs
 			}
 		}
 
+		if (m_polyMeshList.size() < iMultiMeshCount)
+		{
+			m_polyMeshList.resize(iMultiMeshCount);
+		}
+		
 		return true;		
 	};
 	
@@ -241,6 +255,7 @@ namespace PGAlgs
 		glDisable(GL_TEXTURE_3D);
 
 		glMatrixMode(GL_MODELVIEW);
+
 		glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
 		
 		glPushMatrix();
@@ -335,17 +350,8 @@ namespace PGAlgs
 
 		glPopMatrix();
 	}
+	
 
-	template <class T, class U>
-	void GLVolumeRenderer<T, U>::renderVolume()
-	{
-		for (int i=0; i<m_volumeAccessor.size(); i++)
-		{
-			renderSingleVolume(i);
-		}		
-	}
-
-		
 	
 
 	template <class T, class U>

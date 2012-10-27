@@ -82,7 +82,7 @@ namespace PGAlgs
 
 		virtual ~GLMPRRenderer(void) { Clear(); };
 
-		void Clear() ;
+		virtual void Clear() ;
 		
 
 		virtual bool UpdateRender(int iIndex=-1, bool iUpdateDisplay=0);
