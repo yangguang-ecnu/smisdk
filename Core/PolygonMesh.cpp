@@ -83,11 +83,22 @@ namespace PGCore
 	}
 
 	template <class T, unsigned int Dim>
-	bool PolygonMesh<T, Dim>::Clear()
+	bool PolygonMesh<T, Dim>::Clear(const int iIndex/*=-1*/)
 	{
 		m_polygons.clear();
-		m_refSkeleton.clear();
-		m_subSkeleton.clear();
+
+		if (iIndex==-1)
+		{
+			m_refSkeleton.clear();
+			m_subSkeleton.clear();
+		} else if (iIndex==0)
+		{
+			m_refSkeleton.clear();
+		} else if (iIndex==1)
+		{
+			m_subSkeleton.clear();
+		}
+
 		return true;
 	}
 

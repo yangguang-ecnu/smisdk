@@ -82,6 +82,7 @@ public:
 
 	// pointcloud ops
 	std::vector<PGMath::Point3D<float> >& GetPointCloud(); // in CT space
+	bool ResetPointCloud();
 
 	bool GetEightNeighborValues(const int iRow, const int iColumn, const int iImageIndex, 
 			T ioEightNeighbors[8]) const;	
