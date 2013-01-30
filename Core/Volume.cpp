@@ -190,7 +190,6 @@ bool Volume<T>::InitializeBitVolume(const int iImageIndex/*=0*/)
 }
 
 
-
 template <class T>
 BitVolume& Volume<T>::GetBitVolume(const int iImageIndex/*=0*/)
 {
@@ -750,37 +749,51 @@ inline float Volume<float>::GetAvgValue(const int iRow, const int iColumn, const
 	return float(totalValue/8.0f);
 }	
 
-/*
+template <>
+inline bool Volume<PGMath::Point3D<unsigned short> >::GetGradient(const int iRow, const int iColumn, const int iImageIndex, 
+								   PGMath::Vector3D<float>& oGradient) const
+{
+	return false;
+}
+
+template <>
+inline bool Volume<PGMath::Point3D<unsigned char> >::GetGradient(const int iRow, const int iColumn, const int iImageIndex, 
+								   PGMath::Vector3D<float>& oGradient) const
+{
+	return false;
+}
+	
+
 template <class T>
 inline bool Volume<T>::GetGradient(const int iRow, const int iColumn, const int iImageIndex, 
-								   PGMath::Vector3D<T>& oGradient) const
+								   PGMath::Vector3D<float>& oGradient) const
 {
 	if (iImageIndex<0 || iImageIndex>m_images.size()-2) 
 	{
 		return false;
 	}
 
-	T gX=0, gY=0, gZ=0;
+	float gX=0, gY=0, gZ=0;
 	int r=iRow, rPlus=iRow+1, c=iColumn, cPlus=iColumn+1, z=iImageIndex, zPlus=iImageIndex+1;
 	if (iRow > 0 && iRow < (m_rows-1) && iColumn > 0 && iColumn < (m_columns-1)
 		&& iImageIndex>0 && m_images.size()>2)
 	{	
-		gY = GetValueNoBoundCheck(rPlus, c, z) - GetValueNoBoundCheck(r-1, c, z);	
-		gX = GetValueNoBoundCheck(r, cPlus, z) - GetValueNoBoundCheck(r, c-1, z);	
-		gZ = GetValueNoBoundCheck(r, c, zPlus) - GetValueNoBoundCheck(r, c, z-1);	
+		gY = float(GetValueNoBoundCheck(rPlus, c, z) - GetValueNoBoundCheck(r-1, c, z));	
+		gX = float(GetValueNoBoundCheck(r, cPlus, z) - GetValueNoBoundCheck(r, c-1, z));	
+		gZ = float(GetValueNoBoundCheck(r, c, zPlus) - GetValueNoBoundCheck(r, c, z-1));	
 	} 
 	else 
 	{	
-		gY = GetValue(rPlus, c, z) - GetValue(r-1, c, z);	
-		gX = GetValue(r, cPlus, z) - GetValue(r, c-1, z);	
-		gZ = GetValue(r, c, zPlus) - GetValue(r, c, z-1);	
+		gY = float(GetValue(rPlus, c, z) - GetValue(r-1, c, z));	
+		gX = float(GetValue(r, cPlus, z) - GetValue(r, c-1, z));	
+		gZ = float(GetValue(r, c, zPlus) - GetValue(r, c, z-1));	
 	}
 
-	oGradient = PGMath::Vector3D<T>(gX, gY, gZ);
+	oGradient = PGMath::Vector3D<float>(gX, gY, gZ);
 
 	return true;
 }
-*/
+
 
 
 template <class T>
@@ -957,7 +970,12 @@ bool Volume<T>::GetDataRange(T *oMin, T* oMax)
 	return true;
 }
 
-
+// pointcloud ops
+template <class T>
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud() // in CT space
+{
+	return m_pointCloud;
+}
 
 template <class T>
 bool Volume<T>::Clear() 
@@ -965,7 +983,9 @@ bool Volume<T>::Clear()
 	bool res = clearOctreeBlocks();
 	if (!res) return false;
 
-	m_images.clear();				
+	m_images.clear();			
+	m_pointCloud.clear();
+
 	m_rows = 0; m_columns = 0;
 	m_origin = PGMath::Point3D<float>(0, 0, 0);
 	return (m_images.size()==0);

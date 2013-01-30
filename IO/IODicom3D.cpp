@@ -193,6 +193,343 @@ bool IODicom3D<T>::WriteToFolder(const std::vector<std::string>& iFileList,	PGCo
 		PGCore::Volume<T> *oDataObject)
 {
 	return false;
+
+	/*if (!iMetaDataObject || !oDataObject || iFileList.size()<1)
+	{
+		LOG0("IODicom3D::WriteToFolder: Invalid input data/metadata.");			
+		return false;
+	}
+		
+	// get number of slices
+	// filter the folder with dicom file names
+	// use folder list
+	// cast to appropriate type here
+	PGCore::MetaData<T> *oMetaData = (static_cast<PGCore::MetaData< T > *>(iMetaDataObject));
+	if (!oMetaData) 
+	{
+		LOG0("IODicom3D::WriteToFolder: Invalid output container for metadata.");			
+		return false;
+	}
+	
+	PGIO::IODicom<T> dicomImgIO;
+	PGCore::MetaData<T> firstMetaData;
+
+
+	long iSlices = iFileList.size();
+	int numBitsInData=8*sizeof(T);	
+	bool ignoreBits = (numBits<numBitsInData);
+	if (oMetaData->GetFrameCount()>1) iSlices = numFrames;
+
+	firstMetaData.SetSize(oMetaData->GetSize());	
+	firstMetaData.SetMSBFirst(oMetaData->GetMSBFirst());
+	firstMetaData.SetNumberOfBits(oMetaData->GetMSBFirst());	
+	firstMetaData.SetFrameCount(oMetaData->GetFrameCount());
+	firstMetaData.SetSpacing(oMetaData->GetSpacing());		
+	firstMetaData.SetModality(oMetaData->GetModality());
+	firstMetaData.SetSOPClass(oMetaData->GetSOPClass());
+	firstMetaData.SetStudyUID(oMetaData->GetStudyUID());
+	firstMetaData.SetSeriesUID(oMetaData->GetSeriesUID());
+	firstMetaData.SetSlope(oMetaData->GetSlope());
+	firstMetaData.SetIntercept(oMetaData->GetIntercept());
+
+	PGAlgs::ImageEndianSwapper<T, T> caster;
+	PGAlgs::ImageBitClipper<T, T> bitclipper(numBitsInData-numBits);
+
+	// create vectors for position/orientation information
+	std::vector<PGMath::Vector3D<float> > pPositions, pOrientationsX, pOrientationsY;
+
+	const std::vector<PGMath::Vector3D<float> >& nextPosVec = oMetaData->GetImagePositionsPatient();
+	const std::vector<PGMath::Vector3D<float> >& nextOrVecX = oMetaData->GetImageOrientationsPatientX();
+	const std::vector<PGMath::Vector3D<float> >& nextOrVecY = oMetaData->GetImageOrientationsPatientY();
+
+	if (nextPosVec.empty() || nextOrVecX.empty() || nextOrVecY.empty())
+	{
+		LOG0("IODicom3D::ReadMetaData:Warning: Empty pos/orientation vectors.");			
+		if (oSize.Z()>1)
+		{
+			return false;
+		}
+	}
+
+	std::vector<SlicePosition> slicePositions;
+	std::vector<PGCore::Image<T> > tempVolume;
+
+	long fOffset=0, imgSize = iRows*iColumns*sizeof(T);;
+	
+	PGAlgs::ImageTypeConverter<T, float> forward;
+	PGAlgs::ImageTypeConverter<float, T> backward;
+
+#if (_SMOOTH_MT_==1)
+	int zSkip=1, zSkipFac = min(max(m_skipFactorZ/4, 1), 8);
+	PGCore::GaussianKernel<T, T> gausskernel(1.0f), gausskernelZ(1.0f, max(1, m_skipFactorZ/zSkipFac));
+	unsigned int zKernelSize = gausskernelZ.GetDimension();
+	int zKMid = zKernelSize/2;
+	PGAlgs::ImageTypeConverter<T, float> imgConvTtoFloat;
+	PGAlgs::ImageTypeConverter<float, T> imgConvFloatToT;
+#endif
+
+	PGAlgs::ImageResampler<T, T> resampler;
+	resampler.SetScaleFactor(1.0f/(float)m_skipFactorXY);
+	
+	SetSmoothFlag(m_skipFactorZ>1);
+
+	LOG1("Smoothing status: %d", m_skipFactorZ>1 ? 1 : 0);
+
+	double zWt = 1.0f/(double)m_skipFactorZ;
+	
+	PGCore::BitImage bImage(iRows, iColumns);
+	PGCore::BitImage sbImage(iRows, iColumns);
+	
+	int		actualImagesRead = 0;
+	bool	ignoreImage=false;
+
+	for (int i=0; i<iSlices; i+=m_skipFactorZ)
+	{
+		//LOG2("{ IODicom3D<%d>::Read [%d]", this, i);			
+
+		ignoreImage = false;
+
+		if (pPositions.size()>= oSize.Z()) break;		
+
+		PGCore::Image<float> tempImage(iRows, iColumns), mixedImage(iRows, iColumns);
+		PGCore::Image<T> nextImage(iRows, iColumns);
+		PGCore::Image<T> nImage(iRows, iColumns);	
+		if (!nextImage.GetBuffer() || !nImage.GetBuffer() || !mixedImage.GetBuffer())
+		{
+			LOG0("IODicom3D::WriteToFolder: Invalid image buffer.");			
+			return false;
+		}
+
+		int zRead = 0;
+		int zLim = 1;
+#if (_SMOOTH_MT_==1)
+		if (GetSmoothFlag()) 
+		{
+			zLim = m_skipFactorZ;
+			zSkip = zSkipFac;
+		}
+#endif
+		for (int j=0; j<zLim; j+=zSkip)
+		{
+			std::vector<std::string> nextFileName;
+			int frameIndex = 0;
+			if (numFrames>1)
+			{
+				nextFileName.push_back(iFileList[0]);
+				frameIndex = (i+j);
+			} else
+			{
+				nextFileName.push_back(iFileList[i+j]);				
+			}
+			PGIO::IOParams ioParamsDicom(
+				nextFileName,
+				std::string(""),
+				PGIO::kPgIOSourceTypeFile);	
+			ioParamsDicom.SetActiveFrameIndex(frameIndex);
+			PGCore::MetaData<T> nextMetaDataObject;
+			if (!dicomImgIO.Read(&nImage, ioParamsDicom, &nextMetaDataObject))
+			{			
+				LOG1("IODicom3D::WriteToFolder: failed to open file %s to read.", iFileList[i+j].c_str());							
+				continue;
+			}
+
+			long nRows=0, nCols=0;
+			nImage.GetDimensions(nRows, nCols);
+			if (nRows!=iRows || nCols!=iColumns)
+			{
+				LOG4("IODicom3D::WriteToFolder: WARNING: Image size mismatch %d %d v/s %d %d.", nRows, nCols, iRows, iColumns);						
+				continue;
+			}
+
+			// match study and series UIDs
+			if (strcmp(firstMetaData.GetStudyUID().c_str(), nextMetaDataObject.GetStudyUID().c_str())
+					|| strcmp(firstMetaData.GetSeriesUID().c_str(), nextMetaDataObject.GetSeriesUID().c_str()) )
+			{
+				LOG0("IODicom3D::WriteToFolder: WARNING: Image study/series IDs mismatch!");						
+				continue;
+			}
+
+			zRead++;
+#if (_DRAW_SYNTH_SHAPES_)
+			// draw a circle
+			int zFactor = i/m_skipFactorXY, rad = iRows/8-zFactor;
+			memset(nImage.GetBuffer(), 0, nImage.GetDataSize());
+			nImage.SetValue(iRows/2, iColumns/2, T(255));
+			PGCore::DrawHelper::DrawCircle(iRows/2, iColumns/2, rad, nImage, T(255));
+			PGCore::DrawHelper::DrawBox(0, 0, iColumns-1, iRows-1, nImage, T(255));			
+			PGCore::DrawHelper::DrawBox(iColumns/2-rad, iRows/2-rad, iColumns/2+rad, iRows/2+rad, nImage, T(255));			
+			//PGAlgs::DumpImageAsPGM(nImage, std::string("C:\\Tmp\\Circle.pgm"));		
+#endif
+
+
+			#if (_SMOOTH_MT_==1)			
+				double zwt = gausskernelZ.GetValue(zKMid, zKMid-m_skipFactorZ/(2*zSkip) + j);
+			#endif
+			{		
+				imgConvTtoFloat.SetInput(static_cast<PGCore::Image < T > *>(&nImage));
+				imgConvTtoFloat.Execute();
+				imgConvTtoFloat.GetOutput(static_cast<PGCore::Image < float > *>(&tempImage));	
+			}
+
+			if (j==0) 
+			{
+				#if (_SMOOTH_MT_==1)						
+					mixedImage = tempImage*zwt;
+				#else
+					mixedImage = tempImage;
+					//memcpy(nextImage.GetBuffer(), nImage.GetBuffer(), nImage.GetDataSize());
+				#endif				
+
+				//push new slice attributes into teh meta data structurs
+				const std::vector<PGMath::Vector3D<float> >& nextPosVec = nextMetaDataObject.GetImagePositionsPatient();
+				const std::vector<PGMath::Vector3D<float> >& nextOrVecX = nextMetaDataObject.GetImageOrientationsPatientX();
+				const std::vector<PGMath::Vector3D<float> >& nextOrVecY = nextMetaDataObject.GetImageOrientationsPatientY();
+
+				slicePositions.push_back(SlicePosition(actualImagesRead, nextPosVec[0]));
+				pPositions.push_back(nextPosVec[0]);
+				pOrientationsX.push_back(nextOrVecX[0]);
+				pOrientationsY.push_back(nextOrVecY[0]);
+
+			} else
+			{
+
+				#if (_SMOOTH_MT_==1)
+					mixedImage += tempImage*zwt;
+				#endif
+				//LOG1("\tBlending [%d]..", j);
+			}
+			
+		}	
+		
+		ignoreImage = (zRead!=(zLim/zSkip));
+		if (ignoreImage) continue;
+
+		{		
+			imgConvFloatToT.SetInput(static_cast<PGCore::Image < float > *>(&mixedImage));
+			imgConvFloatToT.Execute();
+			imgConvFloatToT.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));	
+		}
+
+		// if MSB first, swap the endian	
+		if (msbFirst)
+		{		
+			//LOG1("\t{IODicom3D<%d>::Read: Endian Swap.", this);			
+			caster.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
+			caster.Execute();
+			caster.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));	
+			//LOG1("\t}IODicom3D<%d>::Read: Endian Swap.", this);			
+		}
+		// ignore higher bits??
+		if (ignoreBits)
+		{
+			//LOG1("\t{IODicom3D<%d>::Read: ignoreBits.", this);			
+			bitclipper.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
+			bitclipper.Execute();
+			bitclipper.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));	
+			//LOG1("\t{IODicom3D<%d>::Read: ignoreBits.", this);			
+		}
+
+#if (_SMOOTH_MT_==1)
+		if (GetSmoothFlag())
+		{
+			//LOG1("\t{IODicom3D<%d>::Read: smooth.", this);			
+			PGCore::Image<T> sImage;
+			gausskernel.Convolve(nextImage, sImage);	
+			nextImage = sImage;					
+			//LOG1("\t}IODicom3D<%d>::Read: smooth.", this);			
+		}
+#endif
+
+		//resample images if needed
+		if (m_skipFactorXY!=1)
+		{
+			//LOG1("\t{IODicom3D<%d>::Read: subsample.", this);			
+			resampler.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
+			resampler.Execute();
+			resampler.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));				
+			//LOG1("\t}IODicom3D<%d>::Read: subsample.", this);			
+		}		
+
+		// test frequency domain filtering
+		
+
+		//LOG1("IODicom3D::Read: Image [%d] DONE.", i);			
+		tempVolume.push_back(nextImage);
+
+		actualImagesRead++;
+		//oDataObject->AddImage(nextImage);
+
+		//LOG2("} IODicom3D<%d>::Read [%d]", this, i);			
+
+		////_PG_BREAK_NATIVE
+		if (i%4==0)	
+		{
+			int progressValue = (int)(95.0f*((float)(i)/(float)iSlices) + 0.5f);
+			UpdateProgress(progressValue);
+			//LOG1("+++ Loading progress %d / 100", progressValue);
+			//::Sleep(100);
+		}
+	}
+
+	//sort slices on position, perform sanitary checks
+	std::sort(slicePositions.begin(), slicePositions.end(), SlicePositionSorter());
+
+	//then add image
+	bool res = RearrangeSlices(slicePositions, tempVolume, *oDataObject, pPositions, pOrientationsX, pOrientationsY);
+	if (!res)
+	{
+		LOG0("IODicom3D::WriteToFolder: Error: Cannot rearrange slices on position");			
+		return false;
+	}
+
+	//oDataObject->AddImage(nextImage);
+
+	// correct the imagecount read
+	oSize = PGMath::Vector3D<int>(oSize.X(), oSize.Y(), actualImagesRead);
+
+	if (pPositions.size()!=oSize.Z() || 
+		pOrientationsX.size()!=oSize.Z() || 
+		pOrientationsY.size()!=oSize.Z())
+	{
+		LOG1("IODicom3D::WriteToFolder: Error: Only %d position/orientation vectors read in", pPositions.size());			
+		return false;
+	}
+
+	// set size
+	oMetaData->SetSize(PGMath::Vector3D<int>(oSize.X(), oSize.Y(), oSize.Z()));
+	
+	// compute spacing
+	//std::vector<PGMath::Vector3D<float> > unsortedPositions = pPositions;	
+	//std::sort(unsortedPositions.begin(), unsortedPositions.end(), PGMath::Vector3D<float>::BinPred());
+	
+	float spacing = 1.0f;
+	if (actualImagesRead>1)
+	{
+		PGMath::Vector3D<float> diffVector = pPositions[oSize.Z()-1] - pPositions[0];
+		spacing = diffVector.Length()/(oSize.Z()-1);
+	}
+	//LOG1("IODicom3D::Read: Spacing: %3.5f", spacing);			
+
+	oMetaData->SetSpacing(PGMath::Vector3D<float>(oSpacing.X(), oSpacing.Y(), spacing));
+	
+
+	// set vectors
+	oMetaData->SetImagePositionsPatient(pPositions);
+	oMetaData->SetImageOrientationsPatientX(pOrientationsX);
+	oMetaData->SetImageOrientationsPatientY(pOrientationsY);
+	
+	//LOG3("IODicom3D::Read: Pos[0]: %3.4f %3.4f %3.4f", pPositions[0].X(), pPositions[0].Y(), pPositions[0].Z());
+	//LOG3("IODicom3D::Read: OrX[0]: %3.4f %3.4f %3.4f", pOrientationsX[0].X(), pOrientationsX[0].Y(), pOrientationsX[0].Z());
+	//LOG3("IODicom3D::Read: OrY[0]: %3.4f %3.4f %3.4f", pOrientationsY[0].X(), pOrientationsY[0].Y(), pOrientationsY[0].Z());
+	//LOG1("IODicom3D::Read: AxialScan: %d", oMetaData->GetAxialScanFlag()==true ? 1 : 0);
+	//LOG1("IODicom3D::Read: AxialScanFeetFirst: %d", oMetaData->GetAxialScanFeetFirstFlag()==true ? 1 : 0);
+	
+	bool rv = (oDataObject->GetSize() == oSize.Z());	
+	
+	UpdateProgress(100);
+
+	return rv;
+	*/
 }
 
 template <class T>
@@ -371,6 +708,9 @@ bool IODicom3D<T>::ReadFromFolder(const std::vector<std::string>& iFileList,	PGC
 	oMetaData->SetSOPClass(firstMetaData.GetSOPClass());
 	oMetaData->SetStudyUID(firstMetaData.GetStudyUID());
 	oMetaData->SetSeriesUID(firstMetaData.GetSeriesUID());
+	oMetaData->SetSlope(firstMetaData.GetSlope());
+	oMetaData->SetIntercept(firstMetaData.GetIntercept());
+
 
 
 	/*LOG0("\tIODicom3D::ReadMetaData: Attributes");			
@@ -423,9 +763,9 @@ bool IODicom3D<T>::ReadFromFolder(const std::vector<std::string>& iFileList,	PGC
 	PGAlgs::ImageResampler<T, T> resampler;
 	resampler.SetScaleFactor(1.0f/(float)m_skipFactorXY);
 	
-	SetSmoothFlag(m_skipFactorZ>1);
+	SetSmoothFlag(1);//m_skipFactorZ>1);
 
-	LOG1("Smoothing status: %d", m_skipFactorZ>1 ? 1 : 0);
+	LOG1("Smoothing status: %d", GetSmoothFlag() ? 1 : 0);
 
 	double zWt = 1.0f/(double)m_skipFactorZ;
 	

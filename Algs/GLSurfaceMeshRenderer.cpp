@@ -363,7 +363,7 @@ namespace PGAlgs
 		glPushMatrix();
 		{		
 			
-			int polySkip = 1;//36;//
+			int polySkip = 16;//36;//
 			glScalef(meshScFactor, meshScFactor, meshScFactor);				
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());			
 			glColor4f(1, 1, 1, 0.1f);
@@ -373,7 +373,7 @@ namespace PGAlgs
 			{
 				const PGCore::Polygon<float, 3>& nextPoly = m_polyMeshList[iMeshIndex]->GetPolygon(i);
 				
-				glBegin(GL_TRIANGLES);//POINTS);//LINE_LOOP);//TRIANGLES);
+				glBegin(GL_POINTS);//LINE_LOOP);//TRIANGLES);
 				for (int j=0; j<3; j++)
 				{						
 					const PGMath::Point3D<float>& nextNormal = nextPoly.GetNormal(j);

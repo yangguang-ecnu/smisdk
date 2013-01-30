@@ -39,6 +39,8 @@ public:
 	BitVolume& operator=(const BitVolume& iBitVolumeObject);
 	
 	BitVolume& operator|=(const BitVolume& iBitVolumeObject);
+	
+	BitVolume& operator&=(const BitVolume& iBitVolumeObject);
 
 	bool Clear();
 

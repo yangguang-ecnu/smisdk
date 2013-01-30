@@ -216,8 +216,8 @@ namespace PGCore
 			return false;
 		}
 
-		//endLogText();
-		//close();
+		endLogText();
+		close();
 
 		m_filename = iFileName;
 
@@ -229,6 +229,8 @@ namespace PGCore
 		//beginLogTxtDone = false;
 
 		beginLogText();
+		close();
+
 		return true;
 	}
 	//////////////////////////////////////////////////////////////////////////
@@ -260,13 +262,15 @@ namespace PGCore
 
 	int Logger::Log(char *fmt, ...)
 	{
-		if (!m_fptr) return false;
-
+		
 		/* Enter the critical section -- other threads are locked out */
 		EnterCriticalSection(&m_cs);
 
 		/* Do some thread-safe processing! */
 
+		if (!open()) return false;
+
+		if (!m_fptr) return false;
 
 
 		va_list ap;                                /* special type for variable    */
@@ -411,6 +415,8 @@ namespace PGCore
 
 		fflush(m_fptr);
 		fflush(stderr);
+
+		close();
 
 		/* Leave the critical section -- other threads can now EnterCriticalSection() */
 		LeaveCriticalSection(&m_cs);
@@ -569,6 +575,7 @@ namespace PGCore
 			FILE_ATTRIBUTE_READONLY,(HANDLE)NULL)) == (HANDLE)(-1))
 		{
 			printf("\nFailed to open log file.");
+			CloseHandle(hFile);	
 			SetLogFile(m_filename.c_str());	
 			return returnSize;
 		}		
@@ -587,7 +594,7 @@ namespace PGCore
 		CloseHandle(hFile);	
 		returnSize = fileSizeInBytes/1024;	
 
-		open();	
+		//open();	
 
 		return returnSize;	
 	}

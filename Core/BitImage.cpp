@@ -94,6 +94,29 @@ BitImage& BitImage::operator|=(const BitImage& iBitImageObject) // OR
 }
 
 
+BitImage& BitImage::operator&=(const BitImage& iBitImageObject) // AND
+{
+	if (GetDataSize() != iBitImageObject.GetDataSize())
+	{
+		return *this;
+	}
+	
+	unsigned char* mBuf = (unsigned char*)GetBuffer(), *iBuf = (unsigned char*)iBitImageObject.GetBuffer();
+	if (!iBuf || !mBuf)
+	{
+		return *this;
+	}
+
+	int imgSize = GetDataSize();
+	for (int i=0; i<imgSize; i++)
+	{
+		*mBuf = (*iBuf) & (*mBuf);
+		iBuf++; mBuf++;
+	}
+
+	return *this;
+}
+
 
 bool BitImage::Invert() 
 {			

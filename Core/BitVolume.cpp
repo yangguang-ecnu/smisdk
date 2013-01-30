@@ -211,6 +211,30 @@ namespace PGCore
 		return *this;
 	}
 
+	BitVolume &BitVolume::operator&=(const BitVolume &iBitVolumeObject) 
+	{	
+		// confirm the dimensions match
+		PGMath::Point3D<long> iDims, mDims, diffDims;
+		iBitVolumeObject.GetDimensions(iDims);
+		GetDimensions(mDims);
+
+		if (iDims.X()!=mDims.X() || iDims.Y()!=mDims.Y() || iDims.Z()!=mDims.Z())
+		{
+			assert(0 && "Dimensions dont match");
+			return *this;
+		}
+
+		// OR all BitImages
+		for (int i=0; i<iBitVolumeObject.GetSize(); i++) 
+		{
+			BitImage& mImage = m_BitImages[i];
+			const BitImage& iImage = ((BitVolume&)iBitVolumeObject).GetImage(i);
+			mImage &= iImage;		
+		}
+		m_initialized = iBitVolumeObject.IsInitialized();
+		return *this;
+	}
+
 	bool BitVolume::IsInitialized() const
 	{
 		return m_initialized;

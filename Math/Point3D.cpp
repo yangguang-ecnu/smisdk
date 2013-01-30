@@ -228,10 +228,12 @@ Point3D<T> Point3D<T>::operator-()
 #ifdef _PG_GENERATE_SDK_LIBS_	
 	template class Point3D<unsigned char>; 	
 	template class Point3D<char>; 	
+	template class Point3D<unsigned char>; 	
 	template class Point3D<unsigned short>; 	
 	template class Point3D<int>; 	
 	template class Point3D<long>; 	
 	template class Point3D<float>; 		
+	template class Point3D<short>; 		
 #endif
 
 };
@@ -239,4 +241,5 @@ Point3D<T> Point3D<T>::operator-()
 
 //////////////////////////////////////////////////////////////////////////
 // EOF
+
 

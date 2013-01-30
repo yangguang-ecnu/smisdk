@@ -40,6 +40,8 @@ public:
 	BitImage& operator=(const BitImage& iBitImageObject);
 
 	BitImage& operator|=(const BitImage& iBitImageObject); // OR
+	
+	BitImage& operator&=(const BitImage& iBitImageObject); // AND
 
 	virtual ~BitImage(void);
 	

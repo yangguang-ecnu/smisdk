@@ -23,8 +23,14 @@
 
 #include "Algs/RegionGrowSegmentation.h"
 #include "Core/DilationKernel.h"
+#include "Core/ErosionKernel.h"
 #include "Core/MultiDataBase.h"
 
+#define kPgMinComponentSz 64
+#define kPgMaxComponentSz 64*64
+#define kPgMaxMaskVxCountPerIter 32*32*64 
+#define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
+#define kPgMaxCentroidsSz 32767
 
 namespace PGAlgs
 {
@@ -32,7 +38,7 @@ namespace PGAlgs
 	template <class T, class U>
 	RegionGrowSegmentation<T, U>::RegionGrowSegmentation(void) 
 	{
-
+		m_thinMask = true;
 	};
 
 	template <class T, class U>
@@ -104,7 +110,7 @@ namespace PGAlgs
 		PGCore::PixelBase<T> tPixel;
 		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue();
 		T seedValue, avgValue = 0, offset = 0;
-		float stdDev=0, snr=0, spread=2.5f, valFac=1.0f, gradFac = 0.1f;
+		float stdDev=0, snr=0, spread=4.0f, valFac=1.0f, gradFac = 0.1f;
 		
 		seedValue = m_pIVolume->GetVolumeAccessor()->GetValue(m_pSeeds[0].Y(), m_pSeeds[0].X(), m_pSeeds[0].Z());
 		avgValue = seedValue;
@@ -136,8 +142,8 @@ namespace PGAlgs
 			if (!rv) return false;
 		}
     
-		long totalVoxels = max(m_totalCount/2, 500);
-		long voxelsPerIteration = min(totalVoxels, 10000);
+		long totalVoxels = min(m_totalCount/2, kPgMaxMaskVxCount);
+		long voxelsPerIteration = min(totalVoxels, kPgMaxMaskVxCountPerIter);
 		
 		
 		//bool flag=false;
@@ -151,8 +157,9 @@ namespace PGAlgs
 		int nLoops = 0, breakReason=-1; // 0: stack empty, 1: visit failure
 		PGMath::Point3D<int> lastPoint;
 		eSegRetCode rvc = SegRetCodeOutOfRange;
-		while (nLoops < m_maxLoopCount)
+		while (nLoops < m_maxLoopCount && m_count<totalVoxels)
 		{
+			int mCountPerIter=0;
 			int stSize = m_stack.Size();
 			if (stSize==0) break;			
 			rvc = SegRetCodeOk;
@@ -188,9 +195,7 @@ namespace PGAlgs
 			} 
 			
 			bool rv = m_autoAdjustConditions ? autoAdjustConditions(lastPoint, rvc) : false;
-			if (!rv) break;
-
-			
+			if (!rv) break;		
 
 			if (breakReason==0)
 			{
@@ -203,11 +208,16 @@ namespace PGAlgs
 			nLoops++;		
 		}
 
+		//anything below the selected Z is not grown into
+		UpdateProgress(100);
+
 		// auto-dilate
-		if (m_autoDilationCount && m_count)
+		m_autoDilationCount=0;//+=3;
+		if (m_autoDilationCount && m_count)		
 		{
-			GetLogger()->Log("Start AutoDilation...%d voxels", m_autoDilationCount);
+			GetLogger()->Log("Start Morphological Closing...%d voxels", m_autoDilationCount);
 			PGCore::DilationKernel<T, T> dilationKernel(m_autoDilationCount);
+			PGCore::ErosionKernel<T, T> erosionKernel(m_autoDilationCount-1);
 			PGCore::BitVolume& maskVol = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
 			PGMath::Point3D<long> mDims;
 			maskVol.GetDimensions(mDims);
@@ -220,42 +230,249 @@ namespace PGAlgs
 
 				PGCore::BitImage bImage = maskImages[i];
 				dilationKernel.Convolve(bImage, sbImage);	
-
-				// set it back
-				maskVol.SetImage(i, sbImage);
+				if (m_autoDilationCount>1) 
+				{
+					erosionKernel.Convolve(sbImage, bImage);	
+					// set it back
+					maskVol.SetImage(i, bImage);
+				} else
+				{
+					maskVol.SetImage(i, sbImage);
+				}
+				UpdateProgress(100.0f*(float)i/float(mDims.Z()));
 			}
-			GetLogger()->Log("End AutoDilation.");
+			GetLogger()->Log("End Morphological Closing.");
+		}	
+
+		// make use of this mask now!!!!!!!!
+		/*
+#define _DEBUG_DUMP 1
+#if (_DEBUG_DUMP)
+		{
+			PGCore::BitVolume& maskVol = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
+			PGMath::Point3D<long> mDims;
+			maskVol.GetDimensions(mDims);
+			const std::vector<BitImage > & maskImages = maskVol.GetImages();
+			int skip = maskImages.size()/128;
+			for (int i=0; i<maskImages.size(); i+=skip)
+			{
+				PGCore::BitImage bImage = maskImages[i];
+				PGCore::Image<T> img;
+
+				bImage.UnPack(img);
+
+				char fileName[256] = {0};
+				_snprintf(fileName, 255, "C:\\Temp\\Data\\MaskImage_%04d.pgm", i); fileName[255] = '\0';
+				PGAlgs::DumpImageAsPGM(img, std::string(fileName));
+			}
 		}
+#endif*/
 
 		if (m_count) m_pIVolume->GetVolumeAccessor()->FinalizeMask();
+
+		if (m_thinMask && m_count)
+		{
+			thinMask();					
+		}	
+		
+		/*
+#if (_DEBUG_DUMP)
+		{
+			PGCore::BitVolume& maskVol = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
+			PGMath::Point3D<long> mDims;
+			maskVol.GetDimensions(mDims);
+			const std::vector<BitImage > & maskImages = maskVol.GetImages();
+			int skip = maskImages.size()/128;
+			for (int i=0; i<maskImages.size(); i+=skip)
+			{
+				PGCore::BitImage bImage = maskImages[i];
+				PGCore::Image<T> img;
+
+				bImage.UnPack(img);
+
+				char fileName[256] = {0};
+				_snprintf(fileName, 255, "C:\\Temp\\Data\\CloudImage_%04d.pgm", i); fileName[255] = '\0';
+				PGAlgs::DumpImageAsPGM(img, std::string(fileName));
+			}
+		}
+#endif
+		*/
+
 
 		//anything below the selected Z is not grown into
 		UpdateProgress(100);
 
 		GetLogger()->Log("Marked %d voxels.", m_count);
-
-		// make use of this mask now!!!!!!!!
-#define _DEBUG_DUMP 0
-#if (_DEBUG_DUMP)
-		PGCore::BitVolume& maskVol = m_pIVolume->GetVolumeAccessor()->GetBitVolume();
-		PGMath::Point3D<long> mDims;
-		maskVol.GetDimensions(mDims);
-		const std::vector<BitImage > & maskImages = maskVol.GetImages();
-		for (int i=0; i<mDims.Z(); i++)
-		{
-			PGCore::BitImage bImage = maskImages[i];
-			PGCore::Image<T> img;
-
-			bImage.UnPack(img);
-
-			char fileName[256] = {0};
-			_snprintf(fileName, 255, "C:\\Data\\Dump\\MaskImage_%04d.pgm", i); fileName[255] = '\0';
-			PGAlgs::DumpImageAsPGM(img, std::string(fileName));
-		}
-	
-#endif
+		
 		return true;
 	}
+
+
+	template <class T, class U>
+	bool RegionGrowSegmentation<T, U>::thinMask()
+	{
+		GetLogger()->Log("Start thinMask...%d voxels");		
+		PGCore::BitVolume& maskVol = m_pIVolume->GetVolumeAccessor()->GetBitVolume(0);
+		PGMath::Point3D<long> mDims;
+		maskVol.GetDimensions(mDims);
+		
+		const PGCore::MetaData< T > & metaData = m_pIVolume->GetMetaData();
+		PGMath::Vector3D<float> spacings = metaData.GetSpacing();
+
+		//std::vector<std::vector<PGMath::Point3D<int> > > centroidList; // centroid of each component
+
+		std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetPointCloud();
+		ptCloud.reserve(kPgMaxCentroidsSz);
+
+		PGCore::BitVolume& maskVol1 = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
+		maskVol1.Reset(1);
+		
+		const std::vector<BitImage > & maskImages = maskVol.GetImages();
+
+		const std::vector< PGMath::Vector3D<float> >& imgPosPatient = metaData.GetImagePositionsPatient();
+
+		const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[0];
+
+		for (int i=0; i<mDims.Z(); i++)
+		{
+			PGCore::BitImage visitedImage(mDims.Y(), mDims.X());
+
+ 			//std::vector<std::vector<PGMath::Point3D<int> > > componentList;
+			//std::vector<PGMath::Point3D<int> > centroids;
+
+			const PGCore::BitImage& bImage = maskImages[i];
+
+			
+			
+			for (int j=0; j<mDims.Y(); j++)
+			{
+				for (int k=0; k<mDims.X(); k++)
+				{
+					if (bImage.GetValue(k, j) && !visitedImage.GetValue(k, j))
+					{
+						PGMath::Point3D<int> nextSeed(k, j, i);
+						PGMath::Point3D<int> nextCentroid;
+						std::vector<PGMath::Point3D<int> > nextComponent;						
+
+						//nextComponent.push_back(nextSeed);
+						//visitedImage.SetValue(k, j, 1);
+
+						// masked voxel. find neighbors
+						visitBitPixel(nextSeed, bImage, visitedImage, nextComponent);
+
+						if (nextComponent.size()>kPgMinComponentSz)
+						{
+							//componentList.push_back(nextComponent);
+							findCentroid(nextComponent, nextCentroid);
+							//centroids.push_back(nextCentroid);							
+
+							PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
+									imgPosPatientOrg.X()+ nextCentroid.X()*spacings.X(),
+									imgPosPatientOrg.Y()+ nextCentroid.Y()*spacings.Y(),
+									imgPosPatientOrg.Z()+ nextCentroid.Z()*spacings.Z());
+
+							ptCloud.push_back(nextPt); 
+
+							//m_pIVolume->GetVolumeAccessor()->SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 4095);
+							maskVol1.SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 0);
+						}
+					}
+				}
+			}	
+
+			//if (centroids.size()) centroidList.push_back(centroids);
+		}
+
+		//maskVol.Reset(0);
+
+		maskVol &= maskVol1;
+
+#define _DEBUG_DUMP_PTCLOUD_ 1
+#if (_DEBUG_DUMP_PTCLOUD_)
+		char fileName[256] = {0};
+		_snprintf(fileName, 255, "C:\\Temp\\Data\\PointCloud.txt"); 
+		fileName[255] = '\0';
+		
+		FILE* fp = fopen(fileName, "w");
+		if (fp)
+		{
+			
+			
+
+			fprintf(fp, "%d, 0, 0\n", ptCloud.size());
+			fprintf(fp, "%3.2f, %3.2f, %3.2f\n", 1.0f, 1.0f, 1.0f);
+			
+			for (int i=0; i<ptCloud.size(); i++)
+			{								
+				const PGMath::Point3D<float>& nextMarkedVx = ptCloud[i]; 
+				fprintf( fp, "%3.2f, %3.2f, %3.2f\n", nextMarkedVx.X(), nextMarkedVx.Y(), nextMarkedVx.Z());		
+			}
+			fclose(fp);
+		}
+#endif
+
+		
+
+		GetLogger()->Log("End thinMask.");
+
+		return true;
+	}	
+
+	template <class T, class U>
+	bool RegionGrowSegmentation<T, U>::findCentroid(
+			const std::vector<PGMath::Point3D<int>>& iComponent,
+			PGMath::Point3D<int>& ioCentroid)
+	{
+		PGMath::Point3D<int> tempPt;
+		for (int i=0; i<iComponent.size(); i++)
+		{
+			tempPt+=iComponent[i];
+		}
+
+		if (!iComponent.empty()) tempPt/=iComponent.size();
+
+		ioCentroid = tempPt;
+
+		return true;
+	}
+
+
+	template <class T, class U>
+	bool RegionGrowSegmentation<T, U>::visitBitPixel(
+			const PGMath::Point3D<int>& iSeed,
+			const PGCore::BitImage& bImage,
+			PGCore::BitImage& visitedImage,
+			std::vector<PGMath::Point3D<int>>& ioComponent
+		)
+	{	
+		if (!bImage.GetValue(iSeed.X(), iSeed.Y()) || visitedImage.GetValue(iSeed.X(), iSeed.Y()) || ioComponent.size()>=kPgMaxComponentSz)
+			return false;
+
+		visitedImage.SetValue(iSeed.X(), iSeed.Y(), 1);			
+		ioComponent.push_back(iSeed);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()+1, iSeed.Y(), iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+		
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X(), iSeed.Y()+1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()-1, iSeed.Y(), iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X(), iSeed.Y()-1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
+		return true;
+	};
 
 
 	template <class T, class U>
