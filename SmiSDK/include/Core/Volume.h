@@ -66,6 +66,9 @@ public:
 	T GetValueNoBoundCheck(const int iRow, const int iColumn, const int iImageIndex) const;
 	T GetAvgValue(const int iRow, const int iColumn, const int iImageIndex) const;
 
+	bool GetGradient(const int iRow, const int iColumn, const int iImageIndex, 
+								   PGMath::Vector3D<float>& oGradient) const;
+
 	// BitVolume operations
 	// iImageIndex = 0 or 1
 	bool InitializeBitVolume(const int iImageIndex=0);
@@ -76,6 +79,9 @@ public:
 	bool InvertBitVolume(const int iImageIndex=0);
 
 	bool FinalizeMask(); // OR temp mask with main mask
+
+	// pointcloud ops
+	std::vector<PGMath::Point3D<float> >& GetPointCloud(); // in CT space
 
 	bool GetEightNeighborValues(const int iRow, const int iColumn, const int iImageIndex, 
 			T ioEightNeighbors[8]) const;	
@@ -102,6 +108,8 @@ private:
 	PGMath::Point3D<float>	m_origin;		
 
 	BitVolume				m_maskVolume[2]; // 0: working volume, 1: temp volume
+
+	std::vector<PGMath::Point3D<float> >			m_pointCloud; // in CT space
 
 	bool clearOctreeBlocks();
 };

@@ -49,6 +49,19 @@ namespace PGAlgs
 		
 		virtual bool executeSync();
 		virtual bool executeAsync();
+
+	private:
+		bool m_thinMask;
+
+		bool thinMask();
+		bool findCentroid(
+			const std::vector<PGMath::Point3D<int>>& iComponent,
+			PGMath::Point3D<int>& ioCentroid);
+		bool visitBitPixel(
+			const PGMath::Point3D<int>& iSeed,
+			const PGCore::BitImage& bImage,
+			PGCore::BitImage& visitedImage,
+			std::vector<PGMath::Point3D<int>>& ioComponent);
 	};
 
 };

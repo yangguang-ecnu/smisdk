@@ -132,7 +132,7 @@ namespace PGCore
 			return kPGModalityUnknown;
 		}
 
-		if (!strcmp(iStr, "CT")) 
+		if (!strcmp(iStr, "CT") || !strcmp(iStr, "XA")) 
 		{	
 			return kPGModalityCT;
 		} else

@@ -145,7 +145,9 @@ bool IOPgm<T>::Write(PGCore::BaseDataObject *iDataObject, const IOParams &iParam
 	}
 
 
-	FILE *fptr = fopen (oFileName.c_str(), "wb");
+	FILE *fptr = NULL;
+	
+	errno_t er = fopen_s (&fptr, oFileName.c_str(), "wb");
 	if (!fptr) {			
 		LOG1("IOPgm::Write: failed to open file %s to write.", oFileName.c_str());			
 		return false;

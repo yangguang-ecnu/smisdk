@@ -211,11 +211,10 @@ namespace PGAlgs
 			return SegRetCodeValue;
 		}
 
-		// Prashant C, 8/4/08: revisit this
-		/*
+		// Prashant C, 8/4/08: revisit this		
 		if (1)
 		{
-			PGMath::Vector3D<T> gradientValue;
+			PGMath::Vector3D<float> gradientValue;
 			m_pIVolume->GetVolumeAccessor()->GetGradient(iVoxel.Y(), iVoxel.X(), iVoxel.Z(), gradientValue);
 			//if (gradientValue.X() > 50 || gradientValue.Y() > 50 || gradientValue.Z() > 50)
 			float gVal = gradientValue.Length();
@@ -225,7 +224,7 @@ namespace PGAlgs
 				return SegRetCodeGradient;
 			}
 		}
-		*/
+		
 		
 		return SegRetCodeOk;
 	}

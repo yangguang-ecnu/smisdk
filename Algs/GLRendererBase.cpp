@@ -104,7 +104,7 @@ namespace PGAlgs
 	template <class T, class U>
 	bool GLRendererBase<T, U>::SetContext(HDC iContext)
 	{
-		if (m_hdContext!=0 && m_hdContext==iContext) return true;
+		//if (m_hdContext!=0) && m_hdContext==iContext) return true;
 
 		m_externalContext = initializeOpenGL(iContext);	
 		return true;
