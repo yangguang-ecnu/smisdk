@@ -39,7 +39,7 @@ namespace PGCore
 
 		virtual ~PolygonMesh(void);
 
-		bool Clear();
+		bool Clear(const int iIndex=-1);
 
 		bool Reserve(const unsigned long int& iMaxSize);
 

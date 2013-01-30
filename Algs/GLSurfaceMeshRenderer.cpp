@@ -433,6 +433,13 @@ namespace PGAlgs
 						//glPopMatrix();
 					}
 					glEnd();
+
+					glBegin(GL_POINTS);
+					for (int j=0; j<nextCenterline.size(); j++)
+					{	
+						glVertex3f(nextCenterline[j].X(), nextCenterline[j].Y(), nextCenterline[j].Z());						
+					}
+					glEnd();
 				}
 			}
 			glLineWidth(1.0f);//

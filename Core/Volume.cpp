@@ -169,6 +169,12 @@ bool Volume<T>::ResetBitVolume(const int iImageIndex/*=0*/)
 	return m_maskVolume[iImageIndex].Clear();
 }
 
+template <class T>
+bool Volume<T>::ResetPointCloud()
+{
+	m_pointCloud.clear();
+	return true;
+}
 
 template <class T>
 bool Volume<T>::InitializeBitVolume(const int iImageIndex/*=0*/)

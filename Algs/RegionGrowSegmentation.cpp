@@ -189,7 +189,7 @@ namespace PGAlgs
 
 				if (m_count%50==0)	
 				{
-					int progressValue=(int)(100.0f*((float)(m_count)/(float)voxelsPerIteration) + 0.5f);				
+					int progressValue=(int)(50.0f*((float)(m_count)/(float)voxelsPerIteration) + 0.5f);				
 					UpdateProgress(progressValue%98);
 				}
 			} 
@@ -209,7 +209,7 @@ namespace PGAlgs
 		}
 
 		//anything below the selected Z is not grown into
-		UpdateProgress(100);
+		UpdateProgress(50);
 
 		// auto-dilate
 		m_autoDilationCount=0;//+=3;
@@ -239,7 +239,7 @@ namespace PGAlgs
 				{
 					maskVol.SetImage(i, sbImage);
 				}
-				UpdateProgress(100.0f*(float)i/float(mDims.Z()));
+				UpdateProgress(50+25.0f*(float)i/float(mDims.Z()));
 			}
 			GetLogger()->Log("End Morphological Closing.");
 		}	
@@ -367,8 +367,8 @@ namespace PGAlgs
 							//centroids.push_back(nextCentroid);							
 
 							PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
-									imgPosPatientOrg.X()+ nextCentroid.X()*spacings.X(),
-									imgPosPatientOrg.Y()+ nextCentroid.Y()*spacings.Y(),
+									imgPosPatientOrg.X()+ nextCentroid.Y()*spacings.X(), // x and y are swapped
+									imgPosPatientOrg.Y()+ nextCentroid.X()*spacings.Y(),
 									imgPosPatientOrg.Z()+ nextCentroid.Z()*spacings.Z());
 
 							ptCloud.push_back(nextPt); 
@@ -380,6 +380,8 @@ namespace PGAlgs
 				}
 			}	
 
+			UpdateProgress(75+24.0f*(float)i/float(mDims.Z()));
+
 			//if (centroids.size()) centroidList.push_back(centroids);
 		}
 
@@ -387,7 +389,7 @@ namespace PGAlgs
 
 		maskVol &= maskVol1;
 
-#define _DEBUG_DUMP_PTCLOUD_ 1
+#define _DEBUG_DUMP_PTCLOUD_ 0
 #if (_DEBUG_DUMP_PTCLOUD_)
 		char fileName[256] = {0};
 		_snprintf(fileName, 255, "C:\\Temp\\Data\\PointCloud.txt"); 
