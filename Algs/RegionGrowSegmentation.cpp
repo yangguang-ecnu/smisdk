@@ -27,7 +27,7 @@
 #include "Core/MultiDataBase.h"
 
 #define kPgMinComponentSz 32
-#define kPgMaxComponentSz 64*64
+#define kPgMaxComponentSz 2048
 #define kPgMaxMaskVxCountPerIter 32*32*64 
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
@@ -340,7 +340,7 @@ namespace PGAlgs
 		PGCore::BitImage visitedImage(mDims.Y(), mDims.X());
 
 		const int skipLow=8, skipHigh=mDims.Z()-8; 
-		for (int i=skipHigh; i>skipLow; i--)
+		for (int i=skipLow; i<skipHigh; i++)
 		{			
 			visitedImage.Reset(0);
 
