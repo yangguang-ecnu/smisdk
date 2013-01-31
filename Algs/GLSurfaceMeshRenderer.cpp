@@ -405,7 +405,7 @@ namespace PGAlgs
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());
 
 
-			float treeColors[2][4] = {{0,  0.7,  0, 0.5}, {1, 0, 0.3, 0.5} }; // 
+			float treeColors[2][4] = {{0,  0.7,  0, 0.5}, {1, 1, 0.3, 0.5} }; // 
 			float lWidths[2] = {2, 2}; // ref: 1, sub: 2
 			int beginIdx[2] = {1, 1};
 			int pSkip=1;
@@ -415,6 +415,7 @@ namespace PGAlgs
 			for (int k=0; k<2; k++)
 			{
 				glLineWidth(lWidths[k]);//
+				glPointSize(2);//
 				glColor4fv(treeColors[k]);
 				unsigned int clineCount = m_polyMeshList[iMeshIndex]->GetSkeletonDimensions(k);
 							
@@ -443,6 +444,7 @@ namespace PGAlgs
 				}
 			}
 			glLineWidth(1.0f);//
+			glPointSize(1);//
 			//glDisable(GL_LINE_STIPPLE);
 		}
 		glPopMatrix();	

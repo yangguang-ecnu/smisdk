@@ -26,11 +26,14 @@
 #include "Core/ErosionKernel.h"
 #include "Core/MultiDataBase.h"
 
-#define kPgMinComponentSz 64
+#define kPgMinComponentSz 32
 #define kPgMaxComponentSz 64*64
 #define kPgMaxMaskVxCountPerIter 32*32*64 
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
+
+#define kPgStDevSpreadFac 4.5
+#define kPgStDevGradientFac 0.05
 
 namespace PGAlgs
 {
@@ -110,7 +113,7 @@ namespace PGAlgs
 		PGCore::PixelBase<T> tPixel;
 		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue();
 		T seedValue, avgValue = 0, offset = 0;
-		float stdDev=0, snr=0, spread=4.0f, valFac=1.0f, gradFac = 0.1f;
+		float stdDev=0, snr=0, spread=kPgStDevSpreadFac, valFac=1.0f, gradFac = kPgStDevGradientFac;
 		
 		seedValue = m_pIVolume->GetVolumeAccessor()->GetValue(m_pSeeds[0].Y(), m_pSeeds[0].X(), m_pSeeds[0].Z());
 		avgValue = seedValue;
@@ -212,7 +215,7 @@ namespace PGAlgs
 		UpdateProgress(50);
 
 		// auto-dilate
-		m_autoDilationCount=0;//+=3;
+		m_autoDilationCount=0;//+=2;
 		if (m_autoDilationCount && m_count)		
 		{
 			GetLogger()->Log("Start Morphological Closing...%d voxels", m_autoDilationCount);
@@ -270,7 +273,7 @@ namespace PGAlgs
 
 		if (m_count) m_pIVolume->GetVolumeAccessor()->FinalizeMask();
 
-		if (m_thinMask && m_count)
+		if (m_thinMask)
 		{
 			thinMask();					
 		}	
@@ -322,10 +325,11 @@ namespace PGAlgs
 		//std::vector<std::vector<PGMath::Point3D<int> > > centroidList; // centroid of each component
 
 		std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetPointCloud();
+		ptCloud.clear();
 		ptCloud.reserve(kPgMaxCentroidsSz);
 
-		PGCore::BitVolume& maskVol1 = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
-		maskVol1.Reset(1);
+		//PGCore::BitVolume& maskVol1 = m_pIVolume->GetVolumeAccessor()->GetBitVolume(1);
+		//maskVol1.Reset(1);
 		
 		const std::vector<BitImage > & maskImages = maskVol.GetImages();
 
@@ -333,17 +337,19 @@ namespace PGAlgs
 
 		const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[0];
 
-		for (int i=0; i<mDims.Z(); i++)
-		{
-			PGCore::BitImage visitedImage(mDims.Y(), mDims.X());
+		PGCore::BitImage visitedImage(mDims.Y(), mDims.X());
+
+		const int skipLow=8, skipHigh=mDims.Z()-8; 
+		for (int i=skipHigh; i>skipLow; i--)
+		{			
+			visitedImage.Reset(0);
 
  			//std::vector<std::vector<PGMath::Point3D<int> > > componentList;
 			//std::vector<PGMath::Point3D<int> > centroids;
 
 			const PGCore::BitImage& bImage = maskImages[i];
 
-			
-			
+						
 			for (int j=0; j<mDims.Y(); j++)
 			{
 				for (int k=0; k<mDims.X(); k++)
@@ -374,7 +380,7 @@ namespace PGAlgs
 							ptCloud.push_back(nextPt); 
 
 							//m_pIVolume->GetVolumeAccessor()->SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 4095);
-							maskVol1.SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 0);
+							//maskVol1.SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 0);
 						}
 					}
 				}
@@ -387,7 +393,7 @@ namespace PGAlgs
 
 		//maskVol.Reset(0);
 
-		maskVol &= maskVol1;
+		//maskVol &= maskVol1;
 
 #define _DEBUG_DUMP_PTCLOUD_ 0
 #if (_DEBUG_DUMP_PTCLOUD_)
@@ -457,8 +463,18 @@ namespace PGAlgs
 			bImage,
 			visitedImage,
 			ioComponent);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()+1, iSeed.Y()+1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
 		
 		visitBitPixel(PGMath::Point3D<int>(iSeed.X(), iSeed.Y()+1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()-1, iSeed.Y()+1, iSeed.Z()),
 			bImage,
 			visitedImage,
 			ioComponent);
@@ -468,7 +484,17 @@ namespace PGAlgs
 			visitedImage,
 			ioComponent);
 
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()-1, iSeed.Y()-1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
 		visitBitPixel(PGMath::Point3D<int>(iSeed.X(), iSeed.Y()-1, iSeed.Z()),
+			bImage,
+			visitedImage,
+			ioComponent);
+
+		visitBitPixel(PGMath::Point3D<int>(iSeed.X()+1, iSeed.Y()-1, iSeed.Z()),
 			bImage,
 			visitedImage,
 			ioComponent);

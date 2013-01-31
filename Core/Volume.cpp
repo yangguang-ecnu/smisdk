@@ -170,9 +170,11 @@ bool Volume<T>::ResetBitVolume(const int iImageIndex/*=0*/)
 }
 
 template <class T>
-bool Volume<T>::ResetPointCloud()
+bool Volume<T>::ResetPointCloud(const int iImageIndex/*=0*/)
 {
-	m_pointCloud.clear();
+	if (iImageIndex<0 || iImageIndex>1) return false;
+
+	m_pointCloud[iImageIndex].clear();
 	return true;
 }
 
@@ -978,9 +980,11 @@ bool Volume<T>::GetDataRange(T *oMin, T* oMax)
 
 // pointcloud ops
 template <class T>
-std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud() // in CT space
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud(const int iIndex/*=0*/) // in CT space
 {
-	return m_pointCloud;
+	if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+	return m_pointCloud[iIndex];
 }
 
 template <class T>
@@ -990,7 +994,8 @@ bool Volume<T>::Clear()
 	if (!res) return false;
 
 	m_images.clear();			
-	m_pointCloud.clear();
+	m_pointCloud[0].clear();
+	m_pointCloud[1].clear();
 
 	m_rows = 0; m_columns = 0;
 	m_origin = PGMath::Point3D<float>(0, 0, 0);
