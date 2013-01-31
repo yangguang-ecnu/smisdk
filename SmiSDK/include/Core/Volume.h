@@ -81,8 +81,8 @@ public:
 	bool FinalizeMask(); // OR temp mask with main mask
 
 	// pointcloud ops
-	std::vector<PGMath::Point3D<float> >& GetPointCloud(); // in CT space
-	bool ResetPointCloud();
+	std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // in CT space
+	bool ResetPointCloud(const int iImageIndex/*=0*/);
 
 	bool GetEightNeighborValues(const int iRow, const int iColumn, const int iImageIndex, 
 			T ioEightNeighbors[8]) const;	
@@ -110,7 +110,7 @@ private:
 
 	BitVolume				m_maskVolume[2]; // 0: working volume, 1: temp volume
 
-	std::vector<PGMath::Point3D<float> >			m_pointCloud; // in CT space
+	std::vector<PGMath::Point3D<float> >			m_pointCloud[2]; // in CT space
 
 	bool clearOctreeBlocks();
 };
