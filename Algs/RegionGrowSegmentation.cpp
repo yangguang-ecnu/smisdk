@@ -372,12 +372,19 @@ namespace PGAlgs
 							findCentroid(nextComponent, nextCentroid);
 							//centroids.push_back(nextCentroid);							
 
-							PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
-									imgPosPatientOrg.X()+ nextCentroid.Y()*spacings.X(), // x and y are swapped
-									imgPosPatientOrg.Y()+ nextCentroid.X()*spacings.Y(),
-									imgPosPatientOrg.Z()+ nextCentroid.Z()*spacings.Z());
+							//m_pIVolume->GetVolumeAccessor()->
 
-							ptCloud.push_back(nextPt); 
+							//PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
+									//imgPosPatientOrg.X()+ nextCentroid.Y()*spacings.X(), // x and y are swapped
+									//imgPosPatientOrg.Y()+ nextCentroid.X()*spacings.Y(),
+									//imgPosPatientOrg.Z()+ nextCentroid.Z()*spacings.Z());
+
+							PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
+									nextCentroid.Y(),
+									nextCentroid.X(),
+									nextCentroid.Z());
+
+							ptCloud.push_back(nextPt); // img space
 
 							//m_pIVolume->GetVolumeAccessor()->SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 4095);
 							//maskVol1.SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 0);

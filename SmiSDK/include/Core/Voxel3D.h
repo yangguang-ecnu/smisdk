@@ -84,7 +84,7 @@ public:
 	T GetValueNoBoundCheck(const float& iX,  const float& iY, const float& iZ);// const; // interpolate 
 
 	bool GetStdToImgCoord(const float& iX,  const float& iY, const float& iZ,
-								  float& oX,  float& oY, float& oZ) const;
+								  float& oX,  float& oY, float& oZ) const;	
 
 	bool GetImgToStdCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ) const;
