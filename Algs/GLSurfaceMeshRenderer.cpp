@@ -187,7 +187,7 @@ namespace PGAlgs
 		glLoadIdentity(); 
 		gluLookAt(0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); 	
 		
-		renderVolume();	
+		renderVolume();			
 	}
 
 	template <class T, class U>
@@ -353,16 +353,76 @@ namespace PGAlgs
 		//glClearColor(0, 0, 0, 0);		
 		
 		glTranslatef(gTranslation.X(), gTranslation.Y(), -gTranslation.Z());
-			glRotatef(90, 1, 0, 0);
+			glRotatef(-90, 1, 0, 0);
 			glRotatef(gRotation.X(), 1, 0, 0);
 			glRotatef(gRotation.Y(), 0, 0, 1);
 			glRotatef(gRotation.Z(), 0, 1, 0);
 		
 		
+		// cursor
+		glPushMatrix();
+			glScalef(1.0, 1.0, 1.0);
+			// x axis
+			glColor4f(1, 0, 0, 0.5);
+			glBegin(GL_LINES);
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());				
+				glVertex3f(m_cursor3D.X()+0.1, m_cursor3D.Y(), m_cursor3D.Z());
+			glEnd();
+
+			// y axis
+			glColor4f(0, 1, 0, 0.5);
+			glBegin(GL_LINES);//_LOOP);				
+			glBegin(GL_LINES);
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+0.1, m_cursor3D.Z());
+			glEnd();
+			
+			// XY plane - Z axis			
+			glColor4f(0, 0, 1, 0.5);
+			glBegin(GL_LINES);
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z()+0.1);
+			glEnd();
+		glPopMatrix();
+
+		float gXMin=-0.5, gYMin=-0.5, gZMin=-0.5;
+		float gXMax=0.5, gYMax=0.5, gZMax=0.5;
+		glPushMatrix();
+		{
+			glColor4f(1,1,0,0.3);
+			glBegin(GL_LINE_LOOP);			
+				glVertex3f( gXMin, gYMin, gZMin);
+				glVertex3f( gXMin, gYMax, gZMin); 
+				glVertex3f( gXMin, gYMax, gZMax); 
+				glVertex3f( gXMin, gYMin, gZMax);
+				glEnd(); 
+			glBegin(GL_LINE_LOOP);			
+				glVertex3f( gXMax, gYMin, gZMin);
+				glVertex3f( gXMax, gYMax, gZMin); 
+				glVertex3f( gXMax, gYMax, gZMax); 
+				glVertex3f( gXMax, gYMin, gZMax);
+			glEnd(); 
+			glBegin(GL_LINE_LOOP);			
+				glVertex3f( gXMin, gYMin, gZMin);
+				glVertex3f( gXMin, gYMax, gZMin); 
+				glVertex3f( gXMax, gYMax, gZMin); 
+				glVertex3f( gXMax, gYMin, gZMin);
+			glEnd(); 
+			glBegin(GL_LINE_LOOP);			
+				glVertex3f( gXMin, gYMin, gZMax);
+				glVertex3f( gXMin, gYMax, gZMax); 
+				glVertex3f( gXMax, gYMax, gZMax); 
+				glVertex3f( gXMax, gYMin, gZMax);
+			glEnd(); 
+			glDisable(GL_LINE_STIPPLE);
+		}
+		glPopMatrix();
+
+
 		// mesh first
 		glPushMatrix();
 		{		
-			
+			glRotatef(-90, 1, 0, 0);
 			int polySkip = 16;//36;//
 			glScalef(meshScFactor, meshScFactor, meshScFactor);				
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());			
@@ -394,11 +454,13 @@ namespace PGAlgs
 		// Now the tree
 		glPushMatrix();
 		{ 
+
 			float skelScFactor=1.0f;		
 			skelScFactor = meshScFactor;
 			//glRotatef(180, 0, 0, 1);
 			glScalef(1, 1, 1);		
 			//glRotatef(180, 1, 0, 0);
+			glRotatef(-90, 1, 0, 0);
 
 			glScalef(skelScFactor, skelScFactor, skelScFactor);					
 			//glTranslatef(-skelOrigin.X(), -skelOrigin.Y(), -skelOrigin.Z());		

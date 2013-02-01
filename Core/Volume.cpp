@@ -980,7 +980,7 @@ bool Volume<T>::GetDataRange(T *oMin, T* oMax)
 
 // pointcloud ops
 template <class T>
-std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud(const int iIndex/*=0*/) // in CT space
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud(const int iIndex/*=0*/) // in img/raw space
 {
 	if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
 
