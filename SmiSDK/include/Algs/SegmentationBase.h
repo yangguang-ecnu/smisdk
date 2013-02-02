@@ -54,6 +54,7 @@ public:
 	std::vector< PGMath::Point3D< float > >		m_pSeeds;	
 	int											m_autoDilationCount; // in voxels	
 	bool										m_autoAdjustConditions;
+	bool										m_modeAddSeedOnly;
 
 	PGCore::Voxel3D<T>							*m_pIVolume;
 	float										m_window; // 0.0f...1.0f. around the seedvalue
@@ -84,6 +85,7 @@ public:
 
 	bool SetGradientHigh(const int& iGradient);
 	
+	bool SetModeAddSeedOnly(const bool iFlag);
 	
 public:	
 	virtual ~SegmentationBase(void);
@@ -95,6 +97,7 @@ protected:
 	ThreadedSegmentationParams<T>	 m_SegParams;
 	int								 m_autoDilationCount; // in voxels	
 	bool							 m_autoAdjustConditions;
+	bool							 m_modeAddSeedOnly;
 
 	PGCore::Stack3D<int>			 m_stack;
 	
