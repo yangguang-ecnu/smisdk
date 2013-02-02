@@ -26,14 +26,14 @@
 #include "Core/ErosionKernel.h"
 #include "Core/MultiDataBase.h"
 
-#define kPgMinComponentSz 32
+#define kPgMinComponentSz 8
 #define kPgMaxComponentSz 2048
 #define kPgMaxMaskVxCountPerIter 32*32*64 
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
 
-#define kPgStDevSpreadFac 4.5
-#define kPgStDevGradientFac 0.05
+#define kPgStDevSpreadFac 2.5
+#define kPgStDevGradientFac 0.01
 
 namespace PGAlgs
 {
@@ -110,6 +110,14 @@ namespace PGAlgs
 			return false;
 		}
 
+		// m_modeAddSeedOnly = true;
+		if (m_modeAddSeedOnly && !m_pSeeds.empty())
+		{
+			std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetPointCloud();			
+			ptCloud.push_back(m_pSeeds[0]); // img space
+			return true;
+		}
+
 		PGCore::PixelBase<T> tPixel;
 		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue();
 		T seedValue, avgValue = 0, offset = 0;
@@ -126,12 +134,11 @@ namespace PGAlgs
 			{
 				offset = valFac*spread*stdDev;
 				m_gradientHigh *= (gradFac*stdDev);
-			}
-			//else offset = spread;
+			}			
 		} 
 
-		m_lowValue = seedValue - offset;
-		m_highValue= avgValue + offset;
+		m_lowValue	=	seedValue	-	offset;
+		m_highValue	=	avgValue	+	offset;
 		
 		GetLogger()->Log("Range: %d -> %d, GTh: %03d (Std: %3.2f, Avg: %05d, SNR: %3.2f)", m_lowValue, m_highValue, m_gradientHigh, stdDev, int(avgValue), snr);
 		
@@ -534,6 +541,7 @@ namespace PGAlgs
 		m_SegParams.m_gradientHigh = m_gradientHigh;
 		m_SegParams.m_maxLoopCount = m_maxLoopCount;
 		m_SegParams.m_neighborTh = m_neighborTh;
+		m_SegParams.m_modeAddSeedOnly = m_modeAddSeedOnly;
 
 		// base params settings
 		m_SegParams.statusCB = GetProgressCB();
@@ -685,6 +693,7 @@ namespace PGAlgs
 		segmentationEngine.SetWindow(iParams->m_window);
 		segmentationEngine.SetGradientHigh(iParams->m_gradientHigh);
 		segmentationEngine.SetAutoAdjustConditions(iParams->m_autoAdjustConditions);
+		segmentationEngine.SetModeAddSeedOnly(iParams->m_modeAddSeedOnly);
 
 		rv = segmentationEngine.Execute();
 		if (!rv)
