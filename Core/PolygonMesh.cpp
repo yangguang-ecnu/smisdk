@@ -52,6 +52,58 @@ namespace PGCore
 		return m_polygons.size();
 	}
 
+	// pointcloud ops
+	template <class T, unsigned int Dim>
+	std::vector<PGMath::Point3D<float> >& PolygonMesh<T, Dim>::GetPointCloud(const int iIndex/*=0*/) // in img/raw space
+	{
+		if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+		return m_pointCloud[iIndex];
+	}
+
+	template <class T, unsigned int Dim>
+	std::vector<PGMath::Point3D<float> >& PolygonMesh<T, Dim>::GetTargetCloud(const int iIndex/*=0*/) // in img/raw space
+	{
+		if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+		return m_targetCloud[iIndex];
+	}
+
+	template <class T, unsigned int Dim>
+	std::vector<PGMath::Point3D<float> >& PolygonMesh<T, Dim>::GetToolCloud(const int iIndex/*=0*/) // in img/raw space
+	{
+		if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+		return m_toolCloud[iIndex];
+	}
+
+	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ResetPointCloud(const int iImageIndex/*=0*/)
+	{
+		if (iImageIndex<0 || iImageIndex>1) return false;
+
+		m_pointCloud[iImageIndex].clear();
+		return true;
+	}
+
+	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ResetTargetCloud(const int iImageIndex/*=0*/)
+	{
+		if (iImageIndex<0 || iImageIndex>1) return false;
+
+		m_targetCloud[iImageIndex].clear();
+		return true;
+	}
+
+	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ResetToolCloud(const int iImageIndex/*=0*/)
+	{
+		if (iImageIndex<0 || iImageIndex>1) return false;
+
+		m_toolCloud[iImageIndex].clear();
+		return true;
+	}
+
 	template <class T, unsigned int Dim>
 	const unsigned int& PolygonMesh<T, Dim>::GetSkeletonDimensions(bool iRef/*=true*/) const
 	{
@@ -91,13 +143,25 @@ namespace PGCore
 		{
 			m_refSkeleton.clear();
 			m_subSkeleton.clear();
+			for (int i=0; i<2; i++)
+			{
+				m_pointCloud[i].clear();
+				m_targetCloud[i].clear();
+				m_toolCloud[i].clear();
+			}
 		} else if (iIndex==0)
 		{
 			m_refSkeleton.clear();
+			m_pointCloud[0].clear();
+			m_targetCloud[0].clear();
+			m_toolCloud[0].clear();
 		} else if (iIndex==1)
 		{
 			m_subSkeleton.clear();
-		}
+			m_pointCloud[1].clear();
+			m_targetCloud[1].clear();
+			m_toolCloud[1].clear();
+		}	
 
 		return true;
 	}

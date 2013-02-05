@@ -69,11 +69,25 @@ namespace PGCore
 		void  SetSkeletonSpan(const PGMath::Point3D<float>& iOrigin, bool iRef=true);
 		const PGMath::Point3D<float>& GetSkeletonSpan(bool iRef=true) const;
 
+		// Point clouds
+		std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // // in img/raw space
+		bool ResetPointCloud(const int iImageIndex/*=0*/);
+
+		std::vector<PGMath::Point3D<float> >& GetTargetCloud(const int iIndex=0); // // in img/raw space
+		bool ResetTargetCloud(const int iImageIndex/*=0*/);
+
+		std::vector<PGMath::Point3D<float> >& GetToolCloud(const int iIndex=0); // // in img/raw space
+		bool ResetToolCloud(const int iImageIndex/*=0*/);
+			
 
 
 	private: 		
 		std::vector<std::vector<PGMath::Point3D<T> > >		m_refSkeleton;	
 		std::vector<std::vector<PGMath::Point3D<T> > >		m_subSkeleton;	
+
+		std::vector<PGMath::Point3D<float> > 				m_pointCloud[2];			
+		std::vector<PGMath::Point3D<float> > 				m_toolCloud[2];			
+		std::vector<PGMath::Point3D<float> > 				m_targetCloud[2];			
 
 		std::vector<Polygon<T, Dim> >						m_polygons;	
 		PGMath::Point3D<float>								m_origin;

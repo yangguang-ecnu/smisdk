@@ -179,6 +179,24 @@ bool Volume<T>::ResetPointCloud(const int iImageIndex/*=0*/)
 }
 
 template <class T>
+bool Volume<T>::ResetTargetCloud(const int iImageIndex/*=0*/)
+{
+	if (iImageIndex<0 || iImageIndex>1) return false;
+
+	m_targetCloud[iImageIndex].clear();
+	return true;
+}
+
+template <class T>
+bool Volume<T>::ResetToolCloud(const int iImageIndex/*=0*/)
+{
+	if (iImageIndex<0 || iImageIndex>1) return false;
+
+	m_toolCloud[iImageIndex].clear();
+	return true;
+}
+
+template <class T>
 bool Volume<T>::InitializeBitVolume(const int iImageIndex/*=0*/)
 {
 	if (iImageIndex<0 || iImageIndex>1) return false;
@@ -988,14 +1006,35 @@ std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud(const int iIndex/
 }
 
 template <class T>
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetTargetCloud(const int iIndex/*=0*/) // in img/raw space
+{
+	if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+	return m_targetCloud[iIndex];
+}
+
+template <class T>
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetToolCloud(const int iIndex/*=0*/) // in img/raw space
+{
+	if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
+
+	return m_toolCloud[iIndex];
+}
+
+template <class T>
 bool Volume<T>::Clear() 
 {
 	bool res = clearOctreeBlocks();
 	if (!res) return false;
 
 	m_images.clear();			
-	m_pointCloud[0].clear();
-	m_pointCloud[1].clear();
+
+	for (int i=0; i<2; i++)
+	{
+		m_pointCloud[i].clear();
+		m_targetCloud[i].clear();
+		m_toolCloud[i].clear();
+	}
 
 	m_rows = 0; m_columns = 0;
 	m_origin = PGMath::Point3D<float>(0, 0, 0);

@@ -366,7 +366,7 @@ namespace PGAlgs
 			glColor4f(1, 0, 0, 0.5);
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());				
-				glVertex3f(m_cursor3D.X()+0.1, m_cursor3D.Y(), m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X()+0.5, m_cursor3D.Y(), m_cursor3D.Z());
 			glEnd();
 
 			// y axis
@@ -374,14 +374,14 @@ namespace PGAlgs
 			glBegin(GL_LINES);//_LOOP);				
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
-				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+0.1, m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+0.5, m_cursor3D.Z());
 			glEnd();
 			
 			// XY plane - Z axis			
-			glColor4f(0, 0, 1, 0.5);
+			glColor4f(0.7, 0.7, 1, 0.5);
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
-				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z()+0.1);
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z()+0.5);
 			glEnd();
 		glPopMatrix();
 
@@ -433,7 +433,7 @@ namespace PGAlgs
 			{
 				const PGCore::Polygon<float, 3>& nextPoly = m_polyMeshList[iMeshIndex]->GetPolygon(i);
 				
-				glBegin(GL_POINTS);//LINE_LOOP);//TRIANGLES);
+				glBegin(GL_POINTS);
 				for (int j=0; j<3; j++)
 				{						
 					const PGMath::Point3D<float>& nextNormal = nextPoly.GetNormal(j);
@@ -451,10 +451,75 @@ namespace PGAlgs
 		} 
 		glPopMatrix();
 
+		// clouds next
+		glPushMatrix();
+		{		
+			float skelScFactor=1.0f;		
+			skelScFactor = meshScFactor;			
+			glScalef(1, 1, 1);					
+			glRotatef(-90, 1, 0, 0);
+
+			glScalef(skelScFactor, skelScFactor, skelScFactor);								
+			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());
+
+			// point, tool, target - ref
+			// point, tool, target - sec
+			float treeColors[2][3][4] = {
+										{{1.0,  0.3,  0.3, 1.0}, {1.0, 1.0, 0.0, 1.0},  {1.0, 0, 0, 1.0} },
+										{{0.3,  1.0,  0.3, 0.3}, {1.0, 1.0, 0.5, 0.3},  {1.0, 0.5, 0.5, 0.3}}
+									}; 
+			int pSkip=1;
+
+			for (int j=0; j<2; j++)
+			{
+				// pt cloud
+				glColor4fv(treeColors[j][0]);
+				std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetPointCloud();
+				unsigned int pointCount = ptCloud.size();		
+				glBegin(GL_POINTS);
+				for (int i=0; i<pointCount; i+=pSkip)
+				{
+					const PGMath::Point3D<float>& nextPoint = ptCloud[i];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+				}	
+				glEnd();
+
+				// tool
+				glPointSize(2.0);
+				glColor4fv(treeColors[j][1]);
+				std::vector<PGMath::Point3D<float> >& tlCloud = m_polyMeshList[iMeshIndex]->GetToolCloud();
+				pointCount = tlCloud.size();		
+				glBegin(GL_POINTS);
+				for (int i=0; i<pointCount; i+=pSkip)
+				{
+					const PGMath::Point3D<float>& nextPoint = tlCloud[i];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+				}	
+				glEnd();
+				glPointSize(1.0);
+
+				// target
+				glColor4fv(treeColors[j][2]);
+				glPointSize(4.0);
+				std::vector<PGMath::Point3D<float> >& tgCloud = m_polyMeshList[iMeshIndex]->GetTargetCloud();
+				pointCount = tgCloud.size();		
+				glBegin(GL_POINTS);
+				for (int i=0; i<pointCount; i+=pSkip)
+				{
+					const PGMath::Point3D<float>& nextPoint = tgCloud[i];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+				}	
+				glEnd();
+				glPointSize(1.0);
+			}
+
+			
+		} 
+		glPopMatrix();
+
 		// Now the tree
 		glPushMatrix();
 		{ 
-
 			float skelScFactor=1.0f;		
 			skelScFactor = meshScFactor;
 			//glRotatef(180, 0, 0, 1);

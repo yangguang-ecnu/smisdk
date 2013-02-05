@@ -84,6 +84,12 @@ public:
 	std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // // in img/raw space
 	bool ResetPointCloud(const int iImageIndex/*=0*/);
 
+	std::vector<PGMath::Point3D<float> >& GetTargetCloud(const int iIndex=0); // // in img/raw space
+	bool ResetTargetCloud(const int iImageIndex/*=0*/);
+
+	std::vector<PGMath::Point3D<float> >& GetToolCloud(const int iIndex=0); // // in img/raw space
+	bool ResetToolCloud(const int iImageIndex/*=0*/);
+
 	bool GetEightNeighborValues(const int iRow, const int iColumn, const int iImageIndex, 
 			T ioEightNeighbors[8]) const;	
 
@@ -111,6 +117,10 @@ private:
 	BitVolume				m_maskVolume[2]; // 0: working volume, 1: temp volume
 
 	std::vector<PGMath::Point3D<float> >			m_pointCloud[2]; // // in img/raw space
+
+	std::vector<PGMath::Point3D<float> >			m_targetCloud[2]; // // in img/raw space
+
+	std::vector<PGMath::Point3D<float> >			m_toolCloud[2]; // // in img/raw space
 
 	bool clearOctreeBlocks();
 };

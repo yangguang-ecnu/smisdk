@@ -34,7 +34,7 @@ namespace PGAlgs
 		m_pSeeds.clear();	
 		m_autoDilationCount = 0;
 		m_autoAdjustConditions = false;
-		m_modeAddSeedOnly = false;
+		m_addSeedCode = SegAddSeedCodeSeed;
 		m_pIVolume = 0;
 		m_window = 0.1f;
 		m_gradientHigh = 75;
@@ -53,7 +53,7 @@ namespace PGAlgs
 		m_highValue = 255;
 		m_totalCount = 1;
 		m_autoDilationCount = 1;
-		m_modeAddSeedOnly = false;
+		m_addSeedCode = SegAddSeedCodeSeed;
 		m_gradientHigh = 60;
 		m_maxLoopCount = 5;
 		m_neighborTh = 3;
@@ -83,9 +83,9 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	bool SegmentationBase<T, U>::SetModeAddSeedOnly(const bool iFlag)
+	bool SegmentationBase<T, U>::SetSeedMode(const eSegAddSeedCode iMode)
 	{
-		m_modeAddSeedOnly = iFlag;
+		m_addSeedCode = iMode;
 		return true;
 	}
 

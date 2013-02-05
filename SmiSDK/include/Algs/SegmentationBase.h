@@ -43,6 +43,16 @@ typedef enum eSegRetCode
 	SegRetCodeAlreadyMarked = 5
 } _eSegRetCode;
 
+typedef enum eSegAddSeedCode
+{
+	SegAddSeedCodeUnknown = -1,	
+	SegAddSeedCodePoint = 0,
+	SegAddSeedCodeTool = 1,
+	SegAddSeedCodeTarget = 2,
+	SegAddSeedCodeSeed = 3,
+	SegAddSeedCodeMax = 4
+} _eSegAddSeedCode;
+
 using namespace PGCore;
 
 template <class T>
@@ -54,7 +64,7 @@ public:
 	std::vector< PGMath::Point3D< float > >		m_pSeeds;	
 	int											m_autoDilationCount; // in voxels	
 	bool										m_autoAdjustConditions;
-	bool										m_modeAddSeedOnly;
+	eSegAddSeedCode								m_addSeedCode;
 
 	PGCore::Voxel3D<T>							*m_pIVolume;
 	float										m_window; // 0.0f...1.0f. around the seedvalue
@@ -85,7 +95,7 @@ public:
 
 	bool SetGradientHigh(const int& iGradient);
 	
-	bool SetModeAddSeedOnly(const bool iFlag);
+	bool SetSeedMode(const eSegAddSeedCode iMode);
 	
 public:	
 	virtual ~SegmentationBase(void);
@@ -97,7 +107,7 @@ protected:
 	ThreadedSegmentationParams<T>	 m_SegParams;
 	int								 m_autoDilationCount; // in voxels	
 	bool							 m_autoAdjustConditions;
-	bool							 m_modeAddSeedOnly;
+	eSegAddSeedCode					 m_addSeedCode;
 
 	PGCore::Stack3D<int>			 m_stack;
 	
