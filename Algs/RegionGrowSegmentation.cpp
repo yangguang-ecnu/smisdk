@@ -110,11 +110,34 @@ namespace PGAlgs
 			return false;
 		}
 
-		// m_modeAddSeedOnly = true;
-		if (m_modeAddSeedOnly && !m_pSeeds.empty())
+		// m_addSeedCode = true;
+		if (m_addSeedCode!=SegAddSeedCodeSeed && !m_pSeeds.empty())
 		{
-			std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetPointCloud();			
-			ptCloud.push_back(m_pSeeds[0]); // img space
+			switch(m_addSeedCode)
+			{
+				case PGAlgs::SegAddSeedCodePoint: 
+					{
+					std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetPointCloud();			
+					ptCloud.push_back(m_pSeeds[0]); // img space
+					}
+					break;
+				
+				case PGAlgs::SegAddSeedCodeTool: 
+					{
+					std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetToolCloud();			
+					ptCloud.push_back(m_pSeeds[0]); // img space
+					}
+					break;
+
+				case PGAlgs::SegAddSeedCodeTarget: 
+					{
+					std::vector<PGMath::Point3D<float> >& ptCloud = m_pIVolume->GetVolumeAccessor()->GetTargetCloud();			
+					ptCloud.push_back(m_pSeeds[0]); // img space
+					}
+					break;
+
+				default: break;
+			}
 			return true;
 		}
 
@@ -541,7 +564,7 @@ namespace PGAlgs
 		m_SegParams.m_gradientHigh = m_gradientHigh;
 		m_SegParams.m_maxLoopCount = m_maxLoopCount;
 		m_SegParams.m_neighborTh = m_neighborTh;
-		m_SegParams.m_modeAddSeedOnly = m_modeAddSeedOnly;
+		m_SegParams.m_addSeedCode = m_addSeedCode;
 
 		// base params settings
 		m_SegParams.statusCB = GetProgressCB();
@@ -693,7 +716,7 @@ namespace PGAlgs
 		segmentationEngine.SetWindow(iParams->m_window);
 		segmentationEngine.SetGradientHigh(iParams->m_gradientHigh);
 		segmentationEngine.SetAutoAdjustConditions(iParams->m_autoAdjustConditions);
-		segmentationEngine.SetModeAddSeedOnly(iParams->m_modeAddSeedOnly);
+		segmentationEngine.SetSeedMode(iParams->m_addSeedCode);
 
 		rv = segmentationEngine.Execute();
 		if (!rv)
