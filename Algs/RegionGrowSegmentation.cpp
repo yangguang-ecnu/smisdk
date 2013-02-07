@@ -32,8 +32,6 @@
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
 
-#define kPgStDevSpreadFac 2.5
-#define kPgStDevGradientFac 0.01
 
 namespace PGAlgs
 {
@@ -144,7 +142,7 @@ namespace PGAlgs
 		PGCore::PixelBase<T> tPixel;
 		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue();
 		T seedValue, avgValue = 0, offset = 0;
-		float stdDev=0, snr=0, spread=kPgStDevSpreadFac, valFac=1.0f, gradFac = kPgStDevGradientFac;
+		float stdDev=0, snr=0, spread=m_stdSpreadValue, valFac=1.0f, gradFac = m_stdSpreadGradient;
 		
 		seedValue = m_pIVolume->GetVolumeAccessor()->GetValue(m_pSeeds[0].Y(), m_pSeeds[0].X(), m_pSeeds[0].Z());
 		avgValue = seedValue;
@@ -565,6 +563,8 @@ namespace PGAlgs
 		m_SegParams.m_maxLoopCount = m_maxLoopCount;
 		m_SegParams.m_neighborTh = m_neighborTh;
 		m_SegParams.m_addSeedCode = m_addSeedCode;
+		m_SegParams.m_stdSpreadValue = m_stdSpreadValue;
+		m_SegParams.m_stdSpreadGradient = m_stdSpreadGradient;
 
 		// base params settings
 		m_SegParams.statusCB = GetProgressCB();
@@ -717,6 +717,9 @@ namespace PGAlgs
 		segmentationEngine.SetGradientHigh(iParams->m_gradientHigh);
 		segmentationEngine.SetAutoAdjustConditions(iParams->m_autoAdjustConditions);
 		segmentationEngine.SetSeedMode(iParams->m_addSeedCode);
+		segmentationEngine.SetStdSpreadValue(iParams->m_stdSpreadValue);
+		segmentationEngine.SetStdSpreadGradient(iParams->m_stdSpreadGradient);
+		 
 
 		rv = segmentationEngine.Execute();
 		if (!rv)
