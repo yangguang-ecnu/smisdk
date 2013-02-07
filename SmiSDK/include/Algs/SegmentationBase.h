@@ -72,6 +72,9 @@ public:
 	int											m_gradientHigh;
 	int											m_maxLoopCount;
 	int											m_neighborTh;
+
+	float										m_stdSpreadValue;
+	float										m_stdSpreadGradient;
 };
 
 
@@ -96,6 +99,11 @@ public:
 	bool SetGradientHigh(const int& iGradient);
 	
 	bool SetSeedMode(const eSegAddSeedCode iMode);
+
+	bool SetStdSpreadValue(const float iStdSpreadValue);
+
+    bool SetStdSpreadGradient(const float iStdSpreadGradient);
+		 
 	
 public:	
 	virtual ~SegmentationBase(void);
@@ -108,6 +116,8 @@ protected:
 	int								 m_autoDilationCount; // in voxels	
 	bool							 m_autoAdjustConditions;
 	eSegAddSeedCode					 m_addSeedCode;
+	float							 m_stdSpreadValue;
+	float							 m_stdSpreadGradient;
 
 	PGCore::Stack3D<int>			 m_stack;
 	

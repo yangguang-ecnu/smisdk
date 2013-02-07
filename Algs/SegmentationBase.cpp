@@ -23,6 +23,10 @@
 
 #include "Algs/SegmentationBase.h"
 
+#define kPgStDevSpreadFac 2.5
+#define kPgStDevGradientFac 0.01
+
+
 namespace PGAlgs
 {
 
@@ -40,6 +44,8 @@ namespace PGAlgs
 		m_gradientHigh = 75;
 		m_maxLoopCount = 32767;
 		m_neighborTh = 3;
+		m_stdSpreadValue = kPgStDevSpreadFac;
+		m_stdSpreadGradient = kPgStDevGradientFac;
 	};
 
 	template <class T, class U>
@@ -58,6 +64,8 @@ namespace PGAlgs
 		m_maxLoopCount = 5;
 		m_neighborTh = 3;
 		m_autoAdjustConditions = false;
+		m_stdSpreadValue = kPgStDevSpreadFac;
+		m_stdSpreadGradient = kPgStDevGradientFac;
 	};
 
 	// -0.5 to 0.5
@@ -86,6 +94,20 @@ namespace PGAlgs
 	bool SegmentationBase<T, U>::SetSeedMode(const eSegAddSeedCode iMode)
 	{
 		m_addSeedCode = iMode;
+		return true;
+	}
+
+	template <class T, class U>
+	bool SegmentationBase<T, U>::SetStdSpreadValue(const float iStdSpreadValue)
+	{
+		m_stdSpreadValue = iStdSpreadValue;
+		return true;
+	}
+
+    template <class T, class U>
+	bool SegmentationBase<T, U>::SetStdSpreadGradient(const float iStdSpreadGradient)
+	{
+		m_stdSpreadGradient = iStdSpreadGradient;
 		return true;
 	}
 
