@@ -489,7 +489,7 @@ namespace PGAlgs
 				glColor4fv(treeColors[j][1]);
 				std::vector<PGMath::Point3D<float> >& tlCloud = m_polyMeshList[iMeshIndex]->GetToolCloud(j);
 				pointCount = tlCloud.size();		
-				glBegin(GL_LINES);
+				glBegin(GL_POINTS);
 				for (int i=0; i<pointCount; i+=pSkip)
 				{
 					const PGMath::Point3D<float>& nextPoint = tlCloud[i];						
@@ -500,7 +500,7 @@ namespace PGAlgs
 
 				// target
 				glColor4fv(treeColors[j][2]);
-				glPointSize(4.0);
+				glPointSize(3.0);
 				std::vector<PGMath::Point3D<float> >& tgCloud = m_polyMeshList[iMeshIndex]->GetTargetCloud(j);
 				pointCount = tgCloud.size();		
 				glBegin(GL_POINTS);
