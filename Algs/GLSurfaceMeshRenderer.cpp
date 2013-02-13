@@ -175,7 +175,7 @@ namespace PGAlgs
 	{
 		if (!m_ready) return;
 		
-		glClearColor( 0.1, 0.1, 0.1, 1.0 );
+		glClearColor( 0.0, 0.0, 0.0, 1.0 );
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -465,14 +465,18 @@ namespace PGAlgs
 			// point, tool, target - ref
 			// point, tool, target - sec
 			float treeColors[2][3][4] = {
-										{{1.0,  0.3,  0.3, 1.0}, {1.0, 1.0, 0.0, 1.0},  {1.0, 0, 0, 1.0} },
-										{{0.3,  1.0,  0.3, 0.3}, {1.0, 1.0, 0.5, 0.3},  {1.0, 0.5, 0.5, 0.3}}
+										{{1.0,  0.0,  0.0, 1.0}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.7} }, // red, cyan, green - BIG
+										{{1,  1,  1, 0.5}, {1.0, 1.0, 1, 0.5},  {1.0, 1, 1, 0.4}} // white, white, white - faded
 									}; 
+			float geomPtSz[2][2] = { {1, 2}, {1, 2} };   
+			float sphereDivn[2] = {16, 4};
+			float sphereRadius[2] = {0.001, 0.001}; // ~1mm radius
 			int pSkip=1;
 
 			for (int j=0; j<2; j++)
-			{
+			{				
 				// pt cloud
+				glPointSize(geomPtSz[j][0]);
 				glColor4fv(treeColors[j][0]);
 				std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetPointCloud(j);
 				unsigned int pointCount = ptCloud.size();		
@@ -484,8 +488,8 @@ namespace PGAlgs
 				}	
 				glEnd();
 
-				// tool
-				glPointSize(2.0);
+				// tool				
+				glPointSize(geomPtSz[j][1]);
 				glColor4fv(treeColors[j][1]);
 				std::vector<PGMath::Point3D<float> >& tlCloud = m_polyMeshList[iMeshIndex]->GetToolCloud(j);
 				pointCount = tlCloud.size();		
@@ -496,23 +500,27 @@ namespace PGAlgs
 					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
 				}	
 				glEnd();
-				glPointSize(1.0);
+				
 
 				// target
-				glColor4fv(treeColors[j][2]);
-				glPointSize(3.0);
+				if (j==0) glEnable(GL_LIGHTING);
+				glPointSize(geomPtSz[j][2]);
+				glColor4fv(treeColors[j][2]);				
 				std::vector<PGMath::Point3D<float> >& tgCloud = m_polyMeshList[iMeshIndex]->GetTargetCloud(j);
 				pointCount = tgCloud.size();		
-				glBegin(GL_POINTS);
+				//glBegin(GL_POINTS);
 				for (int i=0; i<pointCount; i+=pSkip)
 				{
 					const PGMath::Point3D<float>& nextPoint = tgCloud[i];						
-					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+					//glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+					renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 0.016, sphereDivn[j]);
 				}	
-				glEnd();
-				glPointSize(1.0);
+				//glEnd();
+				glDisable(GL_LIGHTING);
+				
 			}
 
+			glPointSize(1.0);
 			
 		} 
 		glPopMatrix();
@@ -577,6 +585,41 @@ namespace PGAlgs
 		glPopMatrix();	
 		//glPopMatrix();
 	}
+
+	template <class T, class U>
+	void GLSurfaceMeshRenderer<T, U>::renderSphere(float x, float y, float z, float radius,int subdivisions,GLUquadricObj *quadric)
+
+	{
+
+		glPushMatrix();
+
+		glTranslatef( x,y,z );
+
+		gluSphere(quadric, radius, subdivisions,subdivisions);
+
+		glPopMatrix();
+
+	}
+
+	template <class T, class U>
+	void GLSurfaceMeshRenderer<T, U>::renderSphere_convenient(float x, float y, float z, float radius,int subdivisions)
+
+	{
+
+		//the same quadric can be re-used for drawing many spheres
+
+		GLUquadricObj *quadric=gluNewQuadric();
+
+		gluQuadricNormals(quadric, GLU_SMOOTH);
+
+		renderSphere(x,y,z,radius,subdivisions,quadric);
+
+		gluDeleteQuadric(quadric);
+
+	}
+
+
+
 
 #ifdef _PG_GENERATE_SDK_LIBS_
 	template class GLSurfaceMeshRenderer<PG_RENDERING_IN_TYPE, PG_RENDERING_OUT_TYPE>; 		
