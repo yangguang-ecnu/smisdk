@@ -59,6 +59,10 @@ namespace PGAlgs
 		
 		int		initGLthread(); 
 		int		init(const int iVolumeIndex=0);
+
+
+		void renderSphere(float x, float y, float z, float radius,int subdivisions,GLUquadricObj *quadric);		
+		void renderSphere_convenient(float x, float y, float z, float radius,int subdivisions);	
 	};
 };
 
