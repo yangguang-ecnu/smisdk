@@ -392,7 +392,7 @@ private:
   /// singleton list of registered codecs
   static OFList<DcmCodecList *> registeredCodecs;
   
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   /// read/write lock guarding access to singleton list
   static OFReadWriteLock codecLock;
 #endif

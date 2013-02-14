@@ -42,7 +42,7 @@
 // static member variables
 OFList<DcmCodecList *> DcmCodecList::registeredCodecs;
 
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
 OFReadWriteLock DcmCodecList::codecLock;
 #endif
 
@@ -249,13 +249,13 @@ OFCondition DcmCodecList::registerCodec(
     const DcmCodecParameter *aCodecParameter)
 {
   if ((aCodec == NULL)||(aCodecParameter == NULL)) return EC_IllegalParameter;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
 
   // acquire write lock on codec list.  Will block if some codec is currently active.
   OFCondition result = EC_Normal;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.wrlock())
   {
 #endif
@@ -276,7 +276,7 @@ OFCondition DcmCodecList::registerCodec(
       }
       if (result.good()) registeredCodecs.push_back(listEntry); else delete listEntry;
     } else result = EC_MemoryExhausted;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -286,13 +286,13 @@ OFCondition DcmCodecList::registerCodec(
 OFCondition DcmCodecList::deregisterCodec(const DcmCodec *aCodec)
 {
   if (aCodec == NULL) return EC_IllegalParameter;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
   // acquire write lock on codec list.  Will block if some codec is currently active.
   OFCondition result = EC_Normal;
 
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.wrlock())
   {
 #endif
@@ -306,7 +306,7 @@ OFCondition DcmCodecList::deregisterCodec(const DcmCodec *aCodec)
       	first = registeredCodecs.erase(first);
       } else ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -318,13 +318,13 @@ OFCondition DcmCodecList::updateCodecParameter(
     const DcmCodecParameter *aCodecParameter)
 {
   if ((aCodec == NULL)||(aCodecParameter == NULL)) return EC_IllegalParameter;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
   // acquire write lock on codec list.  Will block if some codec is currently active.
   OFCondition result = EC_Normal;
 
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.wrlock())
   {
 #endif
@@ -335,7 +335,7 @@ OFCondition DcmCodecList::updateCodecParameter(
       if ((*first)->codec == aCodec) (*first)->codecParameter = aCodecParameter;
       ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -350,13 +350,13 @@ OFCondition DcmCodecList::decode(
     DcmPolymorphOBOW& uncompressedPixelData,
     DcmStack & pixelStack)
 {
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
   OFCondition result = EC_CannotChangeRepresentation;
 
   // acquire write lock on codec list.  Will block if some write lock is currently active.
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.rdlock())
   {
 #endif
@@ -371,7 +371,7 @@ OFCondition DcmCodecList::decode(
         first = last;
       } else ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -388,13 +388,13 @@ OFCondition DcmCodecList::encode(
     DcmStack & pixelStack)
 {
   toPixSeq = NULL;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
   OFCondition result = EC_CannotChangeRepresentation;
 
   // acquire write lock on codec list.  Will block if some write lock is currently active.
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.rdlock())
   {
 #endif
@@ -410,7 +410,7 @@ OFCondition DcmCodecList::encode(
         first = last;
       } else ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -428,13 +428,13 @@ OFCondition DcmCodecList::encode(
     DcmStack & pixelStack)
 {
   toPixSeq = NULL;
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return EC_IllegalCall; // should never happen
 #endif
   OFCondition result = EC_CannotChangeRepresentation;
 
   // acquire write lock on codec list.  Will block if some write lock is currently active.
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.rdlock())
   {
 #endif
@@ -450,7 +450,7 @@ OFCondition DcmCodecList::encode(
         first = last;
       } else ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   } else result = EC_IllegalCall;
 #endif
@@ -462,13 +462,13 @@ OFBool DcmCodecList::canChangeCoding(
     const E_TransferSyntax fromRepType,
     const E_TransferSyntax toRepType)
 {
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (! codecLock.initialized()) return OFFalse; // should never happen
 #endif
   OFBool result = OFFalse;
 
   // acquire write lock on codec list.  Will block if some write lock is currently active.
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
   if (0 == codecLock.rdlock())
   {
 #endif
@@ -482,7 +482,7 @@ OFBool DcmCodecList::canChangeCoding(
         first = last;
       } else ++first;
     }
-#ifdef _REENTRANT
+#ifdef WITH_THREADS
     codecLock.unlock();
   }
 #endif
