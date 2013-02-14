@@ -155,6 +155,9 @@ public:
 	const std::string& GetFileNamePrefix() const;	
 	void SetFileNamePrefix(const std::string & iPrefix);	
 	
+	void SetPixelDataFormatJpeg(const int iFlag);
+	const int& GetPixelDataFormatJpeg() const;
+
 	virtual ~MetaData(void);
 
 private:
@@ -181,6 +184,8 @@ private:
 	int										m_dimensionality;
 
 	int										m_compressedDataFlag;
+
+	int										m_pixelDataFormatJPEG;
 
 	float									m_slope;
 	float									m_intercept;

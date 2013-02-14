@@ -59,6 +59,8 @@ namespace PGCore
 		m_numFrames = 0;
 		m_compressedDataFlag = 0;
 		m_dimensionality = 3;
+
+		m_pixelDataFormatJPEG = 0;
 	}
 
 	template <class T>	
@@ -510,6 +512,18 @@ namespace PGCore
 		}		
 	}
 
+	template <class T>
+	void MetaData<T>::SetPixelDataFormatJpeg(const int iFlag)
+	{
+		m_pixelDataFormatJPEG = iFlag;
+		return;
+	}
+
+	template <class T>
+	const int& MetaData<T>::GetPixelDataFormatJpeg() const
+	{
+		return m_pixelDataFormatJPEG;
+	}
 
 
 	template <class T>

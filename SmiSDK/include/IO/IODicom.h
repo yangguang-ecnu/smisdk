@@ -34,6 +34,7 @@
 	#include "dcmtk/dcmdata/dcfilefo.h"
 	#include "dcmtk/dcmdata/dcdeftag.h"
 	#include "dcmtk/dcmdata/dcmetinf.h"
+	#include "dcmtk/dcmjpeg/djdecode.h"
 #endif
 
 
@@ -95,6 +96,8 @@ private:
 #else
 	DcmFileFormat	m_fileformat;
 #endif
+
+	bool decodeJpeg(char* oBuf, char* iBuf, const int iMaxBytes);
 };
 
 

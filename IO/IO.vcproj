@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;..\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;..\Common\gdcm\include\gdcm-2.0&quot;;..\SmiSDK\include"
+				AdditionalIncludeDirectories="&quot;..\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;..\Common\gdcm\include\gdcm-2.0&quot;;..\SmiSDK\include;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmjpeg\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmimage\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmimgle\include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -112,7 +112,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;..\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;..\Common\gdcm\include\gdcm-2.0&quot;;..\SmiSDK\include"
+				AdditionalIncludeDirectories="&quot;..\Common\dcmtk\dcmtk-3.5.4\config\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmdata\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\ofstd\include&quot;;..\;..\Common\;&quot;..\Common\gdcm\include\gdcm-2.0&quot;;..\SmiSDK\include;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmjpeg\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmimage\include&quot;;&quot;..\Common\dcmtk\dcmtk-3.5.4\dcmimgle\include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
