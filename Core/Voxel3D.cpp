@@ -436,6 +436,91 @@ bool Voxel3D<T>::GetStdToImgCoord(const float& iX,  const float& iY, const float
 
 
 template <class T>
+bool Voxel3D<T>::GetImgToPatCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ) 
+{	
+	PGMath::Point3D<float> pointStd, pointPat;
+
+	// perform testing that all volumes provide same tranformed point
+	// renderer's std to raw transform changes y's scaling component during initializeviewers (in full res)??
+	
+	bool imagesFollowScanDirection = m_metaData.GetImagesAlongScanDirection();
+	float invZFactor = 1.0f;
+	if (!imagesFollowScanDirection)
+	{
+		// Example: if axial images are head first, they increase in opposite direction to 
+		// DICOM patient space's z-axis		
+		invZFactor = -1.0f; 
+	}
+	const std::vector< PGMath::Vector3D<float> >& imgPosPatient = m_metaData.GetImagePositionsPatient();
+	int firstSliceIdx = 0;//invZFactor<0.0f ? imgPosPatient.size()-1 : 0;
+	const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[firstSliceIdx];	
+
+	PGMath::Matrix4x4<float> matrixImageToPat;	
+	matrixImageToPat.Identity();
+	{
+		// get first slice pos
+		matrixImageToPat.SetElement(0, 3, imgPosPatientOrg.X());
+		matrixImageToPat.SetElement(1, 3, imgPosPatientOrg.Y());
+		matrixImageToPat.SetElement(2, 3, imgPosPatientOrg.Z());
+	}	
+
+	PGMath::AffineTransform<float> transformImageToPat(matrixImageToPat);
+
+	bool rv = m_transformImageToDcm.Apply(PGMath::Point3D<float>(iX, iY, iZ), pointStd);
+	rv |= transformImageToPat.Apply(pointStd, pointPat);
+	
+	//oX = int(pointImg.X()+0.5f); oY = int(pointImg.Y()+0.5f); oZ = int(pointImg.Z()+0.5f);
+	
+	oX = pointPat.X(); oY = pointPat.Y(); oZ = pointPat.Z();
+
+	return rv;
+}
+
+template <class T>
+bool Voxel3D<T>::GetPatToImgCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ) 
+{	
+	PGMath::Point3D<float> pointStd, pointImg;
+
+	float invZFactor = 1.0f;
+	bool imagesFollowScanDirection = m_metaData.GetImagesAlongScanDirection();
+	if (!imagesFollowScanDirection)
+	{
+		// Example: if axial images are head first, they increase in opposite direction to 
+		// DICOM patient space's z-axis		
+		invZFactor = -1.0f; 
+	}
+	const std::vector< PGMath::Vector3D<float> >& imgPosPatient = m_metaData.GetImagePositionsPatient();
+	int firstSliceIdx = 0;//invZFactor<0.0f ? imgPosPatient.size()-1 : 0;
+	const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[firstSliceIdx];	
+
+	PGMath::Matrix4x4<float> matrixPatToImage;	
+	matrixPatToImage.Identity();
+	{
+		// get first slice pos
+		matrixPatToImage.SetElement(0, 3, -imgPosPatientOrg.X());
+		matrixPatToImage.SetElement(1, 3, -imgPosPatientOrg.Y());
+		matrixPatToImage.SetElement(2, 3, -imgPosPatientOrg.Z());
+	}	
+
+	PGMath::AffineTransform<float> transformPatToImage(matrixPatToImage);
+
+	// perform testing that all volumes provide same tranformed point
+	// renderer's std to raw transform changes y's scaling component during initializeviewers (in full res)??
+	
+	bool rv = transformPatToImage.Apply(PGMath::Point3D<float>(iX, iY, iZ), pointStd);
+	rv |=	m_transformDcmToImage.Apply(pointStd, pointImg);	
+	
+	//oX = int(pointImg.X()+0.5f); oY = int(pointImg.Y()+0.5f); oZ = int(pointImg.Z()+0.5f);
+	
+	oX = pointImg.X(); oY = pointImg.Y(); oZ = pointImg.Z();
+
+	return rv;
+}
+
+
+template <class T>
 bool Voxel3D<T>::GetImgToStdCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ) const
 {	
@@ -556,12 +641,22 @@ bool Voxel3D<T>::updateTransformImgToDcm()
 		return false;
 	}
 
+	
+	//const std::vector< PGMath::Vector3D<float> >& imgPosPatient = m_metaData.GetImagePositionsPatient();
+	//int firstSliceIdx = invZFactor ? imgPosPatient.size()-1 : 0;
+	//const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[firstSliceIdx];	
+
 	PGMath::Matrix4x4<float> m_matrixImageToMMScale;	
 	m_matrixImageToMMScale.Identity();
 	{
 		m_matrixImageToMMScale.SetElement(0, 0, spacings.X()); 
 		m_matrixImageToMMScale.SetElement(1, 1, spacings.Y()); 
 		m_matrixImageToMMScale.SetElement(2, 2, invZFactor*spacings.Z()); 
+
+		// get first slice pos
+		//m_matrixImageToMMScale.SetElement(0, 3, imgPosPatientOrg.X());
+		//m_matrixImageToMMScale.SetElement(1, 3, imgPosPatientOrg.Y());
+		//m_matrixImageToMMScale.SetElement(2, 3, imgPosPatientOrg.Z());
 	}	
 	
 	m_transformImageToDcm = PGMath::AffineTransform<float>(m_matrixImageToMMScale);

@@ -89,6 +89,12 @@ public:
 	bool GetImgToStdCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ) const;
 
+	bool GetImgToPatCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ);
+
+	bool GetPatToImgCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ);
+
 	bool GetInterpolatedImage(const int& oSizeX, const int& oSizeY, const float& iZ, const int& iSkip, PGCore::Image<T>& ioImage) const; // interpolate	
 
 	virtual ~Voxel3D(void);
@@ -119,7 +125,7 @@ private:
 
 	PGMath::Point3D<float>			m_cachedPointImg;
 
-	PGMath::AffineTransform<float>	m_transformImageToDcm;		// apply scaling, thats it
+	PGMath::AffineTransform<float>	m_transformImageToDcm;		// apply scaling, apply Z flip if needed, add the first slice's co-ordinates
 	PGMath::AffineTransform<float>	m_transformDcmToImage;	
 
 	PGMath::AffineTransform<float>	m_transformRegistration;	// registration etc.
