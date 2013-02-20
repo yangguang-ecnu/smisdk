@@ -35,6 +35,8 @@ namespace PGAlgs
 
 		virtual bool Execute();
 
+		virtual bool PostExecute();
+
 		virtual eSegRetCode conditionCheck(const PGMath::Point3D<int> &iVoxel);
 	
 		// overload for threadedprocess inheritance
@@ -54,6 +56,8 @@ namespace PGAlgs
 		bool m_thinMask;
 
 		bool thinMask();
+
+		bool sanityCheckComponent(const std::vector<PGMath::Point3D<int>>& iComponent);
 		bool findCentroid(
 			const std::vector<PGMath::Point3D<int>>& iComponent,
 			PGMath::Point3D<int>& ioCentroid);

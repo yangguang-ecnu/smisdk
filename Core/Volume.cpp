@@ -232,6 +232,35 @@ bool Volume<T>::FinalizeMask() // OR temp mask with main mask
 }
 
 template <class T>
+bool Volume<T>::SubtractMask(const int iSourceImageIndex/*=1*/) // used for undos / redos
+{
+	if (iSourceImageIndex<0 || iSourceImageIndex>1) return false;
+
+	int srcMaskIndex = iSourceImageIndex, dstMaskIndex = (iSourceImageIndex+1)%1;
+
+	m_maskVolume[srcMaskIndex].Invert();
+
+	m_maskVolume[dstMaskIndex] &= m_maskVolume[srcMaskIndex];
+
+	m_maskVolume[srcMaskIndex].Invert();
+
+	return true;
+}
+
+template <class T>
+bool Volume<T>::AddMask(const int iSourceImageIndex/*=1*/) // used for undos / redos
+{
+	if (iSourceImageIndex<0 || iSourceImageIndex>1) return false;
+
+	int srcMaskIndex = iSourceImageIndex, dstMaskIndex = (iSourceImageIndex+1)%1;
+
+	m_maskVolume[dstMaskIndex] |= m_maskVolume[srcMaskIndex];	
+
+	return true;
+}
+
+
+template <class T>
 bool Volume<T>::CreateOctree()
 {
 	bool res = false;

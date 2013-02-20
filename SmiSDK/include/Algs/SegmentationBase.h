@@ -27,6 +27,8 @@
 #include "Core/Voxel3D.h"
 #include "Core/Stack.h"
 #include "Core/Stack3D.h"
+#include "Core/Circle.h"
+#include "Math/PointSet.h"
 
 
 namespace PGAlgs
@@ -85,6 +87,8 @@ public:
 	SegmentationBase(void);
 
 	virtual bool Execute() = 0;
+
+	virtual bool PostExecute() = 0;
 	
 	// -0.5 to 0.5
 	bool SetSeeds(const std::vector< PGMath::Point3D< float > > &iSeeds);
@@ -103,7 +107,10 @@ public:
 	bool SetStdSpreadValue(const float iStdSpreadValue);
 
     bool SetStdSpreadGradient(const float iStdSpreadGradient);
-		 
+	
+	bool UndoLastStep();
+
+	bool RedoLastStep();
 	
 public:	
 	virtual ~SegmentationBase(void);
@@ -118,6 +125,8 @@ protected:
 	eSegAddSeedCode					 m_addSeedCode;
 	float							 m_stdSpreadValue;
 	float							 m_stdSpreadGradient;
+
+	int								 m_undoCounter;
 
 	PGCore::Stack3D<int>			 m_stack;
 	
@@ -147,8 +156,11 @@ protected:
 	// in image co-ordinates
 	bool	setVoxel(const PGMath::Point3D<int> &iVoxel, const bool iValue);	
 
-	void DumpSeedsOnImages(const std::vector<PGMath::Point3D< float > >& iSeeds);
+	void dumpSeedsOnImages(const std::vector<PGMath::Point3D< float > >& iSeeds);
 	
+	bool fitCircle (const PGMath::PointSet& iPointSet, PGCore::Circle& ioCircle);
+
+	float computeSigma (const PGMath::PointSet& iPointSet, PGCore::Circle& ioCircle);
 };
 
 
