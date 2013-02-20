@@ -25,6 +25,7 @@
 
 #define kPgStDevSpreadFac 2.5
 #define kPgStDevGradientFac 0.01
+#define kPgSHORT_MAX 32767
 
 
 namespace PGAlgs
@@ -66,6 +67,7 @@ namespace PGAlgs
 		m_autoAdjustConditions = false;
 		m_stdSpreadValue = kPgStDevSpreadFac;
 		m_stdSpreadGradient = kPgStDevGradientFac;
+		m_undoCounter = 0;
 	};
 
 	// -0.5 to 0.5
@@ -149,8 +151,8 @@ namespace PGAlgs
 		//PGMath::AffineTransform<float> voxelToImage = m_pIVolume->GetTransformVoxelToImage();
 		
 		//const PGCore::MetaData< T >& oMetaData = m_pIVolume->GetMetaData();
-		//bool feetFirst = oMetaData.GetAxialScanFeetFirstFlag();
-		//bool axialScan = oMetaData.GetAxialScanFlag();
+		//bool feetFirst = oMetaiPointSet.GetAxialScanFeetFirstFlag();
+		//bool axialScan = oMetaiPointSet.GetAxialScanFlag();
 
 		for (int i=0; i<m_pSeeds.size(); i++)
 		{
@@ -176,6 +178,41 @@ namespace PGAlgs
 		}		
 		
 		return true;
+	};
+
+	template <class T, class U>
+	bool SegmentationBase<T, U>::UndoLastStep()
+	{
+		if (m_undoCounter==1) // already done one undo
+		{
+			return false;
+		}
+
+		m_undoCounter++;
+
+		bool rv = m_pIVolume->GetVolumeAccessor()->SubtractMask(1);
+
+		rv |= this->PostExecute();		
+
+		return rv;	
+	}
+
+	
+	template <class T, class U>
+	bool SegmentationBase<T, U>::RedoLastStep()
+	{
+		if (m_undoCounter==0) // nothing to redo
+		{
+			return false;
+		}
+
+		m_undoCounter--;
+
+		bool rv = m_pIVolume->GetVolumeAccessor()->AddMask(1);
+
+		rv |= this->PostExecute();		
+
+		return rv;
 	};
 
 	// in image co-ordinates
@@ -261,7 +298,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	void SegmentationBase<T, U>::DumpSeedsOnImages(const std::vector<PGMath::Point3D< float > >& iSeeds)
+	void SegmentationBase<T, U>::dumpSeedsOnImages(const std::vector<PGMath::Point3D< float > >& iSeeds)
 	{
 		int crossSize = 8;
 		for (int i=0; i<iSeeds.size(); i++)
@@ -354,6 +391,116 @@ namespace PGAlgs
 
 		return SegRetCodeOk;
 	};
+
+
+	// Taubin's method
+	// http://people.cas.uab.edu/~mosya/cl/CircleFitByTaubin.cpp	
+	template <class T, class U>
+	bool SegmentationBase<T, U>::fitCircle (const PGMath::PointSet& iPointSet, PGCore::Circle& ioCircle)
+	{	
+		int i,iter,IterMAX=99;
+
+		float Xi,Yi,Zi;
+		float Mz,Mxy,Mxx,Myy,Mxz,Myz,Mzz,Cov_xy,Var_z;
+		float A0,A1,A2,A22,A3,A33;
+		float Dy,xnew,x,ynew,y;
+		float DET,Xcenter,Ycenter;
+
+		PGMath::Point3D<float> pMean = iPointSet.ComputeMeans();   // Compute x- and y- sample means (via a function in the class "data")
+
+		//     computing moments 
+		//             (note: all moments will be normed, i.e. divided by the number of points)
+
+		Mxx=Myy=Mxy=Mxz=Myz=Mzz=0.;
+
+		for (i=0; i<iPointSet.Size(); i++)
+		{
+			Xi = iPointSet.Element(i).X() - pMean.X();   //  centered x-coordinates
+			Yi = iPointSet.Element(i).Y() - pMean.Y();   //  centered y-coordinates
+			Zi = Xi*Xi + Yi*Yi;
+
+			Mxy += Xi*Yi;
+			Mxx += Xi*Xi;
+			Myy += Yi*Yi;
+			Mxz += Xi*Zi;
+			Myz += Yi*Zi;
+			Mzz += Zi*Zi;
+		}
+		Mxx /= iPointSet.Size();
+		Myy /= iPointSet.Size();
+		Mxy /= iPointSet.Size();
+		Mxz /= iPointSet.Size();
+		Myz /= iPointSet.Size();
+		Mzz /= iPointSet.Size();
+
+		//    computing the coefficients of the characteristic polynomial
+
+		Mz = Mxx + Myy;
+		Cov_xy = Mxx*Myy - Mxy*Mxy;
+		Var_z = Mzz - Mz*Mz;
+		A3 = 4*Mz;
+		A2 = -3*Mz*Mz - Mzz;
+		A1 = Var_z*Mz + 4*Cov_xy*Mz - Mxz*Mxz - Myz*Myz;
+		A0 = Mxz*(Mxz*Myy - Myz*Mxy) + Myz*(Myz*Mxx - Mxz*Mxy) - Var_z*Cov_xy;
+		A22 = A2 + A2;
+		A33 = A3 + A3 + A3;
+
+		//    finding the root of the characteristic polynomial
+		//    using Newton's method starting at x=0  
+		//     (it is guaranteed to converge to the right root)
+
+		for (x=0.,y=A0,iter=0; iter<IterMAX; iter++)  // usually, 4-6 iterations are enough
+		{
+			Dy = A1 + x*(A22 + A33*x);
+			if (Dy<=kPgFineEpsilon) break;
+
+			xnew = x - y/Dy;
+
+			if ((xnew == x)) break;
+
+			ynew = A0 + xnew*(A1 + xnew*(A2 + xnew*A3));
+			if (abs(ynew)>=abs(y))  break;
+
+			x = xnew;  y = ynew;
+		}
+
+		//    computing the circle parameters
+
+		DET = x*x - x*Mz + Cov_xy;
+		Xcenter = (Mxz*(Myy - x) - Myz*Mxy)/DET/2.0;
+		Ycenter = (Myz*(Mxx - x) - Mxz*Mxy)/DET/2.0;
+
+		float circlea = Xcenter + pMean.X();
+		float circleb = Ycenter + pMean.Y();
+		float circler = sqrt(Xcenter*Xcenter + Ycenter*Ycenter + Mz);
+		float circles = computeSigma(iPointSet, ioCircle);
+		float circlei = 0;
+		float circlej = iter;  //  return the number of iterations, too
+
+		ioCircle = Circle(circlea, circleb, circler);//, circles, circlei, circlej);
+
+		return true;
+	}
+
+	//****************** Sigma ************************************
+	//
+	//   estimate of Sigma = square root of RSS divided by N
+	template <class T, class U>
+	float SegmentationBase<T, U>::computeSigma(const PGMath::PointSet& iPointSet, PGCore::Circle& ioCircle)
+	{
+		if (iPointSet.Size()<=0) return 0.0f;
+
+		float sum = 0.,dx,dy;
+
+		for (int i=0; i<iPointSet.Size(); i++)
+		{
+			dx = iPointSet.Element(i).X() - ioCircle.a();
+			dy = iPointSet.Element(i).Y() - ioCircle.b();
+			sum += sqrt(sqrt(dx*dx+dy*dy) - ioCircle.r());
+		}
+
+		return sqrt(sum/iPointSet.Size());
+	}
 
 
 		

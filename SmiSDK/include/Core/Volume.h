@@ -78,7 +78,9 @@ public:
 	bool ErodeBitVolume(const int iImageIndex=0, const int iVoxels=1);
 	bool InvertBitVolume(const int iImageIndex=0);
 
-	bool FinalizeMask(); // OR temp mask with main mask
+	bool FinalizeMask(); // OR temp mask with main mask	
+	bool SubtractMask(const int iSourceImageIndex=1); // undo
+	bool AddMask(const int iSourceImageIndex=1); // redo
 
 	// pointcloud ops
 	std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // // in img/raw space

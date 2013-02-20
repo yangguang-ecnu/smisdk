@@ -176,6 +176,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\Circle.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\DerivativeOfGaussianKernel.cpp"
 				>
 			</File>
@@ -327,6 +331,10 @@
 			</File>
 			<File
 				RelativePath="..\SmiSDK\include\Core\CentralDifferenceDerivativeKernel.h"
+				>
+			</File>
+			<File
+				RelativePath="..\SmiSDK\include\Core\Circle.h"
 				>
 			</File>
 			<File

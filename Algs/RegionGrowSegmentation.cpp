@@ -27,7 +27,7 @@
 #include "Core/MultiDataBase.h"
 
 #define kPgMinComponentSz 8
-#define kPgMaxComponentSz 2048
+#define kPgMaxComponentSz 2826 // 15 mm radius circle area in px sq at 0.5mm per px
 #define kPgMaxMaskVxCountPerIter 32*32*64 
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
@@ -97,6 +97,9 @@ namespace PGAlgs
 	{
 		m_pIVolume->GetVolumeAccessor()->InitializeBitVolume(0);
 		m_pIVolume->GetVolumeAccessor()->InitializeBitVolume(1);
+		
+
+		// clear temp mask
 		m_pIVolume->GetVolumeAccessor()->GetBitVolume(1).Reset(0);
 
 		m_pIVolume->GetVolumeAccessor()->GetDimensions(m_volumeDimensions);
@@ -239,6 +242,8 @@ namespace PGAlgs
 			nLoops++;		
 		}
 
+		if (m_count) m_undoCounter = 0; 
+
 		//anything below the selected Z is not grown into
 		UpdateProgress(50);
 
@@ -301,11 +306,10 @@ namespace PGAlgs
 
 		if (m_count) m_pIVolume->GetVolumeAccessor()->FinalizeMask();
 
-		if (m_thinMask)
-		{
-			thinMask();					
-		}	
 		
+
+		// mask 1 is available now. do not clear it yet.
+
 		/*
 #if (_DEBUG_DUMP)
 		{
@@ -329,15 +333,27 @@ namespace PGAlgs
 #endif
 		*/
 
-
+		bool rv = this->PostExecute();
+		
 		//anything below the selected Z is not grown into
 		UpdateProgress(100);
 
 		GetLogger()->Log("Marked %d voxels.", m_count);
 		
-		return true;
+		return rv;
 	}
 
+
+	template <class T, class U>
+	bool RegionGrowSegmentation<T, U>::PostExecute()
+	{
+		if (m_thinMask)
+		{
+			return thinMask();					
+		}		
+
+		return true;
+	}
 
 	template <class T, class U>
 	bool RegionGrowSegmentation<T, U>::thinMask()
@@ -394,28 +410,21 @@ namespace PGAlgs
 						// masked voxel. find neighbors
 						visitBitPixel(nextSeed, bImage, visitedImage, nextComponent);
 
-						if (nextComponent.size()>kPgMinComponentSz)
+						
 						{
 							//componentList.push_back(nextComponent);
-							findCentroid(nextComponent, nextCentroid);
-							//centroids.push_back(nextCentroid);							
+							bool rvi = sanityCheckComponent(nextComponent);							
 
-							//m_pIVolume->GetVolumeAccessor()->
-
-							//PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
-									//imgPosPatientOrg.X()+ nextCentroid.Y()*spacings.X(), // x and y are swapped
-									//imgPosPatientOrg.Y()+ nextCentroid.X()*spacings.Y(),
-									//imgPosPatientOrg.Z()+ nextCentroid.Z()*spacings.Z());
-
-							PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
+							if (rvi)
+							{
+								findCentroid(nextComponent, nextCentroid);	
+								PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
 									nextCentroid.Y(),
 									nextCentroid.X(),
 									nextCentroid.Z());
 
-							ptCloud.push_back(nextPt); // img space
-
-							//m_pIVolume->GetVolumeAccessor()->SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 4095);
-							//maskVol1.SetValue(nextCentroid.X(), nextCentroid.Y(), nextCentroid.Z(), 0);
+								ptCloud.push_back(nextPt); // img space	
+							}
 						}
 					}
 				}
@@ -460,6 +469,16 @@ namespace PGAlgs
 
 		return true;
 	}	
+
+
+	template <class T, class U>
+	bool RegionGrowSegmentation<T, U>::sanityCheckComponent(const std::vector<PGMath::Point3D<int>>& iComponent)
+	{
+		if (iComponent.size()<kPgMinComponentSz || iComponent.size()>kPgMaxComponentSz) return false;
+
+		return true;
+	}
+
 
 	template <class T, class U>
 	bool RegionGrowSegmentation<T, U>::findCentroid(
