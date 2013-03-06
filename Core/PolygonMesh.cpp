@@ -54,6 +54,13 @@ namespace PGCore
 
 	// pointcloud ops
 	template <class T, unsigned int Dim>
+	std::vector<PGMath::Point3D<float> >& PolygonMesh<T, Dim>::GetShapeCloud() // in img/raw space
+	{
+		return m_shapeCloud;
+	}
+
+
+	template <class T, unsigned int Dim>
 	std::vector<PGMath::Point3D<float> >& PolygonMesh<T, Dim>::GetPointCloud(const int iIndex/*=0*/) // in img/raw space
 	{
 		if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
@@ -105,6 +112,13 @@ namespace PGCore
 	}
 
 	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ResetShapeCloud()
+	{	
+		m_shapeCloud.clear();
+		return true;
+	}
+
+	template <class T, unsigned int Dim>
 	const unsigned int& PolygonMesh<T, Dim>::GetSkeletonDimensions(bool iRef/*=true*/) const
 	{
 		return iRef ? m_refSkeleton.size() : m_subSkeleton.size();
@@ -138,11 +152,12 @@ namespace PGCore
 	bool PolygonMesh<T, Dim>::Clear(const int iIndex/*=-1*/)
 	{
 		m_polygons.clear();
-
+	
 		if (iIndex==-1)
 		{
 			m_refSkeleton.clear();
 			m_subSkeleton.clear();
+			m_shapeCloud.clear();
 			for (int i=0; i<2; i++)
 			{
 				m_pointCloud[i].clear();
@@ -154,13 +169,14 @@ namespace PGCore
 			m_refSkeleton.clear();
 			m_pointCloud[0].clear();
 			m_targetCloud[0].clear();
-			m_toolCloud[0].clear();
+			m_toolCloud[0].clear();			
 		} else if (iIndex==1)
 		{
 			m_subSkeleton.clear();
 			m_pointCloud[1].clear();
 			m_targetCloud[1].clear();
 			m_toolCloud[1].clear();
+			m_shapeCloud.clear();
 		}	
 
 		return true;

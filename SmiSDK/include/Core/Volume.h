@@ -89,6 +89,9 @@ public:
 	std::vector<PGMath::Point3D<float> >& GetTargetCloud(const int iIndex=0); // // in img/raw space
 	bool ResetTargetCloud(const int iImageIndex/*=0*/);
 
+	std::vector<PGMath::Point3D<float> >& GetShapeCloud(); // // in img/raw space
+	bool ResetShapeCloud();
+
 	std::vector<PGMath::Point3D<float> >& GetToolCloud(const int iIndex=0); // // in img/raw space
 	bool ResetToolCloud(const int iImageIndex/*=0*/);
 
@@ -123,6 +126,8 @@ private:
 	std::vector<PGMath::Point3D<float> >			m_targetCloud[2]; // // in img/raw space
 
 	std::vector<PGMath::Point3D<float> >			m_toolCloud[2]; // // in img/raw space
+
+	std::vector<PGMath::Point3D<float> >			m_shapeCloud; // // in img/raw space
 
 	bool clearOctreeBlocks();
 };

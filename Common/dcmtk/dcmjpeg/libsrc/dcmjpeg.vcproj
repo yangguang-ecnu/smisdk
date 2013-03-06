@@ -179,7 +179,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="copy &quot;release\\dcmjpeg.lib&quot; &quot;..\\..\\..\\\SMISDK\\Lib\\dcmjpeg.lib&quot;"
+				CommandLine="copy &quot;Release\\dcmjpeg.lib&quot; &quot;..\\..\\..\\..\\SMISDK\\Lib\\dcmjpeg.lib&quot;"
 			/>
 		</Configuration>
 		<Configuration

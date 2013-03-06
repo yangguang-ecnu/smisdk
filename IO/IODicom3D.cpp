@@ -763,7 +763,7 @@ bool IODicom3D<T>::ReadFromFolder(const std::vector<std::string>& iFileList,	PGC
 	PGAlgs::ImageResampler<T, T> resampler;
 	resampler.SetScaleFactor(1.0f/(float)m_skipFactorXY);
 	
-	SetSmoothFlag(1);//m_skipFactorZ>1);
+	SetSmoothFlag(m_skipFactorZ>1);
 
 	LOG1("Smoothing status: %d", GetSmoothFlag() ? 1 : 0);
 
