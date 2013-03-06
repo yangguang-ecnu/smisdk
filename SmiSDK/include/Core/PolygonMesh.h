@@ -78,6 +78,9 @@ namespace PGCore
 
 		std::vector<PGMath::Point3D<float> >& GetToolCloud(const int iIndex=0); // // in img/raw space
 		bool ResetToolCloud(const int iImageIndex/*=0*/);
+		
+		std::vector<PGMath::Point3D<float> >& GetShapeCloud(); // // in img/raw space
+		bool ResetShapeCloud();
 			
 
 
@@ -88,6 +91,7 @@ namespace PGCore
 		std::vector<PGMath::Point3D<float> > 				m_pointCloud[2];			
 		std::vector<PGMath::Point3D<float> > 				m_toolCloud[2];			
 		std::vector<PGMath::Point3D<float> > 				m_targetCloud[2];			
+		std::vector<PGMath::Point3D<float> > 				m_shapeCloud;			
 
 		std::vector<Polygon<T, Dim> >						m_polygons;	
 		PGMath::Point3D<float>								m_origin;

@@ -370,8 +370,7 @@ namespace PGAlgs
 			glEnd();
 
 			// y axis
-			glColor4f(0, 1, 0, 0.5);
-			glBegin(GL_LINES);//_LOOP);				
+			glColor4f(0, 1, 0, 0.5);			
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+0.5, m_cursor3D.Z());
@@ -486,6 +485,11 @@ namespace PGAlgs
 					const PGMath::Point3D<float>& nextPoint = ptCloud[i];						
 					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
 				}	
+				if (ptCloud.size()>0)
+				{
+					const PGMath::Point3D<float>& nextPoint = ptCloud[ptCloud.size()-1];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+				}
 				glEnd();
 
 				// tool				
@@ -499,6 +503,11 @@ namespace PGAlgs
 					const PGMath::Point3D<float>& nextPoint = tlCloud[i];						
 					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
 				}	
+				if (ptCloud.size()>0)
+				{
+					const PGMath::Point3D<float>&nextPoint = ptCloud[ptCloud.size()-1];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+				}
 				glEnd();
 				
 
@@ -519,6 +528,25 @@ namespace PGAlgs
 				glDisable(GL_LIGHTING);
 				
 			}
+
+			// shape cloud
+			glPointSize(1.0f);
+			glColor4f(1.0, 1.0, 0.0, 0.75);
+			std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetShapeCloud();
+			unsigned int pointCount = ptCloud.size();		
+			glBegin(GL_LINES);
+			for (int i=0; i<pointCount; i++)
+			{
+				const PGMath::Point3D<float>& nextPoint = ptCloud[i];						
+				glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+			}	
+			if (ptCloud.size()>0)
+			{
+				const PGMath::Point3D<float>& nextPoint = ptCloud[ptCloud.size()-1];						
+				glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+			}
+
+			glEnd();
 
 			glPointSize(1.0);
 			

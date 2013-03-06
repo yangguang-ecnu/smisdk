@@ -187,6 +187,15 @@ bool Volume<T>::ResetTargetCloud(const int iImageIndex/*=0*/)
 	return true;
 }
 
+
+template <class T>
+bool Volume<T>::ResetShapeCloud()
+{	
+	m_shapeCloud.clear();
+	return true;
+}
+
+
 template <class T>
 bool Volume<T>::ResetToolCloud(const int iImageIndex/*=0*/)
 {
@@ -1043,6 +1052,13 @@ std::vector<PGMath::Point3D<float> >& Volume<T>::GetTargetCloud(const int iIndex
 }
 
 template <class T>
+std::vector<PGMath::Point3D<float> >& Volume<T>::GetShapeCloud() // in img/raw space
+{
+	return m_shapeCloud;
+}
+
+
+template <class T>
 std::vector<PGMath::Point3D<float> >& Volume<T>::GetToolCloud(const int iIndex/*=0*/) // in img/raw space
 {
 	if (iIndex<0 || iIndex>1) return std::vector<PGMath::Point3D<float> >();
@@ -1064,6 +1080,7 @@ bool Volume<T>::Clear()
 		m_targetCloud[i].clear();
 		m_toolCloud[i].clear();
 	}
+	m_shapeCloud.clear();
 
 	m_rows = 0; m_columns = 0;
 	m_origin = PGMath::Point3D<float>(0, 0, 0);
