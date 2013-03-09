@@ -256,8 +256,8 @@ T Voxel3D<T>::GetValue(const float& iX,  const float& iY, const float& iZ) //con
 
 	//check feetfirst estimation. that is the only doubtful thing now!!!
 
-
 	m_transformStdToRaw.Apply(PGMath::Point3D<float>(iX, iY, iZ), m_cachedPointImg);
+		
 	//m_transformRegistration.Apply(PGMath::Point3D<float>(iX, iY, iZ), iPointReg);
 
 	//m_transformView.Apply(iPointReg, iPointView);	
@@ -431,14 +431,71 @@ bool Voxel3D<T>::GetStdToImgCoord(const float& iX,  const float& iY, const float
 	
 	oX = pointImg.X(); oY = pointImg.Y(); oZ = pointImg.Z();
 
+#define _TEST_XFORMS_ 0
+#if (_TEST_XFORMS_)
+	PGMath::Point3D<float> stdPt(iX, iY, iZ);
+	PGMath::Point3D<float> patPt;
+	PGMath::Point3D<float> isoPt;
+	PGMath::Point3D<float> dcmPt;	
+	PGMath::Point3D<float> imgPt;	
+
+	m_transformStdToPat.Apply(stdPt, patPt); // Normalize to bring to a unit space
+	m_transformPatToIso.Apply(patPt, isoPt); // apply direction cosines
+	m_transformIsoToDcm.Apply(isoPt, dcmPt); // move origin to volume's center 
+    m_transformDcmToImage.Apply(dcmPt, imgPt); // apply pixel spacing & inversion of Z as needed	
+#endif
+
+
 	return rv;
 }
 
+template <class T>
+bool Voxel3D<T>::GetStdToPatCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ) 
+{
+	
+	
+	PGMath::Point3D<float> stdPt(iX, iY, iZ);
+	PGMath::Point3D<float> patPt;
+	PGMath::Point3D<float> isoPt;
+	PGMath::Point3D<float> dcmPt;	
+	PGMath::Point3D<float> outPt;	
+
+	m_transformStdToPat.Apply(stdPt, patPt); // Normalize to bring to a unit space
+	//m_transformPatToIso.Apply(patPt, isoPt); // apply direction cosines // stay in patient space
+	m_transformIsoToDcm.Apply(patPt, dcmPt); // move origin to volume's center    
+
+
+	const std::vector< PGMath::Vector3D<float> >& imgPosPatient = m_metaData.GetImagePositionsPatient();
+	int firstSliceIdx = 0;//invZFactor<0.0f ? imgPosPatient.size()-1 : 0;
+	const PGMath::Vector3D<float>& imgPosPatientOrg = imgPosPatient[firstSliceIdx];	
+
+	PGMath::Matrix4x4<float> matrixDcmToPat;	
+	matrixDcmToPat.Identity();
+	{
+		// get first slice pos
+		matrixDcmToPat.SetElement(0, 3, imgPosPatientOrg.X());
+		matrixDcmToPat.SetElement(1, 3, imgPosPatientOrg.Y());
+		matrixDcmToPat.SetElement(2, 3, imgPosPatientOrg.Z());
+	}	
+
+	PGMath::AffineTransform<float> transformDcmToPat(matrixDcmToPat);
+
+
+
+	transformDcmToPat.Apply(dcmPt, outPt); // add slice co-ordinates
+
+	oX = outPt.X(); oY = outPt.Y(); oZ = outPt.Z();
+
+	return true;
+}
 
 template <class T>
 bool Voxel3D<T>::GetImgToPatCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ) 
 {	
+	return false;
+
 	PGMath::Point3D<float> pointStd, pointPat;
 
 	// perform testing that all volumes provide same tranformed point
@@ -857,10 +914,10 @@ bool Voxel3D<T>::updateTransforms()
 
 	
 	//m_transformStdToImg = m_transformRegistration;
-	m_transformStdToImg = m_transformStdToPat;
-	m_transformStdToImg.ConcatPre(&m_transformPatToIso);
-	m_transformStdToImg.ConcatPre(&m_transformIsoToDcm);
-	m_transformStdToImg.ConcatPre(&m_transformDcmToImage);
+	m_transformStdToImg = m_transformStdToPat;			  // Normalize to bring to a unit space
+	m_transformStdToImg.ConcatPre(&m_transformPatToIso);  // apply direction cosines
+	m_transformStdToImg.ConcatPre(&m_transformIsoToDcm);  // move origin to volume's center 
+	m_transformStdToImg.ConcatPre(&m_transformDcmToImage);// apply pixel spacing & inversion of Z as needed
 
 	m_transformStdToRaw = m_transformStdToImg;
 
