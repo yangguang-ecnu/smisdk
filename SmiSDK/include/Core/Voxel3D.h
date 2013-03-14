@@ -86,6 +86,9 @@ public:
 	bool GetStdToPatCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ);	
 
+	bool GetPatToStdCoord(const float& iX,  const float& iY, const float& iZ,
+								  float& oX,  float& oY, float& oZ);	
+
 	bool GetStdToImgCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ) const;	
 
