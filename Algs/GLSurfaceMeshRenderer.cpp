@@ -534,16 +534,22 @@ namespace PGAlgs
 			glColor4f(1.0, 1.0, 0.0, 0.75);
 			std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetShapeCloud();
 			unsigned int pointCount = ptCloud.size();		
-			glBegin(GL_LINES);
-			for (int i=0; i<pointCount; i++)
+			if (pointCount>1)
 			{
-				const PGMath::Point3D<float>& nextPoint = ptCloud[i];						
-				glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
-			}	
+				glBegin(GL_LINES);
+				for (int i=0; i<pointCount; i++)
+				{
+					const PGMath::Point3D<float>& nextPoint = ptCloud[i];						
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+				}	
+			}
 			if (ptCloud.size()>0)
 			{
+				glEnable(GL_LIGHTING);
 				const PGMath::Point3D<float>& nextPoint = ptCloud[ptCloud.size()-1];						
-				glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+				//glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+				renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 0.008, sphereDivn[0]);
+				glDisable(GL_LIGHTING);
 			}
 
 			glEnd();

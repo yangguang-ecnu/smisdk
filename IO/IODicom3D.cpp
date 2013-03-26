@@ -674,7 +674,17 @@ bool IODicom3D<T>::ReadFromFolder(const std::vector<std::string>& iFileList,	PGC
 	// compute skip factors
 	PGIO::IODicom<T> dicomImgIO;
 	PGCore::MetaData<T> firstMetaData;
-	if (!dicomImgIO.GetAttributes(firstMetaData, iFileList[0]))
+
+	int sliceIdx=0; 
+	bool getMetaDataSuccess = false;
+	while (sliceIdx<iFileList.size())
+	{
+		getMetaDataSuccess = dicomImgIO.GetAttributes(firstMetaData, iFileList[sliceIdx]);
+		if (getMetaDataSuccess) break;
+		sliceIdx++;
+	}
+
+	if (!getMetaDataSuccess)
 	{
 		LOG0("ReadFromFolderMT::ReadMetaData: Failed to GetAttributes.");			
 		return false;

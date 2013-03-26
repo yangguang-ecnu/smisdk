@@ -440,35 +440,9 @@ namespace PGAlgs
 		glMatrixMode(GL_MODELVIEW);
 		glLoadIdentity();
 
-		glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
+		
 
-		/*
-		if (m_centerOnCursor==1)
-		{
-			//glMatrixMode(GL_MODELVIEW);
-			sYn = -2.0f*m_screenY; sXn = -2.0f*m_screenX;
-
-			//glTranslatef(sXn, sYn, 0);
-			//glScalef(m_zoomFactor, m_zoomFactor, 1);
-			//glTranslatef(-sXn, -sYn, 0);
-
-			glTranslatef(sXn, sYn, 0);
-			m_screenLastX+= m_screenX;
-			m_screenLastY+= m_screenY;
-
-			//originFacX = m_screenLastX; originFacY = m_screenLastY;
-
-			//m_centerOnCursor = false;
-		} else if (m_centerOnCursor==-1)
-		{
-			//glMatrixMode(GL_MODELVIEW);
-			sYn = 2.0f*m_screenLastY; sXn = 2.0f*m_screenLastX;
-			glTranslatef(sXn, sYn, 0);
-			m_screenLastX = 0;
-			m_screenLastY = 0;
-			m_centerOnCursor = 0;
-		}
-		*/
+		
 
 		// zoom re-centering disabled for now
 		if (m_centerOnCursor==1)
@@ -536,6 +510,8 @@ namespace PGAlgs
 
 				for (int i=0; i<m_pTextureName.size(); i++)
 				{	
+					if (i) glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
+
 					// bRatio = (int)floor(m_blendRatio[i]);
 					// glColor4f(255,255,255,1);//bRatio);
 					//glColor4f(m_blendRatio[i], m_blendRatio[i], m_blendRatio[i], m_blendRatio[i]);
