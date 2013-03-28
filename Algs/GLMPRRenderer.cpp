@@ -458,6 +458,9 @@ namespace PGAlgs
 		}
 
 		
+		//glColor4f(1,0,0,1);
+		//glColor4f(1, 0.5f, 0, 1);
+	
 
 #ifdef _USE_TEXTURE
 				//glBindTexture(GL_TEXTURE_2D, m_pTextureName);
@@ -507,10 +510,19 @@ namespace PGAlgs
 				// m_volumeAccessor[vIndex]->GetBitVolume().IsInitialized();
 				bool multipleData = (m_pTextureName.size()>1);
 				
+				//glPushMatrix();
+
+				glMatrixMode(GL_MODELVIEW);
+				glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
+				glRotatef(gRotation[0].X(), 1, 0, 0);
+				glRotatef(gRotation[0].Y(), 0, 1, 0);
+				glRotatef(gRotation[0].Z(), 0, 0, 1);
+				glMatrixMode(GL_TEXTURE);
 
 				for (int i=0; i<m_pTextureName.size(); i++)
 				{	
-					if (i) glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
+					
+					
 
 					// bRatio = (int)floor(m_blendRatio[i]);
 					// glColor4f(255,255,255,1);//bRatio);
@@ -535,6 +547,8 @@ namespace PGAlgs
 					glVertex3f( boxSize, -boxSize,  boxSize*i);	// Bottom Right Of The Texture and Quad				
 					glEnd();				
 				}
+
+				//glPopMatrix();
 
 				glDisable(GL_TEXTURE_2D);
 				//glFlush();
@@ -565,10 +579,7 @@ namespace PGAlgs
 		
 		//keep cursor gap fixed. use zoom factor
 		//also, there is still sync error when in zoomed mode
-
-
-		//glColor4f(1,0,0,1);
-		//glColor4f(1, 0.5f, 0, 1);
+	
 		{
 			glBegin(GL_LINES);			
 			glColor4fv(m_colorXAxis);
@@ -580,6 +591,10 @@ namespace PGAlgs
 			glVertex3f(sX, sY+0.1f/m_zoomFactor, 0.0f);glVertex3f(sX, 1.0f,  0.0f);
 			glEnd();
 		}
+	
+
+
+		
 
 		
 		{

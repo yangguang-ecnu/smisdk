@@ -352,11 +352,11 @@ namespace PGAlgs
 		
 		//glClearColor(0, 0, 0, 0);		
 		
-		glTranslatef(gTranslation.X(), gTranslation.Y(), -gTranslation.Z());
+		glTranslatef(gTranslation[iMeshIndex].X(), gTranslation[iMeshIndex].Y(), -gTranslation[iMeshIndex].Z());
 			glRotatef(-90, 1, 0, 0);
-			glRotatef(gRotation.X(), 1, 0, 0);
-			glRotatef(gRotation.Y(), 0, 0, 1);
-			glRotatef(gRotation.Z(), 0, 1, 0);
+			glRotatef(gRotation[iMeshIndex].X(), 1, 0, 0);
+			glRotatef(gRotation[iMeshIndex].Y(), 0, 0, 1);
+			glRotatef(gRotation[iMeshIndex].Z(), 0, 1, 0);
 		
 		
 		// cursor

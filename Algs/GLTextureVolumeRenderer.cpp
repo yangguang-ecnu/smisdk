@@ -1373,7 +1373,7 @@ namespace PGAlgs
 
 
 		//glRotatef(gRotation.X(), gRotation.Y(), gRotation.Z());
-		glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
+		glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
 
 		////glTranslatef(-0.5f, -0.5f, -0.5f);
 		//glRotatef(gRotation.X(), 1, 0, 0);
@@ -1668,9 +1668,9 @@ namespace PGAlgs
 		glScalef(gTexScale[iVIndex].X(), gTexScale[iVIndex].Y(), gTexScale[iVIndex].Z());//0.75f); 7
 
 		glRotatef(90.0, 1, 0, 0);		// this angle is determined based on slice orientation
-		glRotatef(gRotation.X(), 1, 0, 0);
-		glRotatef(gRotation.Y(), 0, 1, 0);
-		glRotatef(gRotation.Z(), 0, 0, 1);					 
+		glRotatef(gRotation[iVolumeIndex].X(), 1, 0, 0);
+		glRotatef(gRotation[iVolumeIndex].Y(), 0, 1, 0);
+		glRotatef(gRotation[iVolumeIndex].Z(), 0, 0, 1);					 
 
 		glTranslatef(-zFac, -zFac, -zFac);		
 

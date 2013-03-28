@@ -92,9 +92,9 @@ namespace PGAlgs
 
 		virtual bool SetSlicerPosition(double iPosition); // MPR plane position. VR: cut plane position
 
-		bool SetTranslationUnit(const float& iTransX, const float& iTransY, const float& iTransZ);		
+		bool SetTranslationUnit(const float& iTransX, const float& iTransY, const float& iTransZ, int iIndex=-1);		
 		
-		bool SetRotationAngles(const float& iRotX, const float& iRotY, const float& iRotZ);
+		bool SetRotationAngles(const float& iRotX, const float& iRotY, const float& iRotZ, int iIndex=-1);
 		
 		virtual bool SetSkipFactor(int iSkipFactor) { m_skipFactor = iSkipFactor; return true; };
 
@@ -107,8 +107,8 @@ namespace PGAlgs
 		int						m_max3DTextureSize;//KB
 		long					m_remaining3DTextureSize;//KB
 
-		PGMath::Vector3D<float>	gTranslation;
-		PGMath::Vector3D<float>	gRotation;
+		PGMath::Vector3D<float>	gTranslation[2];
+		PGMath::Vector3D<float>	gRotation[2];
 		
 		bool							    m_externalContext;
 		bool								m_glutInitialized;
