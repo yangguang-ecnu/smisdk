@@ -58,7 +58,7 @@ namespace PGMath
 
 	
 	template <class T>
-	bool DegreesOfFreedomBase<T>::SetParameter(unsigned int iIndex, const T& iParameter)
+	bool DegreesOfFreedomBase<T>::SetParameter(unsigned int iIndex, T iParameter)
 	{
 		if (iIndex> (m_parameters.size()-1)) {
 			return false;

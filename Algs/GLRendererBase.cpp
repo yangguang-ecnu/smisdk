@@ -55,12 +55,19 @@ namespace PGAlgs
 
 
 	template <class T, class U>
-	bool GLRendererBase<T, U>::SetRotationAngles(const float& iRotX, const float& iRotY, const float& iRotZ)
+	bool GLRendererBase<T, U>::SetRotationAngles(const float& iRotX, const float& iRotY, const float& iRotZ, int iIndex/*=-1*/)
 	{
-		gRotation = PGMath::Vector3D<float>(iRotX, iRotY, iRotZ);
+		if (iIndex==-1)
+		{
+			gRotation[0] = PGMath::Vector3D<float>(iRotX, iRotY, iRotZ);
+		    gRotation[1] = PGMath::Vector3D<float>(iRotX, iRotY, iRotZ);
+		} else if (iIndex>-1 && iIndex<2)
+		{
+			gRotation[iIndex] = PGMath::Vector3D<float>(iRotX, iRotY, iRotZ);
+		}
 		return true;
 	}
-
+		
 
 	template <class T, class U>
 	GLRendererBase<T, U>::~GLRendererBase(void) 
@@ -89,9 +96,16 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	bool GLRendererBase<T, U>::SetTranslationUnit(const float& iTransX, const float& iTransY, const float& iTransZ)
+	bool GLRendererBase<T, U>::SetTranslationUnit(const float& iTransX, const float& iTransY, const float& iTransZ, int iIndex/*=-1*/)
 	{
-		gTranslation = PGMath::Vector3D<float>(iTransX, iTransY, iTransZ);
+		if (iIndex==-1)
+		{
+			gTranslation[0] = PGMath::Vector3D<float>(iTransX, iTransY, iTransZ);
+		    gTranslation[1] = PGMath::Vector3D<float>(iTransX, iTransY, iTransZ);
+		} else if (iIndex>-1 && iIndex<2)
+		{
+			gTranslation[iIndex] = PGMath::Vector3D<float>(iTransX, iTransY, iTransZ);
+		}
 		return true;
 	}
 

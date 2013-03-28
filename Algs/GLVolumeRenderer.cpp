@@ -35,8 +35,11 @@ namespace PGAlgs
 		
 		m_LuT.clear();
 
-		gTranslation = PGMath::Vector3D<float>(0, 0, 0);
-		gRotation = PGMath::Vector3D<float>(0, 0, 0);
+		for (int i=0; i<2; i++)
+		{
+			gTranslation[i] = PGMath::Vector3D<float>(0, 0, 0);
+			gRotation[i] = PGMath::Vector3D<float>(0, 0, 0);
+		}
 
 		gRotate = 0.5f;
 		
@@ -256,7 +259,7 @@ namespace PGAlgs
 
 		glMatrixMode(GL_MODELVIEW);
 
-		glTranslatef(gTranslation.X(), gTranslation.Y(), gTranslation.Z());
+		glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
 		
 		glPushMatrix();
 		glMatrixMode(GL_PROJECTION); 

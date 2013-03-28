@@ -54,7 +54,7 @@ public:
 
 	DegreesOfFreedomBase(const std::vector<T>& iParameters);	
 	
-	virtual bool SetParameter(unsigned int iIndex, const T& iParameter);
+	virtual bool SetParameter(unsigned int iIndex, T iParameter);
 	
 	virtual const T GetParameter(unsigned int iIndex) const;
 
