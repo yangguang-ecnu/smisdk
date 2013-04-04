@@ -441,7 +441,7 @@ namespace PGAlgs
 		glLoadIdentity();
 
 		
-
+		glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
 		
 
 		// zoom re-centering disabled for now
@@ -457,7 +457,13 @@ namespace PGAlgs
 			glTranslatef(-2.0f*m_screenX, -2.0f*m_screenY, 0);
 		}
 
-		
+		//glMatrixMode(GL_MODELVIEW);
+		//glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
+		//glRotatef(gRotation[0].X(), 1, 0, 0);
+		//glRotatef(gRotation[0].Y(), 0, 1, 0);
+		//glRotatef(gRotation[0].Z(), 0, 0, 1);
+		//glMatrixMode(GL_TEXTURE);
+
 		//glColor4f(1,0,0,1);
 		//glColor4f(1, 0.5f, 0, 1);
 	
@@ -512,12 +518,7 @@ namespace PGAlgs
 				
 				//glPushMatrix();
 
-				glMatrixMode(GL_MODELVIEW);
-				glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
-				glRotatef(gRotation[0].X(), 1, 0, 0);
-				glRotatef(gRotation[0].Y(), 0, 1, 0);
-				glRotatef(gRotation[0].Z(), 0, 0, 1);
-				glMatrixMode(GL_TEXTURE);
+				
 
 				for (int i=0; i<m_pTextureName.size(); i++)
 				{	
@@ -1027,8 +1028,8 @@ namespace PGAlgs
 	template <class T, class U>
 	inline bool GLMPRRenderer<T, U>::UpdateRender(int iIndex=-1, bool iUpdateDisplay=0)
 		{
-			int iBegin = (iIndex==-1) ? 0 : iIndex;
-			int iEnd = (iIndex==-1) ?  m_mprRenderer.size() : iIndex+1;
+			int iBegin = (iIndex==-1) ? 0 : (iIndex>m_mprRenderer.size() ? 0 : iIndex);
+			int iEnd = (iIndex==-1) ?  m_mprRenderer.size() : (iIndex>m_mprRenderer.size() ? 0 : iIndex+1);//iIndex+1;
 			bool res = LoadImage(iBegin, iEnd);
 			if (!res) return false;
 

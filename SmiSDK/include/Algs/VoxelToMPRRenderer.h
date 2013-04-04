@@ -71,7 +71,7 @@ namespace PGAlgs
 
 		bool Execute();
 
-		virtual bool PrepareRenderer();
+		virtual bool PrepareRenderer();		
 
 		bool Render();
 

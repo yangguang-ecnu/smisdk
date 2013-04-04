@@ -49,6 +49,10 @@ namespace PGCore
 
 		bool SetWindow(const float iLowLevel, const float iHighLevel);
 
+		void SetTransparencyFlag(const bool iFlag);
+
+		bool GetTransparencyFlag() const;
+
 		Point3D<T>* GetBuffer();
 
 		bool Clear();
@@ -64,6 +68,7 @@ namespace PGCore
 		bool Dump() const;
 
 	protected: 
+		bool						m_transparencyFlag;
 		ePgLUTType					m_LutType;
 		PGCore::Image<Point3D<T> >	m_image;
 		float						m_lowLevel, m_highLevel;
