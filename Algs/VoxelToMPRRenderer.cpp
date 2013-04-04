@@ -455,7 +455,7 @@ namespace PGAlgs
 						//blendVal = inMaskVal ? (1.0f-m_blendWeight[0]) : m_blendWeight[0];
 					} 
 
-					bValue = bValue + PGMath::Point3D<U>(iVal.X(), iVal.Y(), iVal.Z(), uMaxVal);//unsigned char(255.0f*blendVal+0.5f));
+					bValue = bValue + PGMath::Point3D<U>(iVal.X(), iVal.Y(), iVal.Z(), iVal.W());//unsigned char(255.0f*blendVal+0.5f));
 #else					
 					bValue = bValue + PGMath::Point3D<U>(inVal, inVal, inVal, 255);//iVal.W());//.0f*m_blendWeight[i]);//iVal.W()*m_blendWeight[i]);
 #endif
@@ -572,7 +572,7 @@ namespace PGAlgs
 					iVal = m_LuTBuf[i][inVal];						
 
 
-					bValue = bValue + PGMath::Point3D<U>(iVal.X(), iVal.Y(), iVal.Z(), uMaxVal);
+					bValue = bValue + PGMath::Point3D<U>(iVal.X(), iVal.Y(), iVal.Z(), iVal.W());//uMaxVal);
 #else					
 					bValue = bValue + PGMath::Point3D<U>(inVal, inVal, inVal, uMaxVal);//iVal.W());//.0f*m_blendWeight[i]);//iVal.W()*m_blendWeight[i]);
 #endif

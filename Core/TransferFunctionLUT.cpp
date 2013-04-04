@@ -36,6 +36,8 @@ namespace PGCore
 		m_step=1.0f/m_dimBy6;
 		m_maxOutValue = 255;
 
+		m_transparencyFlag = false;
+
 #if (PG_USE_RGBA16)
 		m_maxOutValue = (PG_USHORT_MAX-1);
 #endif
@@ -43,6 +45,18 @@ namespace PGCore
 		SetDimension(iDimension);
 		SetType(iType);
 		//SetBlendWeight(1.0f);
+	}
+
+	template <class T>
+	void TransferFunctionLUT<T>::SetTransparencyFlag(const bool iFlag)
+	{
+		m_transparencyFlag = iFlag;
+	}
+
+	template <class T>
+	bool TransferFunctionLUT<T>::GetTransparencyFlag() const
+	{
+		return m_transparencyFlag;
 	}
 
 	template <class T>
@@ -233,7 +247,8 @@ namespace PGCore
 					posValue,
 					posValue, 
 					posValue, 
-					posValue);							
+					m_transparencyFlag ? i : posValue		
+					);							
 			}
 
 			/*
@@ -260,7 +275,7 @@ namespace PGCore
 				m_maxOutValue, 
 				m_maxOutValue,
 				//m_maxOutValue
-				0
+				m_transparencyFlag ? i : m_maxOutValue	
 				);
 		}
 
@@ -288,7 +303,7 @@ namespace PGCore
 
 		float tstep = (1.0f)/(float)(m_dimBy6);
 		float invExp = float(m_maxOutValue) / (exp(1.0f) - 1.0f);
-		float tstepBig = (1.0f)/(float)(24.0f*m_dimBy6);;
+		float tstepBig = (1.0f)/(float)(m_dimBy6);;
 
 		for (i=0; i<m_dimBy6; i++)
 		{
@@ -316,7 +331,7 @@ namespace PGCore
 					0, 
 					0, 
 					//m_maxOutValue
-					posValueAlpha//i
+					m_transparencyFlag ? i : posValueAlpha		
 					);
 			}
 
@@ -335,7 +350,7 @@ namespace PGCore
 					posValue/2, 
 					0, 
 					//m_maxOutValue
-					posValueAlpha//offsetA1+i
+					m_transparencyFlag ? offsetA1+i : posValueAlpha		
 					);
 			}
 
@@ -352,7 +367,7 @@ namespace PGCore
 					m_maxOutValue/2 + posValue/2, 
 					0,
 					//m_maxOutValue
-					posValueAlpha//offsetA2+i
+					m_transparencyFlag ? offsetA2+i : posValueAlpha		
 					);
 			}
 
@@ -369,7 +384,7 @@ namespace PGCore
 					m_maxOutValue, 
 					posValue/2,
 					//m_maxOutValue
-					posValueAlpha//offsetA3+i
+					m_transparencyFlag ? offsetA3+i : posValueAlpha		
 					);
 			}
 
@@ -386,7 +401,7 @@ namespace PGCore
 					m_maxOutValue, 
 					m_maxOutValue/2 + posValue/2,
 					//m_maxOutValue
-					posValueAlpha//offsetA4+i
+					m_transparencyFlag ? offsetA4+i : posValueAlpha		
 					);
 			}
 
@@ -401,8 +416,8 @@ namespace PGCore
 					m_maxOutValue, 
 					m_maxOutValue, 
 					m_maxOutValue,
-					//m_maxOutValue
-					posValueAlpha//offsetA5+i
+					m_transparencyFlag ? 0 : m_maxOutValue					
+					//offsetA5+i
 					);
 			}
 
@@ -416,7 +431,7 @@ namespace PGCore
 				m_maxOutValue, 
 				m_maxOutValue,
 				//m_maxOutValue
-				0
+				m_transparencyFlag ? m_maxOutValue : 0					
 				);
 		}
 
@@ -456,8 +471,7 @@ namespace PGCore
 					posValue,
 					0, 
 					posValue, 
-					//m_maxOutValue
-					i
+					m_transparencyFlag ? i : m_maxOutValue					
 					);
 			}
 
@@ -466,9 +480,8 @@ namespace PGCore
 				buf[i+offset1] = Point3D<T>( 
 					negValue ,
 					0, 
-					m_maxOutValue, 
-					//m_maxOutValue
-					offsetA1+i
+					m_maxOutValue, 					
+					m_transparencyFlag ? offsetA1+i : m_maxOutValue					
 					);
 			}
 
@@ -479,7 +492,7 @@ namespace PGCore
 					posValue, 
 					negValue,
 					//m_maxOutValue
-					offsetA2+i
+					m_transparencyFlag ? offsetA2+i : m_maxOutValue					
 					);
 			}
 
@@ -490,7 +503,7 @@ namespace PGCore
 					m_maxOutValue, 
 					0,
 					//m_maxOutValue
-					offsetA3+i
+					m_transparencyFlag ? offsetA3+i : m_maxOutValue					
 					);
 			}
 
@@ -501,7 +514,7 @@ namespace PGCore
 					negValue, 
 					0,
 					//m_maxOutValue
-					offsetA4+i
+					m_transparencyFlag ? offsetA4+i : m_maxOutValue					
 					);
 			}
 
@@ -510,9 +523,8 @@ namespace PGCore
 				buf[i+offset5] = Point3D<T>( 
 					m_maxOutValue, 
 					posValue, 
-					posValue,
-					//m_maxOutValue
-					offsetA5+i
+					posValue,					
+					m_transparencyFlag ? offsetA5+i : m_maxOutValue					
 					);
 			}
 
@@ -523,9 +535,8 @@ namespace PGCore
 			buf[i] = Point3D<T>( 
 				m_maxOutValue, 
 				m_maxOutValue, 
-				m_maxOutValue,
-				//m_maxOutValue
-				0
+				m_maxOutValue,				
+				m_transparencyFlag ? 0 : m_maxOutValue		
 				);
 		}
 
