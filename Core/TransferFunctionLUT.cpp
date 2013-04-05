@@ -471,7 +471,7 @@ namespace PGCore
 					posValue,
 					0, 
 					posValue, 
-					m_transparencyFlag ? i : m_maxOutValue					
+					m_transparencyFlag ? i+offset : m_maxOutValue					
 					);
 			}
 
@@ -481,7 +481,7 @@ namespace PGCore
 					negValue ,
 					0, 
 					m_maxOutValue, 					
-					m_transparencyFlag ? offsetA1+i : m_maxOutValue					
+					m_transparencyFlag ? i+offset1 : m_maxOutValue					
 					);
 			}
 
@@ -492,7 +492,7 @@ namespace PGCore
 					posValue, 
 					negValue,
 					//m_maxOutValue
-					m_transparencyFlag ? offsetA2+i : m_maxOutValue					
+					m_transparencyFlag ? i+offset2 : m_maxOutValue					
 					);
 			}
 
@@ -503,7 +503,7 @@ namespace PGCore
 					m_maxOutValue, 
 					0,
 					//m_maxOutValue
-					m_transparencyFlag ? offsetA3+i : m_maxOutValue					
+					m_transparencyFlag ? i+offset3 : m_maxOutValue					
 					);
 			}
 
@@ -514,7 +514,7 @@ namespace PGCore
 					negValue, 
 					0,
 					//m_maxOutValue
-					m_transparencyFlag ? offsetA4+i : m_maxOutValue					
+					m_transparencyFlag ? i+offset4 : m_maxOutValue					
 					);
 			}
 
@@ -524,7 +524,7 @@ namespace PGCore
 					m_maxOutValue, 
 					posValue, 
 					posValue,					
-					m_transparencyFlag ? offsetA5+i : m_maxOutValue					
+					m_transparencyFlag ? i+offset5 : m_maxOutValue					
 					);
 			}
 
