@@ -142,6 +142,7 @@ namespace PGAlgs
 			return true;
 		}
 
+
 		PGCore::PixelBase<T> tPixel;
 		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue();
 		T seedValue, avgValue = 0, offset = 0;
@@ -152,7 +153,8 @@ namespace PGAlgs
 		m_pIVolume->GetVolumeAccessor()->GetDataRange(&minVal, &maxVal);
 		offset = T_ROUND((m_window)*((float)(maxVal-minVal)));
 
-		if (analyzeSeedPoint(m_pSeeds[0], minVal, maxVal, avgValue, stdDev, snr))
+		PGMath::Point3D<int> iSeed((int)m_pSeeds[0].X(), (int)m_pSeeds[0].Y(), (int)m_pSeeds[0].Z());
+		if (analyzeSeedPoint(iSeed, minVal, maxVal, avgValue, stdDev, snr))
 		{
 			if (stdDev)	
 			{
@@ -162,7 +164,7 @@ namespace PGAlgs
 		} 
 
 		m_lowValue	=	seedValue	-	offset;
-		m_highValue	=	avgValue	+	offset;
+		m_highValue	=	seedValue	+	offset;
 		
 		GetLogger()->Log("Range: %d -> %d, GTh: %03d (Std: %3.2f, Avg: %05d, SNR: %3.2f)", m_lowValue, m_highValue, m_gradientHigh, stdDev, int(avgValue), snr);
 		
@@ -170,7 +172,7 @@ namespace PGAlgs
 		//DumpSeedsOnImages(m_pSeeds);
 #endif
 		
-		for (int i=0; i<1/*m_pSeeds.size()*/; i++)
+		for (int i=0; i<m_pSeeds.size(); i++)
 		{
 			bool rv = m_stack.Push(PGMath::Point3D<int>((int)m_pSeeds[i].X(), (int)m_pSeeds[i].Y(), (int)m_pSeeds[i].Z()));
 			if (!rv) return false;
@@ -198,7 +200,7 @@ namespace PGAlgs
 			if (stSize==0) break;			
 			rvc = SegRetCodeOk;
 
-			while (m_count<totalVoxels)
+			while (m_count<voxelsPerIteration)
 			{
 				PGMath::Point3D<int> oPoint;
 
@@ -643,17 +645,44 @@ namespace PGAlgs
 		bool rv = SegmentationBase<T, U>::autoAdjustConditions(iSeed, iReason);
 		if (!rv) return false;
 
+		T valOffset = 5;
+		T gradMultFac = 5; 
+
+		/*
+		float stdDev=0, snr=0, spread=m_stdSpreadValue, valFac=1.0f, gradFac = m_stdSpreadGradient;
+
+		PGCore::PixelBase<T> tPixel;
+		T minVal = tPixel.GetMaxValue(), maxVal = tPixel.GetMinValue(), avgValue = 0;
+		
+		T seedValue = m_pIVolume->GetVolumeAccessor()->GetValue(iSeed.Y(), iSeed.X(), iSeed.Z());		
+
+		//m_pIVolume->GetVolumeAccessor()->GetDataRange(&minVal, &maxVal);
+		valOffset = 10;//T_ROUND((m_window)*((float)(maxVal-minVal)));
+
+		if (analyzeSeedPoint(iSeed, minVal, maxVal, avgValue, stdDev, snr))
+		{
+			if (stdDev)	
+			{
+				valOffset	= T_ROUND(valFac*spread*stdDev);
+				gradMultFac = T_ROUND(gradFac*stdDev);
+			}			
+		} 		
+		
+		GetLogger()->Log("Range: %d -> %d, GTh: %03d (Std: %3.2f, Avg: %05d, SNR: %3.2f)", m_lowValue, m_highValue, m_gradientHigh, stdDev, int(avgValue), snr);
+		
+		*/
+
 		// use current seed to readjust the conditions. maybe use local distribution
 		if (iReason==SegRetCodeGradient || iReason==SegRetCodeNeighbor)
 		{
-			m_gradientHigh+=10;
-		}
+			m_gradientHigh*=gradMultFac;
+		} 
 
 		if (iReason==SegRetCodeValue || iReason==SegRetCodeNeighbor)
 		{
-			m_lowValue-=10;
-			m_highValue+=10;
-		}
+			m_lowValue-=valOffset;
+			m_highValue+=valOffset;
+		} 
 
 		if (iReason==SegRetCodeNeighbor)
 		{

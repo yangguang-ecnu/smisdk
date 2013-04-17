@@ -333,7 +333,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	bool SegmentationBase<T, U>::analyzeSeedPoint(const PGMath::Point3D<float>& iSeed, T& oMinValue, T& oMaxValue, 
+	bool SegmentationBase<T, U>::analyzeSeedPoint(const PGMath::Point3D<int>& iSeed, T& oMinValue, T& oMaxValue, 
 		T& oMeanValue, float& oStdDev, float& oSNR)
 	{
 		PGCore::Image<T> iImage = m_pIVolume->GetVolumeAccessor()->GetImage(int(iSeed.Z()+0.5f));

@@ -47,6 +47,7 @@ namespace PGAlgs
 
 		virtual void Clear();
 
+		
 	protected:
 
 		virtual void display();
@@ -63,6 +64,8 @@ namespace PGAlgs
 
 		void renderSphere(float x, float y, float z, float radius,int subdivisions,GLUquadricObj *quadric);		
 		void renderSphere_convenient(float x, float y, float z, float radius,int subdivisions);	
+
+
 	};
 };
 

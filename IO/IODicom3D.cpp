@@ -1148,8 +1148,9 @@ bool IODicom3D<T>::ReadFromFolder(const std::vector<std::string>& iFileList,	PGC
 	}
 	//LOG1("IODicom3D::Read: Spacing: %3.5f", spacing);			
 
-	oMetaData->SetSpacing(PGMath::Vector3D<float>(oSpacing.X(), oSpacing.Y(), spacing));
-	
+	oMetaData->SetSpacing(PGMath::Vector3D<float>(oSpacing.X(), oSpacing.Y(), spacing));	
+
+	oMetaData->SetSkipFactors(m_skipFactorXY, m_skipFactorZ);
 
 	// set vectors
 	oMetaData->SetImagePositionsPatient(pPositions);

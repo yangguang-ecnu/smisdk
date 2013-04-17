@@ -262,6 +262,7 @@ namespace PGAlgs
 		return; 
 	}
 
+
 	template <class T, class U>
 	void GLSurfaceMeshRenderer<T, U>::renderSingleVolume(const int iMeshIndex/*=0*/)
 	{
@@ -348,7 +349,26 @@ namespace PGAlgs
 
 		float meshScFactor = 1.0f;
 		
-		if (meshSpan.Z()>0.0f) meshScFactor/=meshSpan.Z();
+		
+		std::vector<float> dims;	
+		{
+			dims.push_back(skelSpan.X());
+			dims.push_back(skelSpan.Y());
+			dims.push_back(skelSpan.Z());	
+			std::sort(dims.begin(), dims.end());		
+		}	
+
+		// 1.0 unit = dims[2] mm
+		// 1 mm = 1.0/dims[2] units		
+		float oneMmUnit = 1.0f;//1.0f;
+		if (dims[2]>0.0f) 
+		{
+			//meshScFactor/=dims[2];
+			// 1.0 unit = dims[2] mm
+			// 1 mm = 1.0/dims[2] units
+			oneMmUnit = 1.0f/dims[2];
+		}
+		
 		
 		//glClearColor(0, 0, 0, 0);		
 		
@@ -423,7 +443,7 @@ namespace PGAlgs
 		{		
 			glRotatef(-90, 1, 0, 0);
 			int polySkip = 16;//36;//
-			glScalef(meshScFactor, meshScFactor, meshScFactor);				
+			glScalef(meshScFactor, meshScFactor, meshScFactor);							
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());			
 			glColor4f(1, 1, 1, 0.1f);
 			unsigned int polyCount = m_polyMeshList[iMeshIndex]->GetDimensions();
@@ -464,17 +484,21 @@ namespace PGAlgs
 			// point, tool, target - ref
 			// point, tool, target - sec
 			float treeColors[2][3][4] = {
-										{{1.0,  0.0,  0.0, 1.0}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.7} }, // red, cyan, green - BIG
+										{{1.0,  0.0,  0.0, 1.0}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.5} }, // red, cyan, green - BIG
 										{{1,  1,  1, 0.5}, {1.0, 1.0, 1, 0.5},  {1.0, 1, 1, 0.4}} // white, white, white - faded
 									}; 
 			float geomPtSz[2][2] = { {1, 2}, {1, 2} };   
-			float sphereDivn[2] = {16, 4};
+			float sphereDivn[2] = {16, 8};
 			float sphereRadius[2] = {0.001, 0.001}; // ~1mm radius
 			int pSkip=1;
 
 			for (int j=0; j<2; j++)
-			{				
+			{	
 				// pt cloud
+				const PGMath::AffineTransform<float> &regTrans =  m_polyMeshList[iMeshIndex]->GetRegistrationTransform(j);
+				const Matrix4x4<float>& regMat = regTrans.ConstMatrix4x4();
+				glScalef(regMat[0], regMat[5], regMat[10]);			
+
 				glPointSize(geomPtSz[j][0]);
 				glColor4fv(treeColors[j][0]);
 				std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetPointCloud(j);
@@ -518,11 +542,12 @@ namespace PGAlgs
 				std::vector<PGMath::Point3D<float> >& tgCloud = m_polyMeshList[iMeshIndex]->GetTargetCloud(j);
 				pointCount = tgCloud.size();		
 				//glBegin(GL_POINTS);
+				glScalef(1, 1, 1);
 				for (int i=0; i<pointCount; i+=pSkip)
 				{
 					const PGMath::Point3D<float>& nextPoint = tgCloud[i];						
 					//glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
-					renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 0.016, sphereDivn[j]);
+					renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 4.0*oneMmUnit, sphereDivn[j]);
 				}	
 				//glEnd();
 				glDisable(GL_LIGHTING);
@@ -531,6 +556,7 @@ namespace PGAlgs
 
 			// shape cloud
 			glPointSize(1.0f);
+			glScalef(1, 1, 1);
 			glColor4f(1.0, 1.0, 0.0, 0.75);
 			std::vector<PGMath::Point3D<float> >& ptCloud = m_polyMeshList[iMeshIndex]->GetShapeCloud();
 			unsigned int pointCount = ptCloud.size();		
@@ -546,9 +572,8 @@ namespace PGAlgs
 			if (ptCloud.size()>0)
 			{
 				glEnable(GL_LIGHTING);
-				const PGMath::Point3D<float>& nextPoint = ptCloud[ptCloud.size()-1];						
-				//glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
-				renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 0.008, sphereDivn[0]);
+				const PGMath::Point3D<float>& nextPoint = ptCloud[ptCloud.size()-1];										
+				renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), oneMmUnit, sphereDivn[0]);
 				glDisable(GL_LIGHTING);
 			}
 
@@ -563,14 +588,11 @@ namespace PGAlgs
 		glPushMatrix();
 		{ 
 			float skelScFactor=1.0f;		
-			skelScFactor = meshScFactor;
-			//glRotatef(180, 0, 0, 1);
-			glScalef(1, 1, 1);		
-			//glRotatef(180, 1, 0, 0);
+			skelScFactor = meshScFactor;			
+			glScalef(1, 1, 1);					
 			glRotatef(-90, 1, 0, 0);
 
-			glScalef(skelScFactor, skelScFactor, skelScFactor);					
-			//glTranslatef(-skelOrigin.X(), -skelOrigin.Y(), -skelOrigin.Z());		
+			glScalef(skelScFactor, skelScFactor, skelScFactor);								
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());
 
 
@@ -578,13 +600,14 @@ namespace PGAlgs
 			float lWidths[2] = {2, 2}; // ref: 1, sub: 2
 			int beginIdx[2] = {1, 1};
 			int pSkip=1;
-
-			//glEnable(GL_LINE_STIPPLE);
-			//glLineStipple(1, 0xAAAA);
+		
 			for (int k=0; k<2; k++)
 			{
-				glLineWidth(lWidths[k]);//
-				glPointSize(2);//
+				const PGMath::AffineTransform<float> &regTrans =  m_polyMeshList[iMeshIndex]->GetRegistrationTransform(k);
+				const Matrix4x4<float>& regMat = regTrans.ConstMatrix4x4();
+				glScalef(regMat[0], regMat[5], regMat[10]);			
+				glLineWidth(lWidths[k]);
+				glPointSize(2);
 				glColor4fv(treeColors[k]);
 				unsigned int clineCount = m_polyMeshList[iMeshIndex]->GetSkeletonDimensions(k);
 							
@@ -594,13 +617,9 @@ namespace PGAlgs
 				
 					glBegin(GL_LINE_STRIP);
 					for (int j=beginIdx[k]; j<nextCenterline.size(); j+=pSkip)
-					{					
-						//glPushMatrix();
-						//glTranslatef(nextCenterline[j-1].X(), nextCenterline[j-1].Y(), nextCenterline[j-1].Z());
-						//gluCylinder(m_quadric, 0.01, 0.01, 0.01, 32, 32);					
+					{				
 						glVertex3f(nextCenterline[j-1].X(), nextCenterline[j-1].Y(), nextCenterline[j-1].Z());
 						glVertex3f(nextCenterline[j].X(), nextCenterline[j].Y(), nextCenterline[j].Z());
-						//glPopMatrix();
 					}
 					glEnd();
 
@@ -612,12 +631,10 @@ namespace PGAlgs
 					glEnd();
 				}
 			}
-			glLineWidth(1.0f);//
-			glPointSize(1);//
-			//glDisable(GL_LINE_STIPPLE);
+			glLineWidth(1.0f);
+			glPointSize(1);
 		}
-		glPopMatrix();	
-		//glPopMatrix();
+		glPopMatrix();			
 	}
 
 	template <class T, class U>

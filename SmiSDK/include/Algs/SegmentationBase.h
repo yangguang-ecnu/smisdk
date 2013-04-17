@@ -144,7 +144,7 @@ protected:
 	int								 m_neighborTh;
 
 	
-	virtual bool analyzeSeedPoint(const PGMath::Point3D<float>& iSeed, T& oMinValue, T& oMaxValue, 
+	virtual bool analyzeSeedPoint(const PGMath::Point3D<int>& iSeed, T& oMinValue, T& oMaxValue, 
 		T& oMeanValue, float& oStdDev, float& oSNR);
 
 	virtual bool autoAdjustConditions(const PGMath::Point3D<int>& iSeed, const eSegRetCode iReason);

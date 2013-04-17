@@ -64,7 +64,14 @@ const T* Matrix4x4<T>::Matrix() const
 }
 
 template <class T>
-T &Matrix4x4<T>::operator[](const unsigned int iIndex)
+const T &Matrix4x4<T>::operator[](const unsigned int iIndex) const
+{	
+	if (iIndex>15) return m_matrix[0];
+	return m_matrix[iIndex];
+};
+
+template <class T>
+T &Matrix4x4<T>::operator[](const unsigned int iIndex) 
 {	
 	if (iIndex>15) return m_matrix[0];
 	return m_matrix[iIndex];

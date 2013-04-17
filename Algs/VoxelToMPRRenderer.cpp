@@ -45,6 +45,9 @@ namespace PGAlgs
 		m_start = -0.5f;
 		m_end = 0.5f;
 		m_skipFactor = 1;
+		m_rangeInv.clear();
+		m_rangeMin.clear();
+		m_rangeMax.clear();
 		m_defaultLUT = PGCore::TransferFunctionLUT<U>(kPgLUTTypeGrayScale);
 		SetTransferFunctionLUT(&m_defaultLUT);
 		SetSlicingDirection(kPgSlicingDirectionCoronal);
@@ -235,6 +238,9 @@ namespace PGAlgs
 		mMaskLuT.clear();
 		m_LuTBuf.clear();
 		m_MaskLuTBuf.clear();
+		m_rangeMin.clear();
+		m_rangeMax.clear();
+		m_rangeInv.clear();
 	}
 
 	template <class T, class U>
@@ -316,6 +322,20 @@ namespace PGAlgs
 				LOG0("VoxelToMPRRenderer: Error: empty input volume");
 				return false;
 			}	
+		
+			T maxValue(0), minValue(0);
+			float rangeInv=1.0f;
+			if (inVolume->GetVolumeAccessor()->GetDataRange(&minValue, &maxValue))
+			{			
+				if (minValue!=maxValue)
+				{
+					rangeInv = float(PG_LUT_SIZE)/(float)(maxValue-minValue);
+				}
+			}
+
+			m_rangeMin.push_back(minValue);
+			m_rangeMax.push_back(maxValue);
+			m_rangeInv.push_back(rangeInv);
 
 			m_inVolume.push_back(inVolume);
 
@@ -435,7 +455,9 @@ namespace PGAlgs
 				bValue=U(0);
 				for (i=0; i<mLuT.size(); i++)
 				{
-					T	inVal			=	m_inVolume[i]->GetValue(c, r, m_pSlicerPosition);
+					T	inVal0			=	m_inVolume[i]->GetValue(c, r, m_pSlicerPosition);
+
+					T inVal = getLuTIndex(i, inVal0);
 
 
 #if (_TEST_INTERP==0)
@@ -540,7 +562,7 @@ namespace PGAlgs
 				for (int j=0; j<m_columns; j++)	
 				{
 					PGMath::Point3D<U> iVal = m_LuTBuf[0][i];
-					PGMath::Point3D<U> bValue(iVal.X(), iVal.Y(), iVal.Z(), uMaxVal);
+					PGMath::Point3D<U> bValue(iVal.X(), iVal.Y(), iVal.Z(), iVal.W());
 					*(oBuf+i*m_columns + j) = bValue;
 				}
 			}
@@ -550,6 +572,7 @@ namespace PGAlgs
 			return true;
 		}
 
+		
 
 #define _TEST_INTERP 0
 		for (r=m_start, rIndex=0; r<=(m_end) && rIndex<m_rows && oBufOffset<oBufOffsetLimit; r+=rStep)
@@ -561,8 +584,8 @@ namespace PGAlgs
 				bValue=U(0);
 				for (i=0; i<mLuT.size(); i++)
 				{
-					T	inVal			=	m_inVolume[i]->GetValue(c, r, m_pSlicerPosition);
-
+					T	inVal0			=	m_inVolume[i]->GetValue(c, r, m_pSlicerPosition);
+					T inVal = getLuTIndex(i, inVal0);
 
 #if (_TEST_INTERP==0)
 					PGMath::Point3D<U> iVal(0, 0, 0);
@@ -670,6 +693,18 @@ namespace PGAlgs
 			resliceDoF);
 
 		return true;
+	}
+
+	template <class T, class U>
+	T VoxelToMPRRenderer<T, U>::getLuTIndex(const int& iVolumeIndex, const T& iValue) const
+	{
+		if (iVolumeIndex<0 || iVolumeIndex>(m_rangeInv.size()-1)) 
+		{
+			return T(0);
+		}
+
+		float dValue = ((float)(iValue-m_rangeMin[iVolumeIndex]) * m_rangeInv[iVolumeIndex]);
+		return (T)(0.5 + dValue);
 	}
 
 #ifdef _PG_GENERATE_SDK_LIBS_
