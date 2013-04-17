@@ -101,6 +101,8 @@ public:
 	bool GetPatToImgCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ);
 
+	const PGMath::Vector3D<float>& GetImageSetOrigin(); 
+
 	bool GetInterpolatedImage(const int& oSizeX, const int& oSizeY, const float& iZ, const int& iSkip, PGCore::Image<T>& ioImage) const; // interpolate	
 
 	virtual ~Voxel3D(void);
@@ -127,24 +129,27 @@ private:
 	ePgInterpolationType			m_interpolationType;
 	PGMath::Point3D<float>			m_dimensions; // in mm			
 	T								m_minValue, m_maxValue;
-	float							m_rangeInv;
+	//float							m_rangeInv;
 
 	PGMath::Point3D<float>			m_cachedPointImg;
 
-	PGMath::AffineTransform<float>	m_transformImageToDcm;		// apply scaling, apply Z flip if needed, add the first slice's co-ordinates
-	PGMath::AffineTransform<float>	m_transformDcmToImage;	
+	PGMath::AffineTransform<float>	m_transformImgToIso_Scale;		// apply scaling
+	PGMath::AffineTransform<float>	m_transformIsoToImg_Scale;	
+
+	PGMath::AffineTransform<float>	m_transformImgToIso_InvertZ;		// apply Z flip if needed, add the first slice's co-ordinates
+	PGMath::AffineTransform<float>	m_transformIsoToImg_InvertZ;	
 
 	PGMath::AffineTransform<float>	m_transformRegistration;	// registration etc.
 	PGMath::AffineTransform<float>	m_transformView;			// View
 
-	PGMath::AffineTransform<float>	m_transformIsoToDcm;	    // isotropic space is the  space: -x/2 ... +x/2 etc
-	PGMath::AffineTransform<float>	m_transformDcmToIso;	    // isotropic space is the  space: -x/2 ... +x/2 etc
+	PGMath::AffineTransform<float>	m_transformStdToPat_Translate;	    // isotropic space is the  space: -x/2 ... +x/2 etc
+	PGMath::AffineTransform<float>	m_transformPatToStd_Translate;	    // isotropic space is the  space: -x/2 ... +x/2 etc
 
-	PGMath::AffineTransform<float>	m_transformPatToIso;		// apply any rotation to orient patient in dcm space
-	PGMath::AffineTransform<float>	m_transformIsoToPat;	
+	PGMath::AffineTransform<float>	m_transformPatToIso_Rotate;		// apply any rotation to orient patient in dcm space
+	PGMath::AffineTransform<float>	m_transformIsoToPat_Rotate;	
 
-	PGMath::AffineTransform<float>	m_transformStdToPat;	    // std space is the view space: -0.5 ... +0.5
-	PGMath::AffineTransform<float>	m_transformPatToStd;	    // std space is the view space: -0.5 ... +0.5	
+	PGMath::AffineTransform<float>	m_transformStdToPat_Normalize;	    // std space is the view space: -0.5 ... +0.5
+	PGMath::AffineTransform<float>	m_transformPatToStd_Normalize;	    // std space is the view space: -0.5 ... +0.5	
 
 	// all transforms concatenated
 	PGMath::AffineTransform<float>	m_transformStdToImg;	    // std space is the view space: -0.5 ... +0.5
@@ -175,7 +180,7 @@ private:
 	T		interpolateTrilinear(const PGMath::Point3D<float> & iPoint) const;
 	T		interpolateTrilinearNoBoundCheck(const PGMath::Point3D<float> & iPoint) const;
 
-	T		normalize(const T& iValue) const;
+	//T		normalize(const T& iValue) const;
 };
 
 

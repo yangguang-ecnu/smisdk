@@ -37,6 +37,7 @@ public:
 
 	bool		SetElement(const unsigned int iRow, const unsigned int iColumn, const T&iValue);
 	const T		GetElement(const unsigned int iRow, const unsigned int iColumn) const;
+	const T& operator[](const unsigned int iIndex) const;  
 	T& operator[](const unsigned int iIndex);  
 	const T* Matrix() const; 
 

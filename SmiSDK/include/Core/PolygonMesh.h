@@ -23,6 +23,7 @@
 #include "BaseDataObject.h"
 #include "Polygon.h"
 #include "Math/Point3D.h"
+#include "Math/AffineTransform.h"
 
 
 namespace PGCore
@@ -66,8 +67,8 @@ namespace PGCore
 		void  SetSkeletonOrigin(const PGMath::Point3D<float>& iOrigin, bool iRef=true);
 		const PGMath::Point3D<float>& GetSkeletonOrigin(bool iRef=true) const;
 		
-		void  SetSkeletonSpan(const PGMath::Point3D<float>& iOrigin, bool iRef=true);
-		const PGMath::Point3D<float>& GetSkeletonSpan(bool iRef=true) const;
+		void  SetSkeletonSpan(const PGMath::Point3D<float>& iOrigin, bool iRef=true); // mm
+		const PGMath::Point3D<float>& GetSkeletonSpan(bool iRef=true) const; // mm
 
 		// Point clouds
 		std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // // in img/raw space
@@ -81,12 +82,18 @@ namespace PGCore
 		
 		std::vector<PGMath::Point3D<float> >& GetShapeCloud(); // // in img/raw space
 		bool ResetShapeCloud();
-			
+		
+
+		bool  SetRegistrationTransform(const int iImageIndex, const PGMath::AffineTransform<float> & iTransform);
+		const PGMath::AffineTransform<float> &GetRegistrationTransform(const int iImageIndex) const;
 
 
 	private: 		
 		std::vector<std::vector<PGMath::Point3D<T> > >		m_refSkeleton;	
 		std::vector<std::vector<PGMath::Point3D<T> > >		m_subSkeleton;	
+
+		
+		PGMath::AffineTransform<float>						m_regTransform[2];
 
 		std::vector<PGMath::Point3D<float> > 				m_pointCloud[2];			
 		std::vector<PGMath::Point3D<float> > 				m_toolCloud[2];			

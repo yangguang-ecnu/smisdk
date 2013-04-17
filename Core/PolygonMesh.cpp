@@ -111,6 +111,25 @@ namespace PGCore
 		return true;
 	}
 
+	
+	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::SetRegistrationTransform(const int iImageIndex/*=0*/, const PGMath::AffineTransform<float> & iTransform)
+	{
+		if (iImageIndex<0 || iImageIndex>1) return false;
+
+		m_regTransform[iImageIndex] = iTransform;
+
+		return true;
+	}
+
+	template <class T, unsigned int Dim>
+	const PGMath::AffineTransform<float> &PolygonMesh<T, Dim>::GetRegistrationTransform(const int iImageIndex) const
+	{
+		if (iImageIndex<0 || iImageIndex>1) return PGMath::AffineTransform<float>();
+
+		return m_regTransform[iImageIndex] ;
+	}
+
 	template <class T, unsigned int Dim>
 	bool PolygonMesh<T, Dim>::ResetShapeCloud()
 	{	

@@ -101,6 +101,9 @@ namespace PGAlgs
 		int								m_skipFactor;
 		float							m_invRows, m_invColumns;
 		float							m_start, m_end;
+		std::vector<float>				m_rangeMin, m_rangeMax, m_rangeInv;
+
+		T								getLuTIndex(const int& iVolumeIndex, const T& iValue) const;					
 		bool							updateSlicingTransform();
 		bool							renderWithMask();
 		bool							renderWithoutMask();
