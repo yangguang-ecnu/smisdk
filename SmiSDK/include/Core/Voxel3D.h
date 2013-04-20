@@ -83,6 +83,8 @@ public:
 
 	T GetValueNoBoundCheck(const float& iX,  const float& iY, const float& iZ);// const; // interpolate 
 
+	bool GetTransformStdToPat(PGMath::AffineTransform<float>& ioTransform); 
+
 	bool GetStdToPatCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ);	
 
@@ -101,7 +103,9 @@ public:
 	bool GetPatToImgCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ);
 
-	const PGMath::Vector3D<float>& GetImageSetOrigin(); 
+	const PGMath::Vector3D<float>& GetImageSetOrigin(); // btm-left-anterior point
+
+	const PGMath::Vector3D<float>& GetImageOrigin(const int& iImgIndex); 
 
 	bool GetInterpolatedImage(const int& oSizeX, const int& oSizeY, const float& iZ, const int& iSkip, PGCore::Image<T>& ioImage) const; // interpolate	
 
@@ -128,6 +132,8 @@ private:
 	PGMath::Point3D<float>			m_dimensionsImage; // in pixels		
 	ePgInterpolationType			m_interpolationType;
 	PGMath::Point3D<float>			m_dimensions; // in mm			
+	//PGMath::Point3D<float>			m_bbox[2]; // low-left-ant corner, high-right-post corner 			
+
 	T								m_minValue, m_maxValue;
 	//float							m_rangeInv;
 
@@ -179,6 +185,11 @@ private:
 	T		interpolateNearestNeighbor(const PGMath::Point3D<float> & iPoint) const;
 	T		interpolateTrilinear(const PGMath::Point3D<float> & iPoint) const;
 	T		interpolateTrilinearNoBoundCheck(const PGMath::Point3D<float> & iPoint) const;
+
+
+
+	const int& getFirstSliceIndex(); 
+	const int& getLastSliceIndex(); 
 
 	//T		normalize(const T& iValue) const;
 };

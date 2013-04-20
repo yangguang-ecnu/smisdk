@@ -664,14 +664,18 @@ namespace PGAlgs
 		case kPgSlicingDirectionCoronal:
 			{				
 				resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomRotationX, 90.0f); 			
+				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomScalingZ, -1.0f); // only if feet first in axial
 			}
 			break;
 
 		case kPgSlicingDirectionSagital:
 			{	
 				resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomScalingX, -1.0f);
+				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomScalingX, -1.0f);
 				resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomRotationY, 90.0f); 		
 				resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomRotationZ, -90.0f); 		
+
+				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomScalingZ, -1.0f); // only if feet first in axial
 
 				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomRotationY, 90.0f); 
 				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomRotationX, 90.0f); 				
@@ -680,7 +684,7 @@ namespace PGAlgs
 
 		case kPgSlicingDirectionTransverse:			
 			{			
-
+				//resliceDoF.SetParameter(PGMath::kPgDegreeOfFreedomScalingZ, -1.0f); // only if feet first in axial
 			}
 			break;
 

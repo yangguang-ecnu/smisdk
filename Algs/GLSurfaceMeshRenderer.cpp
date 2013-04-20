@@ -547,7 +547,7 @@ namespace PGAlgs
 				{
 					const PGMath::Point3D<float>& nextPoint = tgCloud[i];						
 					//glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
-					renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), 4.0*oneMmUnit, sphereDivn[j]);
+					renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), oneMmUnit, sphereDivn[j]);
 				}	
 				//glEnd();
 				glDisable(GL_LIGHTING);
