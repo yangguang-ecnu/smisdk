@@ -85,6 +85,8 @@ public:
 
 	bool GetTransformStdToPat(PGMath::AffineTransform<float>& ioTransform); 
 
+	bool GetTransformPatToStd(PGMath::AffineTransform<float>& ioTransform); 	
+
 	bool GetStdToPatCoord(const float& iX,  const float& iY, const float& iZ,
 								  float& oX,  float& oY, float& oZ);	
 

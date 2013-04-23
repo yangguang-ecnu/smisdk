@@ -349,9 +349,6 @@ bool Voxel3D<T>::GetStdToImgCoord(const float& iX,  const float& iY, const float
 	
 	oX = pointImg.X(); oY = pointImg.Y(); oZ = pointImg.Z();
 
-
-
-
 	return rv;
 }
 
@@ -488,6 +485,29 @@ bool Voxel3D<T>::GetTransformStdToPat(PGMath::AffineTransform<float>& ioTransfor
 	
 	return true;
 }
+
+template <class T>
+bool Voxel3D<T>::GetTransformPatToStd(PGMath::AffineTransform<float>& ioTransform) 
+{	
+	
+	PGMath::AffineTransform<float> transformPatToStd;
+	transformPatToStd.Matrix4x4().Identity();
+
+	bool rv = GetTransformStdToPat(transformPatToStd);
+
+	if (!rv)
+	{
+		ioTransform = transformPatToStd;
+		return false;
+	}
+
+	rv = transformPatToStd.Invert();
+
+	ioTransform = transformPatToStd;	
+
+	return rv;
+}
+
 
 template <class T>
 bool Voxel3D<T>::GetPatToStdCoord(const float& iX,  const float& iY, const float& iZ,
