@@ -48,17 +48,7 @@ namespace PGCore
 	template <class T>
 	void Voxel3D<T>::SetRegistrationTransform(const PGMath::AffineTransform<float> & iTransform)
 	{
-		m_transformRegistration = iTransform;	
-
-		
-
-		PGMath::Matrix4x4<float> regMat = m_transformRegistration.Matrix4x4();
-		regMat[3]	= regMat[3];
-		regMat[7]	= regMat[7];
-		regMat[11]	= regMat[11];
-
-		m_transformRegistration = PGMath::AffineTransform<float>(regMat);
-
+		m_transformRegistration = iTransform;			
 		m_transformStdToRaw = m_transformView;//m_transformStdToImg;
 		m_transformStdToRaw.ConcatPre(&m_transformRegistration);//m_transformView);
 		m_transformStdToRaw.ConcatPre(&m_transformStdToImg);//m_transformRegistration);
@@ -376,7 +366,8 @@ const PGMath::Vector3D<float>& Voxel3D<T>::GetImageSetOrigin()
 		return PGMath::Vector3D<float>(0, 0, 0);
 	}
 
-	return GetImageOrigin(getFirstSliceIndex());	
+	int firstSliceIndex = getFirstSliceIndex();
+	return GetImageOrigin(firstSliceIndex);	
 }
 
 template <class T>
