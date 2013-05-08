@@ -369,6 +369,7 @@ namespace PGAlgs
 			oneMmUnit = 1.0f/dims[2];
 		}
 		
+		float cursorSz = 10.0f*oneMmUnit;
 		
 		//glClearColor(0, 0, 0, 0);		
 		
@@ -386,29 +387,30 @@ namespace PGAlgs
 			glColor4f(1, 0, 0, 0.5);
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());				
-				glVertex3f(m_cursor3D.X()+0.5, m_cursor3D.Y(), m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X()+cursorSz, m_cursor3D.Y(), m_cursor3D.Z());
 			glEnd();
 
 			// y axis
 			glColor4f(0, 1, 0, 0.5);			
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
-				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+0.5, m_cursor3D.Z());
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y()+cursorSz, m_cursor3D.Z());
 			glEnd();
 			
 			// XY plane - Z axis			
 			glColor4f(0.7, 0.7, 1, 0.5);
 			glBegin(GL_LINES);
 				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z());
-				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z()+0.5);
+				glVertex3f(m_cursor3D.X(), m_cursor3D.Y(), m_cursor3D.Z()+cursorSz);
 			glEnd();
 		glPopMatrix();
 
+		
 		float gXMin=-0.5, gYMin=-0.5, gZMin=-0.5;
 		float gXMax=0.5, gYMax=0.5, gZMax=0.5;
 		glPushMatrix();
 		{
-			glColor4f(1,1,0,0.3);
+			glColor4f(0.2,0.2,0.2,0.2);
 			glBegin(GL_LINE_LOOP);			
 				glVertex3f( gXMin, gYMin, gZMin);
 				glVertex3f( gXMin, gYMax, gZMin); 
@@ -436,6 +438,7 @@ namespace PGAlgs
 			glDisable(GL_LINE_STIPPLE);
 		}
 		glPopMatrix();
+		
 
 
 		// mesh first
@@ -484,8 +487,8 @@ namespace PGAlgs
 			// point, tool, target - ref
 			// point, tool, target - sec
 			float treeColors[2][3][4] = {
-										{{1.0,  0.0,  0.0, 1.0}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.5} }, // red, cyan, green - BIG
-										{{1,  1,  1, 0.5}, {1.0, 1.0, 1, 0.5},  {1.0, 1, 1, 0.4}} // white, white, white - faded
+										{{1.0,  0.5,  0.0, 0.75}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.5} }, // Orange, cyan, green - BIG
+										{{1,  1,  1, 0.5}, {0.3, 1.0, 1, 0.8},  {1.0, 1, 1, 0.8}} // white, white, white - faded
 									}; 
 			float geomPtSz[2][2] = { {1, 2}, {1, 2} };   
 			float sphereDivn[2] = {16, 8};
@@ -521,16 +524,19 @@ namespace PGAlgs
 				glColor4fv(treeColors[j][1]);
 				std::vector<PGMath::Point3D<float> >& tlCloud = m_polyMeshList[iMeshIndex]->GetToolCloud(j);
 				pointCount = tlCloud.size();		
+				//if (pointCount>1) glBegin(GL_LINES);
 				glBegin(GL_POINTS);
 				for (int i=0; i<pointCount; i+=pSkip)
 				{
 					const PGMath::Point3D<float>& nextPoint = tlCloud[i];						
-					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());								
+					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());				
+					//renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), oneMmUnit*0.25f, sphereDivn[j]);
 				}	
-				if (ptCloud.size()>0)
+				if (tlCloud.size()>0)
 				{
-					const PGMath::Point3D<float>&nextPoint = ptCloud[ptCloud.size()-1];						
+					const PGMath::Point3D<float>&nextPoint = tlCloud[tlCloud.size()-1];						
 					glVertex3f(nextPoint.X(), nextPoint.Y(), nextPoint.Z());	
+				//	renderSphere_convenient(nextPoint.X(), nextPoint.Y(), nextPoint.Z(), oneMmUnit*0.25f, sphereDivn[j]);
 				}
 				glEnd();
 				
