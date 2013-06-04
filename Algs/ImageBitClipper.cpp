@@ -60,11 +60,11 @@ template <class T, class U>
 bool ImageBitClipper<T, U>::Execute() 
 {
 	// swap endians here
-	if (sizeof(T) != sizeof(U) || sizeof(T)!=sizeof(short)) 
+/*	if (sizeof(T) != sizeof(U) || sizeof(T)!=sizeof(short)) 
 	{
 		LOG2("ImageBitClipper: Error clipping bits. Types different sizes: %d - %d", sizeof(T), sizeof(U));
 		return false;
-	}
+	}*/
 
 	if (!m_iDataObject) {
 		LOG0("ImageBitClipper: Error: no input");
@@ -131,6 +131,7 @@ const U ImageBitClipper<T, U>::clipBits(const T &iValue)
 #ifdef _PG_GENERATE_SDK_LIBS_
 	template class ImageBitClipper<short, short>; 
 	template class ImageBitClipper<unsigned char, unsigned char>; 
+	template class ImageBitClipper<unsigned char, short>; 
 #endif
 
 

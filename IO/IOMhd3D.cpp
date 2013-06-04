@@ -32,7 +32,75 @@ template <class T>
 bool IOMhd3D<T>::Write(PGCore::BaseDataObject *iDataObject, const IOParams &iParams,
 		PGCore::BaseDataObject *iMetaDataObject/* = 0*/)
 {
-	return false;
+	// read meta data first
+	if (!iMetaDataObject)
+	{
+		LOG0("IO/IOMhd3D::Write: metadata object null");			
+		return false;
+	}	
+
+	/*
+	PGCore::MetaData<T> *oMetaData = (static_cast<PGCore::MetaData< T > *>(oMetaDataObject));
+	if (!oMetaData) 
+	{
+		LOG0("IO/IOMhd3D::Write: Invalid output container for metadata.");			
+		return false;
+	}
+
+	// read one file / multiple based on the type set here
+	const std::vector<std::string> &iSourceNamesMhd = iParams.Source();
+	if (iSourceNamesMhd.empty())
+	{
+		LOG0("IO/IOMhd3D::Write: Invalid input filename.");			
+		return false;
+	}
+	
+	if (!oDataObject) 
+	{
+		LOG0("IO/IOMhd3D::Write: Invalid input image.");			
+		return false;
+	}
+
+	// parse the def file
+	std::vector<std::string> iSourceNames;
+	std::string formatStr;
+	int msbFirst=0;
+	PGMath::Vector3D<int> dims;
+	ePgIOSourceType ioSrcType = kPgIOSourceTypeUnknown;
+	PGMath::Vector3D<float> spacingVec(1.0f, 1.0f, 1.0f);
+	bool rv = ParseDefinitionFile(iSourceNamesMhd[0], ioSrcType, iSourceNames, 
+		formatStr, *oMetaData);
+	if (!rv)
+	{
+		return false; 
+	}
+
+	m_fileFormat = kPgIOSourceFormatUnknown;
+	if (strncmp(formatStr.c_str(), "RAW", 3)==0)
+	{
+		m_fileFormat = kPgIOSourceFormatRAW;
+	} else
+	{
+		LOG0("IO/IOMhd3D::Write: Invalid input file format. Should be RAW.");			
+		return false;
+	}
+	
+	// set all metadata here
+	// then call Raw3D IO, and in there decide whether to thread or not
+
+	IOParams rawParams(iSourceNames, iParams.MetaSource(), iParams.SourceType(),
+		iParams.IsEnabledMultiThreading(), iParams.IsEnabledAsynchronousLoad(),
+		iParams.IsEnabledAutoSkip(), iParams.SourceFormat());
+	
+
+	m_rawImgIO.SetProgressCB(GetProgressCB());
+	m_rawImgIO.SetSkipFactors(m_skipFactorXY, m_skipFactorZ);
+	m_rawImgIO.SetByteLimitInKB(GetByteLimitInKB());
+
+	bool res = m_rawImgIO.Read(oDataObject, rawParams, oMetaDataObject);
+
+	return res;
+	*/
 }
 
 
