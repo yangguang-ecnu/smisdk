@@ -62,7 +62,7 @@ namespace PGAlgs
 		m_autoDilationCount = 1;
 		m_addSeedCode = SegAddSeedCodeSeed;
 		m_gradientHigh = 60;
-		m_maxLoopCount = 5;
+		m_maxLoopCount = 32;
 		m_neighborTh = 3;
 		m_autoAdjustConditions = false;
 		m_stdSpreadValue = kPgStDevSpreadFac;
@@ -354,7 +354,30 @@ namespace PGAlgs
 		return true;
 	}
 
+	template <class T, class U>
+	void SegmentationBase<T, U>::commitIncrMask()
+	{
+		PGMath::Point3D<int> nextVoxel; 
+
+		while (m_incrStack.Size())
+		{
+			m_incrStack.Pop(nextVoxel);
+			setVoxel(nextVoxel, true);
+		}
+	}
 	
+	template <class T, class U>
+	void SegmentationBase<T, U>::uncommitIncrMask()
+	{
+		PGMath::Point3D<int> nextVoxel; 
+
+		while (m_incrStack.Size())
+		{
+			m_incrStack.Pop(nextVoxel);
+			setVoxel(nextVoxel, false);
+		}
+	}
+
 		
 	template <class T, class U>
 	eSegRetCode SegmentationBase<T, U>::visitVoxel(const PGMath::Point3D<int> &iVoxel)
@@ -366,7 +389,9 @@ namespace PGAlgs
 			return  checkCode;
 		}
 		
+		
 		setVoxel(iVoxel, true);
+		m_incrStack.Push(iVoxel);
 		m_count++;
 		//ProcessBase::StatusCallBackFn(100.0f*( (double)m_count/(double)m_totalCount ), std::string("Segmenting..."), 0, 0);
 		

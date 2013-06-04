@@ -28,9 +28,11 @@
 
 #define kPgMinComponentSz 8
 #define kPgMaxComponentSz 2826 // 15 mm radius circle area in px sq at 0.5mm per px
-#define kPgMaxMaskVxCountPerIter 32*32*64 
+#define kPgMaxMaskVxCountPerIter 32*32*64*32
 #define kPgMaxMaskVxCount kPgMaxMaskVxCountPerIter*8
 #define kPgMaxCentroidsSz 32767
+#define kPgMaxGrowthRatio 32
+
 
 
 namespace PGAlgs
@@ -105,6 +107,8 @@ namespace PGAlgs
 		m_pIVolume->GetVolumeAccessor()->GetDimensions(m_volumeDimensions);
 		m_totalCount = 1 + m_volumeDimensions.Z() * m_volumeDimensions.Y() * m_volumeDimensions.X();
 		m_stack.SetZSize(m_volumeDimensions.Z());
+		m_incrStack.SetZSize(m_volumeDimensions.Z());
+
 	
 		if (!transformSeedsVoxelToImg())
 		{
@@ -181,26 +185,20 @@ namespace PGAlgs
 		long totalVoxels = min(m_totalCount/2, kPgMaxMaskVxCount);
 		long voxelsPerIteration = min(totalVoxels, kPgMaxMaskVxCountPerIter);
 		
-		
-		//bool flag=false;
-
-		/*
-		if (m_autoAdjustGradient)
-		{
-			m_gradientHigh = autoAdjustGradient(m_pSeeds[0]);
-		}*/
-
+	
 		int nLoops = 0, breakReason=-1; // 0: stack empty, 1: visit failure
 		PGMath::Point3D<int> lastPoint;
 		eSegRetCode rvc = SegRetCodeOutOfRange;
+		long lastCount=0, lastPerIter=0;
 		while (nLoops < m_maxLoopCount && m_count<totalVoxels)
 		{
 			int mCountPerIter=0;
 			int stSize = m_stack.Size();
 			if (stSize==0) break;			
 			rvc = SegRetCodeOk;
+		
 
-			while (m_count<voxelsPerIteration)
+			while (mCountPerIter<voxelsPerIteration)
 			{
 				PGMath::Point3D<int> oPoint;
 
@@ -228,6 +226,8 @@ namespace PGAlgs
 					int progressValue=(int)(50.0f*((float)(m_count)/(float)voxelsPerIteration) + 0.5f);				
 					UpdateProgress(progressValue%98);
 				}
+
+				mCountPerIter = m_count-lastCount;
 			} 
 			
 			bool rv = m_autoAdjustConditions ? autoAdjustConditions(lastPoint, rvc) : false;
@@ -241,7 +241,21 @@ namespace PGAlgs
 			}
 
 			breakReason = -1;
-			nLoops++;		
+			nLoops++;					
+			
+			lastCount =  m_count;
+
+			if (lastPerIter && mCountPerIter/(lastPerIter) > kPgMaxGrowthRatio)
+			{
+				// leaking: uncommit the mask
+				uncommitIncrMask();
+				break;
+			} else
+			{
+				m_incrStack.Clear(); // reset the stack
+			}			
+
+			lastPerIter = mCountPerIter;			
 		}
 
 		if (m_count) m_undoCounter = 0; 
@@ -614,9 +628,12 @@ namespace PGAlgs
 			return checkCode;
 		}
 
+		return checkCode;
+		
 		// add additional check here
+		/*
 		// check that all neighbors satisfy the condition
-		int neighCount=0;
+		int neighCount=0;	
 		checkCode = SegmentationBase<T, U>::conditionCheck(PGMath::Point3D<int>(iVoxel.X()+1, iVoxel.Y(), iVoxel.Z()));
 		neighCount+= (checkCode==SegRetCodeOk ? 1 : 0);
 		
@@ -636,6 +653,8 @@ namespace PGAlgs
 		neighCount+= (checkCode==SegRetCodeOk ? 1 : 0);
 
 		return (neighCount>m_neighborTh) ? SegRetCodeOk : SegRetCodeNeighbor;
+		*/
+		
 	}
 
 
@@ -645,8 +664,8 @@ namespace PGAlgs
 		bool rv = SegmentationBase<T, U>::autoAdjustConditions(iSeed, iReason);
 		if (!rv) return false;
 
-		T valOffset = 5;
-		T gradMultFac = 5; 
+		T valOffset = 1;
+		T gradFac = 1.0f; 
 
 		/*
 		float stdDev=0, snr=0, spread=m_stdSpreadValue, valFac=1.0f, gradFac = m_stdSpreadGradient;
@@ -675,19 +694,16 @@ namespace PGAlgs
 		// use current seed to readjust the conditions. maybe use local distribution
 		if (iReason==SegRetCodeGradient || iReason==SegRetCodeNeighbor)
 		{
-			m_gradientHigh*=gradMultFac;
-		} 
-
-		if (iReason==SegRetCodeValue || iReason==SegRetCodeNeighbor)
+			m_gradientHigh+=gradFac;
+		} else if (iReason==SegRetCodeValue || iReason==SegRetCodeNeighbor)
 		{
 			m_lowValue-=valOffset;
 			m_highValue+=valOffset;
-		} 
-
-		if (iReason==SegRetCodeNeighbor)
+		}
+		/*else if (iReason==SegRetCodeNeighbor)
 		{
 			m_neighborTh = m_neighborTh>2 ? m_neighborTh-1 : m_neighborTh;			
-		}
+		}*/
  
 		GetLogger()->Log("{ RegionGrowSegmentation::New conditions (Reason: %d):", iReason);
 			GetLogger()->Log("\tHighGradient: %d", m_gradientHigh);

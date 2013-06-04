@@ -435,10 +435,14 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 
 	int msbFirst = oMetaData->GetMSBFirst();
 	int numBits = oMetaData->GetNumberOfBits(), numBitsInData = 8*sizeof(T);	
-	bool ignoreBits = (numBits<numBitsInData);
+	bool ucharData = (numBits==8);
+	bool ignoreBits = (!ucharData) && (numBits<numBitsInData);
+	
 
-	PGAlgs::ImageEndianSwapper<T, T> caster;
-	PGAlgs::ImageBitClipper<T, T> bitclipper(numBitsInData-numBits);
+	PGAlgs::ImageEndianSwapper<T, T> casterT;
+	PGAlgs::ImageEndianSwapper<unsigned char, unsigned char> casterUC;
+	PGAlgs::ImageBitClipper<T, T> bitclipperT(numBitsInData-numBits);
+	PGAlgs::ImageBitClipper<unsigned char, T> bitclipperUC(numBitsInData-numBits);
 
 	// get number of slices
 	PGMath::Vector3D<int> iSize = oMetaData->GetSize();
@@ -474,8 +478,13 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 	PGAlgs::ImageResampler<T, T> resampler;
 	resampler.SetScaleFactor(1.0f/(float)m_skipFactorXY);
 
-	PGCore::Image<T> nextImage(iRows, iColumns);	
-	T* oBuf = nextImage.GetBuffer();
+
+	PGCore::Image<T> nextImageT(iRows, iColumns);	
+	PGCore::Image<unsigned char> nextImageUC(iRows, iColumns);	
+
+	unsigned char* oBuf = ucharData ? (unsigned char*)nextImageUC.GetBuffer() : (unsigned char*)nextImageT.GetBuffer();
+
+
 	if (!oBuf)
 	{
 		LOG0("IORaw3D::Read: Invalid image buffer.");			
@@ -503,9 +512,17 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 		if (msbFirst)
 		{
 			LOG0("IORaw3D::Read: msbFirst");						
-			caster.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
-			caster.Execute();
-			caster.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));	
+			if (ucharData)
+			{
+				casterUC.SetInput(static_cast<PGCore::Image < unsigned char > *>(&nextImageUC));
+				casterUC.Execute();
+				casterUC.GetOutput(static_cast<PGCore::Image < unsigned char > *>(&nextImageUC));	
+			} else
+			{
+				casterT.SetInput(static_cast<PGCore::Image < T > *>(&nextImageT));
+				casterT.Execute();
+				casterT.GetOutput(static_cast<PGCore::Image < T > *>(&nextImageT));	
+			}
 			LOG0("End IORaw3D::Read: msbFirst");						
 		}
 		
@@ -513,19 +530,36 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 		if (ignoreBits)
 		{
 			LOG0("IORaw3D::Read: ignoreBits");						
-			bitclipper.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
-			bitclipper.Execute();
-			bitclipper.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));		
+			if (ucharData)
+			{
+				bitclipperUC.SetInput(static_cast<PGCore::Image < unsigned char > *>(&nextImageUC));
+				bitclipperUC.Execute();
+				bitclipperUC.GetOutput(static_cast<PGCore::Image < T > *>(&nextImageT));		
+			} else
+			{
+				bitclipperT.SetInput(static_cast<PGCore::Image < T > *>(&nextImageT));
+				bitclipperT.Execute();
+				bitclipperT.GetOutput(static_cast<PGCore::Image < T > *>(&nextImageT));	
+			}
 			LOG0("End IORaw3D::Read: ignoreBits");						
+		} else if (ucharData)
+		{
+			long imgIter = 0;				
+			while (imgIter< iRows*iColumns) 
+			{
+				unsigned char inVal = *(nextImageUC.GetBuffer()+imgIter);				
+				*(nextImageT.GetBuffer()+imgIter) = T(inVal);			
+				imgIter++;
+			}	
 		}
 
 		//resample images if needed
 		if (m_skipFactorXY!=1)
 		{
 			//LOG1("\t{IORaw3D<%d>::Read: subsample.", this);			
-			resampler.SetInput(static_cast<PGCore::Image < T > *>(&nextImage));
+			resampler.SetInput(static_cast<PGCore::Image < T > *>(&nextImageT));
 			resampler.Execute();
-			resampler.GetOutput(static_cast<PGCore::Image < T > *>(&nextImage));				
+			resampler.GetOutput(static_cast<PGCore::Image < T > *>(&nextImageT));				
 			//LOG1("\t}IORaw3D<%d>::Read: subsample.", this);			
 		}
 
@@ -533,12 +567,12 @@ bool IORaw3D<T>::ReadFromFile(const std::string& iFile,	PGCore::BaseDataObject *
 		{
 			LOG0("IORaw3D::Read: smooth");						
 			PGCore::Image<T> sImage;
-			gausskernel.Convolve(nextImage, sImage);	
-			nextImage = sImage;
+			gausskernel.Convolve(nextImageT, sImage);	
+			nextImageT = sImage;
 			LOG1("IORaw3D::Read: smooth Image [%d] DONE.", i);			
 		}
 
-		if (oDataObject->GetSize() < oSize.Z())	oDataObject->AddImage(nextImage);
+		if (oDataObject->GetSize() < oSize.Z())	oDataObject->AddImage(nextImageT);
 		else break;
 
 		if (i%4==0)	

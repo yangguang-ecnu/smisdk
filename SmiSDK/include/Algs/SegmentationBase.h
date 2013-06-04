@@ -129,6 +129,7 @@ protected:
 	int								 m_undoCounter;
 
 	PGCore::Stack3D<int>			 m_stack;
+	PGCore::Stack3D<int>			 m_incrStack;
 	
 	PGCore::Voxel3D<T>				*m_pIVolume;
 	std::vector<PGMath::Point3D< float > >			m_pSeeds;
@@ -150,6 +151,10 @@ protected:
 	virtual bool autoAdjustConditions(const PGMath::Point3D<int>& iSeed, const eSegRetCode iReason);
 
 	virtual eSegRetCode	visitVoxel(const PGMath::Point3D<int> &iVoxel) = 0;
+
+	void commitIncrMask();
+
+	void uncommitIncrMask();
 
 	bool    transformSeedsVoxelToImg();
 	

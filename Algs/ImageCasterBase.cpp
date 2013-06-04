@@ -48,6 +48,7 @@ ImageCasterBase<T, U>::~ImageCasterBase(void)
 #ifdef _PG_GENERATE_SDK_LIBS_
 	template class ImageCasterBase<short, short>; 
 	template class ImageCasterBase<unsigned char, unsigned char>; 	
+	template class ImageCasterBase<unsigned char, short>; 	
 	template class ImageCasterBase<float, short>; 
 	template class ImageCasterBase<short, float>; 
 	template class ImageCasterBase<float, unsigned char>; 
