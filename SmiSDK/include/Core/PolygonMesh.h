@@ -42,6 +42,10 @@ namespace PGCore
 
 		bool Clear(const int iIndex=-1);
 
+		bool ClearPointClouds(const int iIndex=-1);
+
+		bool ClearSkeleton(const int iIndex=-1);
+
 		bool Reserve(const unsigned long int& iMaxSize);
 
 		bool AddPolygon(const Polygon<T, Dim>& iPolygon);
@@ -59,6 +63,8 @@ namespace PGCore
 		const PGMath::Point3D<float>& GetSpan() const;
 
 		// skeleton		
+		std::vector<std::vector<PGMath::Point3D<T> > > & GetSkeleton(const unsigned int iIndex=0);
+
 		bool AddSkeletonElement(const std::vector<PGMath::Point3D<T> > & iSkeletonElement, bool iRef=true);		
 		const std::vector<PGMath::Point3D<T> > & GetSkeletonElement(const unsigned int iIndex, bool iRef=true) const;
 

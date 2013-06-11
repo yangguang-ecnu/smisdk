@@ -175,7 +175,7 @@ namespace PGAlgs
 	{
 		if (!m_ready) return;
 		
-		glClearColor( 0.0, 0.0, 0.0, 1.0 );
+		glClearColor( 0.568, 0.568, 0.568, 1.0 );
 
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -487,8 +487,8 @@ namespace PGAlgs
 			// point, tool, target - ref
 			// point, tool, target - sec
 			float treeColors[2][3][4] = {
-										{{1.0,  0.5,  0.0, 0.75}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.5} }, // Orange, cyan, green - BIG
-										{{1,  1,  1, 0.5}, {0.3, 1.0, 1, 0.8},  {1.0, 1, 1, 0.8}} // white, white, white - faded
+										{{1.0,  0.3,  0.2, 0.7}, {0.3, 1.0, 1.0, 1.0},  {0.0, 1, 0, 0.5} }, // Orange, cyan, green - BIG
+										{{0.1,  1,  0.5, 0.7}, {0.3, 1.0, 1, 0.8},  {1.0, 1, 1, 0.8}} // green, white, white - faded
 									}; 
 			float geomPtSz[2][2] = { {1, 2}, {1, 2} };   
 			float sphereDivn[2] = {16, 8};
@@ -601,9 +601,9 @@ namespace PGAlgs
 			glScalef(skelScFactor, skelScFactor, skelScFactor);								
 			glTranslatef(-meshOrigin.X(), -meshOrigin.Y(), -meshOrigin.Z());
 
-
-			float treeColors[2][4] = {{0,  0.7,  0, 0.5}, {0.8, 0, 0.3, 0.5} }; // 
-			float lWidths[2] = {2, 2}; // ref: 1, sub: 2
+			
+			float treeColors[2][4] = {{0.196, 0.82, 0.20, 1.0}, {0.32,  0.36,  0.85, 1.0}}; // 
+			float lWidths[2] = {1, 1}; // ref: 1, sub: 2
 			int beginIdx[2] = {1, 1};
 			int pSkip=1;
 		

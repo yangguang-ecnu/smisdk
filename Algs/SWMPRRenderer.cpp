@@ -323,7 +323,7 @@ namespace PGAlgs
 
 
 	template <class T, class U>
-	inline bool SWMPRRenderer<T, U>::SetTransferFunctionLUT(PGCore::TransferFunctionLUT<unsigned char> *iLUT, const int iRendererIndex=0)
+	inline bool SWMPRRenderer<T, U>::SetTransferFunctionLUT(PGCore::TransferFunctionLUT<U> *iLUT, const int iRendererIndex=0)
 	{
 		if (iRendererIndex < 0 || iRendererIndex > m_mprRenderer.size()-1)
 		{
@@ -337,7 +337,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	inline bool SWMPRRenderer<T, U>::SetMaskTransferFunctionLUT(PGCore::TransferFunctionLUT<unsigned char> *iLUT, const int iRendererIndex=0)
+	inline bool SWMPRRenderer<T, U>::SetMaskTransferFunctionLUT(PGCore::TransferFunctionLUT<U> *iLUT, const int iRendererIndex=0)
 	{
 		if (iRendererIndex < 0 || iRendererIndex > m_mprRenderer.size()-1)
 		{

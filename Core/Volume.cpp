@@ -195,6 +195,14 @@ bool Volume<T>::ResetShapeCloud()
 	return true;
 }
 
+template <class T>
+bool Volume<T>::ResetSkeleton(const int iImageIndex/*=0*/)
+{
+	if (iImageIndex<0 || iImageIndex>1) return false;
+
+	m_skeleton[iImageIndex].clear();
+	return true;
+}
 
 template <class T>
 bool Volume<T>::ResetToolCloud(const int iImageIndex/*=0*/)
@@ -1035,6 +1043,14 @@ bool Volume<T>::GetDataRange(T *oMin, T* oMax)
 }
 
 // pointcloud ops
+template <class T>
+std::vector<std::vector<PGMath::Point3D<float> > > & Volume<T>::GetSkeleton(const unsigned int iIndex=0)
+{
+	if (iIndex<0 || iIndex>1) return std::vector<std::vector<PGMath::Point3D<float> > >();
+
+	return m_skeleton[iIndex];
+}
+
 template <class T>
 std::vector<PGMath::Point3D<float> >& Volume<T>::GetPointCloud(const int iIndex/*=0*/) // in img/raw space
 {

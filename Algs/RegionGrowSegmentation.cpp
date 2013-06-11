@@ -107,7 +107,7 @@ namespace PGAlgs
 		m_pIVolume->GetVolumeAccessor()->GetDimensions(m_volumeDimensions);
 		m_totalCount = 1 + m_volumeDimensions.Z() * m_volumeDimensions.Y() * m_volumeDimensions.X();
 		m_stack.SetZSize(m_volumeDimensions.Z());
-		m_incrStack.SetZSize(m_volumeDimensions.Z());
+		//m_incrStack.SetZSize(m_volumeDimensions.Z());
 
 	
 		if (!transformSeedsVoxelToImg())
@@ -252,7 +252,7 @@ namespace PGAlgs
 				break;
 			} else
 			{
-				m_incrStack.Clear(); // reset the stack
+				//m_incrStack.Clear(); // reset the stack
 			}			
 
 			lastPerIter = mCountPerIter;			
@@ -416,7 +416,18 @@ namespace PGAlgs
 				{
 					if (bImage.GetValue(k, j) && !visitedImage.GetValue(k, j))
 					{
+
 						PGMath::Point3D<int> nextSeed(k, j, i);
+
+#if 1
+						PGMath::Point3D<float> nextPt = PGMath::Point3D<float>(
+									nextSeed.Y(),
+									nextSeed.X(),
+									nextSeed.Z());
+						ptCloud.push_back(nextPt); // img space	
+
+#else
+						
 						PGMath::Point3D<int> nextCentroid;
 						std::vector<PGMath::Point3D<int> > nextComponent;						
 
@@ -442,6 +453,7 @@ namespace PGAlgs
 								ptCloud.push_back(nextPt); // img space	
 							}
 						}
+#endif
 					}
 				}
 			}	
@@ -627,11 +639,8 @@ namespace PGAlgs
 		{
 			return checkCode;
 		}
-
-		return checkCode;
-		
-		// add additional check here
-		/*
+				
+		// add additional check here		
 		// check that all neighbors satisfy the condition
 		int neighCount=0;	
 		checkCode = SegmentationBase<T, U>::conditionCheck(PGMath::Point3D<int>(iVoxel.X()+1, iVoxel.Y(), iVoxel.Z()));
@@ -652,9 +661,7 @@ namespace PGAlgs
 		checkCode = SegmentationBase<T, U>::conditionCheck(PGMath::Point3D<int>(iVoxel.X(), iVoxel.Y(), iVoxel.Z()+1));
 		neighCount+= (checkCode==SegRetCodeOk ? 1 : 0);
 
-		return (neighCount>m_neighborTh) ? SegRetCodeOk : SegRetCodeNeighbor;
-		*/
-		
+		return (neighCount>m_neighborTh) ? SegRetCodeOk : SegRetCodeNeighbor;			
 	}
 
 

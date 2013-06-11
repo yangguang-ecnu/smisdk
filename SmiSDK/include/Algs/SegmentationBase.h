@@ -129,7 +129,7 @@ protected:
 	int								 m_undoCounter;
 
 	PGCore::Stack3D<int>			 m_stack;
-	PGCore::Stack3D<int>			 m_incrStack;
+	//PGCore::Stack3D<int>			 m_incrStack;
 	
 	PGCore::Voxel3D<T>				*m_pIVolume;
 	std::vector<PGMath::Point3D< float > >			m_pSeeds;

@@ -280,7 +280,7 @@ namespace PGAlgs
 		}
 
 		// Prashant C, 8/4/08: revisit this		
-		if (1)
+		if (0)
 		{
 			PGMath::Vector3D<float> gradientValue;
 			m_pIVolume->GetVolumeAccessor()->GetGradient(iVoxel.Y(), iVoxel.X(), iVoxel.Z(), gradientValue);
@@ -359,9 +359,9 @@ namespace PGAlgs
 	{
 		PGMath::Point3D<int> nextVoxel; 
 
-		while (m_incrStack.Size())
+		while (0)//m_incrStack.Size())
 		{
-			m_incrStack.Pop(nextVoxel);
+			//m_incrStack.Pop(nextVoxel);
 			setVoxel(nextVoxel, true);
 		}
 	}
@@ -371,9 +371,9 @@ namespace PGAlgs
 	{
 		PGMath::Point3D<int> nextVoxel; 
 
-		while (m_incrStack.Size())
+		while (0)//m_incrStack.Size())
 		{
-			m_incrStack.Pop(nextVoxel);
+			//m_incrStack.Pop(nextVoxel);
 			setVoxel(nextVoxel, false);
 		}
 	}
@@ -391,7 +391,7 @@ namespace PGAlgs
 		
 		
 		setVoxel(iVoxel, true);
-		m_incrStack.Push(iVoxel);
+		//m_incrStack.Push(iVoxel);
 		m_count++;
 		//ProcessBase::StatusCallBackFn(100.0f*( (double)m_count/(double)m_totalCount ), std::string("Segmenting..."), 0, 0);
 		
