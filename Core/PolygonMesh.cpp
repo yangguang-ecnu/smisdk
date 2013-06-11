@@ -168,6 +168,53 @@ namespace PGCore
 	}
 
 	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ClearPointClouds(const int iIndex=-1)
+	{
+		if (iIndex==-1)
+		{			
+			m_shapeCloud.clear();
+			for (int i=0; i<2; i++)
+			{
+				m_pointCloud[i].clear();
+				m_targetCloud[i].clear();
+				m_toolCloud[i].clear();
+			}
+		} else if (iIndex==0)
+		{		
+			m_pointCloud[0].clear();
+			m_targetCloud[0].clear();
+			m_toolCloud[0].clear();			
+		} else if (iIndex==1)
+		{		
+			m_pointCloud[1].clear();
+			m_targetCloud[1].clear();
+			m_toolCloud[1].clear();
+			m_shapeCloud.clear();
+		}	
+
+		return true;
+	}
+
+	template <class T, unsigned int Dim>
+	bool PolygonMesh<T, Dim>::ClearSkeleton(const int iIndex=-1)
+	{
+		if (iIndex==-1)
+		{
+			m_refSkeleton.clear();
+			m_subSkeleton.clear();			
+		} else if (iIndex==0)
+		{
+			m_refSkeleton.clear();			
+		} else if (iIndex==1)
+		{
+			m_subSkeleton.clear();			
+		}	
+
+		return true;
+	}
+
+
+	template <class T, unsigned int Dim>
 	bool PolygonMesh<T, Dim>::Clear(const int iIndex/*=-1*/)
 	{
 		m_polygons.clear();
@@ -241,6 +288,13 @@ namespace PGCore
 			m_subSkeleton.push_back(iSkeletonElement);
 		
 		return rv;
+	}
+
+	
+	template <class T, unsigned int Dim>
+	inline std::vector<std::vector<PGMath::Point3D<T> > > & PolygonMesh<T, Dim>::GetSkeleton(const unsigned int iIndex)
+	{
+		return (iIndex==0) ? m_refSkeleton : m_subSkeleton;
 	}
 
 	template <class T, unsigned int Dim>

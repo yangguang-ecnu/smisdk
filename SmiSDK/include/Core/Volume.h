@@ -83,6 +83,9 @@ public:
 	bool AddMask(const int iSourceImageIndex=1); // redo
 
 	// pointcloud ops
+	std::vector<std::vector<PGMath::Point3D<float> > > & GetSkeleton(const unsigned int iIndex=0);
+	bool ResetSkeleton(const int iImageIndex/*=0*/);
+
 	std::vector<PGMath::Point3D<float> >& GetPointCloud(const int iIndex=0); // // in img/raw space
 	bool ResetPointCloud(const int iImageIndex/*=0*/);
 
@@ -120,6 +123,8 @@ private:
 	PGMath::Point3D<float>	m_origin;		
 
 	BitVolume				m_maskVolume[2]; // 0: working volume, 1: temp volume
+
+	std::vector<std::vector<PGMath::Point3D<float> > >		m_skeleton[2]; // // in img/raw space
 
 	std::vector<PGMath::Point3D<float> >			m_pointCloud[2]; // // in img/raw space
 

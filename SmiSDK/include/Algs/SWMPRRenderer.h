@@ -47,9 +47,9 @@ namespace PGAlgs
 
 		virtual bool UpdateCB(void	*iDataObject);
 
-		virtual bool SetTransferFunctionLUT(PGCore::TransferFunctionLUT<unsigned char> *iLUT, const int iRendererIndex=0);
+		virtual bool SetTransferFunctionLUT(PGCore::TransferFunctionLUT<U> *iLUT, const int iRendererIndex=0);
 
-		virtual bool SetMaskTransferFunctionLUT(PGCore::TransferFunctionLUT<unsigned char> *iLUT, const int iRendererIndex=0);
+		virtual bool SetMaskTransferFunctionLUT(PGCore::TransferFunctionLUT<U> *iLUT, const int iRendererIndex=0);
 		
 		virtual bool SetSlicerPositionAndDirection(double iPosition, ePgSlicingDirection iDirection);
 		
