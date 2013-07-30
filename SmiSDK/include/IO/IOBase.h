@@ -281,7 +281,11 @@ protected:
 	public:
 		bool operator() ( const SlicePosition& iA , const SlicePosition& iB )
 		{
-			return iA.second.Z() < iB.second.Z();
+			return (
+				iA.second.X() <= iB.second.X() && 
+				iA.second.Y() <= iB.second.Y() && 
+				iA.second.Z() <= iB.second.Z()
+				);
 		}
 	};
 

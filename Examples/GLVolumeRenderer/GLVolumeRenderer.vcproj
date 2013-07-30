@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="GLVolumeRenderer"
 	ProjectGUID="{031172DD-D65B-470A-8EFD-2C2F1893CB51}"
 	RootNamespace="VolumeRenderer"
 	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -41,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;C:\Program Files\Science.Medical.Imaging\SMISDK\include&quot;"
+				AdditionalIncludeDirectories="&quot;C:\Program Files\Science.Medical.Imaging\SMISDK\include&quot;;C:\Work\SMIViewer\SmiSDK\include;C:\Work\SMIViewer\Common\dcmtk\dcmjpeg\include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
@@ -64,10 +65,12 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="User32.lib Ws2_32.lib netapi32.lib dcmdata.lib ofstd.lib  opengl32.lib glu32.lib glut32.lib AlgsD.lib IOD.lib CoreD.lib AlgsD.lib MathD.lib"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;C:\Program Files\Science.Medical.Imaging\SMISDK\Lib&quot;"
+				AdditionalLibraryDirectories="&quot;C:\Program Files\Science.Medical.Imaging\SMISDK\lib&quot;;C:\Work\SMIViewer\SmiSDK\lib"
 				GenerateDebugInformation="true"
 				AssemblyDebug="1"
 				SubSystem="1"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -87,9 +90,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -147,6 +147,8 @@
 				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -166,9 +168,6 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
-			/>
-			<Tool
-				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

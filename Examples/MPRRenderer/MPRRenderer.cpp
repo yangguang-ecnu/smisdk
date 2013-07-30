@@ -34,7 +34,7 @@
 #include <string>
 #include <vector>
 
-static PGCore::Logger logger("C://Tmp//MPRRenderer.log");
+static PGCore::Logger logger("C://Temp//MPRRenderer.log");
 
 bool ReadImagesDcm(const std::vector<std::string>& iFileNames, 
 		PGCore::Volume<short>& ioVolume,
@@ -122,7 +122,7 @@ bool ReadImagesDcm(const std::vector<std::string>& iFileNames,
 	return true;
 }
 
-
+#define PG_OUT_DATA_TYPE unsigned char
 
 bool RenderMPR(PGCore::Volume<short>& ioVolume,
 		PGCore::MetaData<short>& ioAttributes,
@@ -134,7 +134,7 @@ bool RenderMPR(PGCore::Volume<short>& ioVolume,
 	ioVolume.ResetBitVolume();
 
 	// create renderer here
-	PGAlgs::VoxelToMPRRenderer<short, unsigned char> mprRenderer;
+	PGAlgs::VoxelToMPRRenderer<short, PG_OUT_DATA_TYPE> mprRenderer;
 	bool rv = mprRenderer.SetInput(static_cast<PGCore::BaseDataObject *> (&voxelDataPrimary));
 	if (!rv)
 	{
@@ -159,7 +159,7 @@ bool RenderMPR(PGCore::Volume<short>& ioVolume,
 		return false;
 	};
 
-	PGCore::TransferFunctionLUT<unsigned char> mprLuT;
+	PGCore::TransferFunctionLUT<PG_OUT_DATA_TYPE> mprLuT;
 	mprLuT.SetWindow(0.1f, 0.35f);
 	mprLuT.SetType(PGCore::kPgLUTTypeVIBGYOR);
 	rv = mprRenderer.SetTransferFunctionLUT(&mprLuT, 0);
@@ -171,7 +171,7 @@ bool RenderMPR(PGCore::Volume<short>& ioVolume,
 		return false;
 	}
 
-	PGCore::Image<PGMath::Point3D<unsigned char>> renderedImage;
+	PGCore::Image<PGMath::Point3D<PG_OUT_DATA_TYPE>> renderedImage;
 
 	rv = mprRenderer.GetOutput(&renderedImage);	
 	if (!rv) return 0;

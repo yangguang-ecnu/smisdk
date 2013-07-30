@@ -440,6 +440,12 @@ namespace PGCore
 	};
 
 	template <class T>
+	const ePGScanDirection MetaData<T>::GetScanDirection()
+	{
+		return m_scanDirection;
+	};
+
+	template <class T>
 	void MetaData<T>::updateImagePosAlongScanDirectionFlag()
 	{
 		if (m_imagePositionsPatient.empty() || m_scanDirection==PGCore::kPgScanDirectionUnknown) 

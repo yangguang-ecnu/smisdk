@@ -148,6 +148,7 @@ public:
 	bool  GetSkipFactors(int& oXYSkip, int& oZSkip) {	oXYSkip = m_skipFactorXY; oZSkip = m_skipFactorZ; return true; }
 	
 	const bool GetImagesAlongScanDirection(); // not const because it need to call update internally
+	const ePGScanDirection GetScanDirection();
 	
 	void SetFileNameNumberDigits(const int& iFileNameNumberDigits);
 	const int &GetFileNameNumberDigits();		
