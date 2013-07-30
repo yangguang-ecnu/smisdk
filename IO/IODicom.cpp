@@ -148,6 +148,7 @@ namespace PGIO
 		}
 
 		// decompress data set if compressed
+#ifdef _PG_JPGDECODE_
 		if (oMetaData->GetPixelDataFormatJpeg())
 		{
 			DJDecoderRegistration::registerCodecs(); // register JPEG codecs
@@ -168,6 +169,7 @@ namespace PGIO
 				return false;	
 			}
 		}
+#endif
 
 		switch (nBitsPerPixel)
 		{
@@ -230,7 +232,9 @@ namespace PGIO
 			if (localBuf==0)
 			{
 				LOG0("IO/IODicom::Read: Invalid local image buffer.");			
-				DJDecoderRegistration::cleanup(); // de-register JPEG codecs
+#ifdef _PG_JPGDECODE_ 
+					DJDecoderRegistration::cleanup(); // de-register JPEG codecs
+#endif
 				return false;
 			}
 
@@ -258,7 +262,9 @@ namespace PGIO
 
 		//LOG0("IO/IODicom::Read: Image DONE.");			
 		//fclose(fptr);
+#ifdef _PG_JPGDECODE_ 
 		DJDecoderRegistration::cleanup(); // de-register JPEG codecs
+#endif
 		return true;
 	}
 

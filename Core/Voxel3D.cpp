@@ -726,18 +726,39 @@ bool Voxel3D<T>::updateTransformImgToDcm()
 	// Z inversion	
 	matrixImageToMMScale.Identity();
 	m_transformIsoToImg_InvertZ =  PGMath::AffineTransform<float>(matrixImageToMMScale);
-	m_transformImgToIso_InvertZ =  PGMath::AffineTransform<float>(matrixImageToMMScale);
+	
 	if (invZFactor<0.0f)
 	{		
 		matrixImageToMMScale.SetElement(2, 2, -1.0f); 
 		matrixImageToMMScale.SetElement(2, 3, (m_dimensionsImage.Z()-1));
-		m_transformIsoToImg_InvertZ =  PGMath::AffineTransform<float>(matrixImageToMMScale);
 
-		m_transformImgToIso_InvertZ = m_transformIsoToImg_InvertZ;
-		m_transformImgToIso_InvertZ.Invert();
+		/*
+		PGCore::ePGScanDirection scanDir = m_metaData.GetScanDirection();
+
+		switch (scanDir)
+		{
+			case kPgScanDirectionAxial:		
+				matrixImageToMMScale.SetElement(2, 3, (m_dimensionsImage.Z()-1));
+				break;
+
+			case kPgScanDirectionSagittal:		
+				matrixImageToMMScale.SetElement(0, 3, (m_dimensionsImage.X()-1));
+				break;
+
+			case kPgScanDirectionCoronal:		
+				matrixImageToMMScale.SetElement(1, 3, (m_dimensionsImage.Y()-1));
+				break;
+
+			default: break;
+		}
+		*/
+		
+
+		m_transformIsoToImg_InvertZ =  PGMath::AffineTransform<float>(matrixImageToMMScale);		
 	}
 
-
+	m_transformImgToIso_InvertZ = m_transformIsoToImg_InvertZ;
+	m_transformImgToIso_InvertZ.Invert();
 
 	
 	return true;
@@ -908,7 +929,7 @@ bool Voxel3D<T>::updateTransforms()
 	//m_transformStdToImg.ConcatPre(&m_transformPatToIso_Rotate);  // apply direction cosines
 		
 	m_transformStdToImg.ConcatPre(&m_transformIsoToImg_Scale);// apply pixel spacing 
-	m_transformStdToImg.ConcatPre(&m_transformIsoToImg_InvertZ); // inversion of Z as needed. scale then translate
+	m_transformStdToImg.ConcatPre(&m_transformIsoToImg_InvertZ); // inversion of slice direction as needed. scale then translate
 	
 
 	m_transformStdToRaw = m_transformStdToImg;

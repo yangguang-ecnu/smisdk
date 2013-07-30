@@ -1,5 +1,5 @@
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPRRenderer", "MPRRenderer\MPRRenderer.vcproj", "{68374094-5842-42CB-B20F-EBA6CF16449E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLMPRRenderer", "GLMPRRenderer\GLMPRRenderer.vcproj", "{D356DE38-A70E-49F7-BC17-B936FBB00991}"

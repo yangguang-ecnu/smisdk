@@ -27,6 +27,7 @@
 #endif // _MSC_VER > 1000
 
 //#define _PG_GDDCM_ "_PG_GDDCM_"
+//#define _PG_JPGDECODE_ "_PG_JPGDECODE_"
 
 #ifdef _PG_GDDCM_
 	#include "../Common/gdcm/include/gdcm-2.0/gdcmFile.h"	
@@ -34,7 +35,9 @@
 	#include "dcmtk/dcmdata/dcfilefo.h"
 	#include "dcmtk/dcmdata/dcdeftag.h"
 	#include "dcmtk/dcmdata/dcmetinf.h"
+#ifdef _PG_JPGDECODE_
 	#include "dcmtk/dcmjpeg/djdecode.h"
+#endif
 #endif
 
 

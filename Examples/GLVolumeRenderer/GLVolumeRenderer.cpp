@@ -33,7 +33,7 @@
 #include <string>
 #include <vector>
 
-static PGCore::Logger volumeLogger("C://Tmp//VolumeRenderer.log");
+static PGCore::Logger volumeLogger("C://Temp//VolumeRenderer.log");
 
 bool ReadImages(const std::vector<std::string>& iFileNames, 
 		PGCore::Volume<short>& ioVolume,
@@ -59,7 +59,7 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	LoggerBase::SetLogger(&volumeLogger);
+	PGCore::LoggerBase::SetLogger(&volumeLogger);
 
 	std::vector<std::string> fileNames;
 	fileNames.push_back(std::string(argv[1]));
@@ -106,10 +106,10 @@ bool ReadImages(const std::vector<std::string>& iFileNames,
 
 		ioParams.SetMultiThreadingFlag(iMTFlag);	
 		ioParams.SetAsynchronousLoadFlag(iAsynchronousLoad);
-		ioParams.SetAutoSkipFlag(true); // let the reader decide how much to skip
+		ioParams.SetAutoSkipFlag(false);//true); // let the reader decide how much to skip
 		ioParams.SetSourceFormat(PGIO::kPgIOSourceFormatDICOM);
 
-		pImgIO3D.SetByteLimitInKB(64000);// 64MB limit, beyond which data will be skipped
+		pImgIO3D.SetByteLimitInKB(4*64000);// 64MB limit, beyond which data will be skipped
 		
 		if (!pImgIO3D.Read(&ioVolume, ioParams, &ioAttributes))
 		{
@@ -145,12 +145,12 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	if (!rv) return false;
 	
 	// how much to skip in sparse mode
-	VolumeRenderer.SetSkipFactor(8);
+	VolumeRenderer.SetSkipFactor(1);
 
 	// create lookup table
 	PGCore::TransferFunctionLUT<unsigned char> volLuT;
-	volLuT.SetType(PGCore::kPgLUTTypeIronHot);
-	volLuT.SetWindow(0.15f, 0.55f);
+	volLuT.SetType(PGCore::kPgLUTTypeVIBGYOR);
+	volLuT.SetWindow(0.15f, 0.45f);
 
 	unsigned int sx = dims.X(), sy = dims.Y();
 	rv = VolumeRenderer.SetImageSize(sx, sy);
@@ -158,7 +158,7 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	rv = VolumeRenderer.PrepareRenderer();
 	if (!rv) return false;
 
-	rv = VolumeRenderer.SetBlendWeight(0.5f, 0);
+	rv = VolumeRenderer.SetBlendWeight(0.05f, 0);
 	if (!rv) return false;
 
 	rv = VolumeRenderer.SetTransferFunctionLUT(&volLuT, 0);
