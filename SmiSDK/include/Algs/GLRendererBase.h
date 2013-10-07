@@ -23,7 +23,7 @@
 #define _PG_GLSL_VR_ 1
 #define _PG_MAX_GL_TX_SIZE_ 1024
 #define _PG_MAX_GL_TX_XY_SIZE_ 256
-#define _PG_GLUT_WIN_SZ_ 512
+#define _PG_GLUT_WIN_SZ_ 800
 
 #include "DeviceRendererBase.h"
 #include "VoxelToMPRRenderer.h"
@@ -48,7 +48,7 @@
 static void *PgStaticRenderer = 0;
 // static vars to enable glut handling
 static int  gSparseMode=0, gLeftDown=0, gMiddleDown=0, gRightDown=0, gXDown=0, gYDown=0, gXUp=0, gYUp=0, gXTemp=0, gYTemp=0;
-static float gRotationIncrement=2.5f, gTranslationIncrement=0.001f, gSlicerPos=0.0f;
+static float gRotationIncrement=5.0f, gTranslationIncrement=0.001f, gSlicerPos=0.0f;
 static PGMath::Vector3D<float> gRotationStatic(0, 0, 0), gTranslationStatic(0, 0, 0);
 
 

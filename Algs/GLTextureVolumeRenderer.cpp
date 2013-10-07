@@ -1643,7 +1643,7 @@ namespace PGAlgs
 		int iVIndex = iVolumeIndex;
 		
 		register float r=0.0f, zz=gZMin;
-		register float zSparse = (m_skipFactor==1) ? gDzFull : 2.0*m_skipFactor*gDzSparse;	
+		register float zSparse = (m_skipFactor==1) ? gDzFull : 8.0*m_skipFactor*gDzSparse;	
 
 		gDrSparse = zSparse/2;	
 
