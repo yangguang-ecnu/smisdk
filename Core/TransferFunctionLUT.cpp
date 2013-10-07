@@ -223,6 +223,19 @@ namespace PGCore
 		int i=0;
 		Point3D<T> *buf = m_image.GetBuffer();
 
+		for (i=0; i<GetDimension(); i++)
+		{
+			buf[i] = Point3D<T>( 
+				i, 
+				i, 
+				i,				
+				i	
+				);
+		}
+
+		return true;
+
+
 		int window=6*m_dimBy6, 
 			offset = m_windowLow,
 			offset1 = m_windowLow + window/2;
@@ -244,10 +257,10 @@ namespace PGCore
 			if (i+offset < GetDimension())
 			{
 				buf[i+offset] = Point3D<T>( 
-					posValue,
-					posValue, 
-					posValue, 
-					m_transparencyFlag ? i : posValue		
+					i+offset, // posValue,
+					i+offset, // posValue, 
+					i+offset, // posValue, 
+					i+offset // m_transparencyFlag ? i : posValue		
 					);							
 			}
 

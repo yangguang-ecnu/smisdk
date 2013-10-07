@@ -21,40 +21,19 @@
 //////////////////////////////////////////////////////////////////////////
 
 
-#include "GLRendererBase.h"
-#include "../Core/Volume.h"
-#include "../Core/PolygonMesh.h"
-#include "../Core/Timer.h"
+#include "Algs/GLRendererBase.h"
+#include "Core/Volume.h"
+#include "Core/PolygonMesh.h"
+#include "Core/Timer.h"
 
 
 #define _TEST_SCENE 0
 //#define _HIGH_BW "_HIGH_BW"
-//#define _USE_CG
-#ifdef _USE_CG
-// to use fragment shading
-#include <Cg/cgGL.h>
 
-#pragma comment( lib, "cg.lib" )							// Search For Cg.lib While Linking
-#pragma comment( lib, "cggl.lib" )							// Search For CgGL.lib While Linking
-#endif
 
 
 namespace PGAlgs
 {
-
-#ifdef _USE_CG
-	typedef struct {
-		// ** Nvidia CG Stuff
-		CGprogram fragmentProgram;
-		CGprogram fragmentSlicerProgram;
-		CGcontext shaderContext;
-		CGprofile fragmentProfile;
-		CGparameter cgTex3d;
-		CGparameter cgTexColormap;
-		//CGparameter cgSlicerTexColormap;
-	} CgInfo;
-	PGAlgs::CgInfo					gCgInfo;
-#endif
 
 	const int				kPgFramesToMeasure=16;	
 	const float				kPgMinThNoiseInMask[3] = 
@@ -129,6 +108,8 @@ public:
 		virtual bool SetContext(HDC iContext);
 
 		virtual void Clear();
+
+		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr);
 		
 	protected:
 
@@ -136,6 +117,7 @@ public:
 
 		virtual bool ImageSizeUpdated();
 
+		virtual bool reloadLUT() = 0;
 	
 		bool							m_ready;	
 		float							m_coronalCutPlanePosition;
@@ -156,7 +138,7 @@ public:
 		int						gXDown, gXUp, gYDown, gYUp, gXTemp, gYTemp;
 		float					gCameraNear, gCameraFar, gCameraEyeZ;
 		float					gDzFull, gDzSparse, gRotate;
-		unsigned int			gLowerBound, gLowerEndNoiseBound;
+		unsigned int			gLowerBound, gUpperBound, gLowerEndNoiseBound;
 		float					gSuperSampligFactorZ;
 		
 		

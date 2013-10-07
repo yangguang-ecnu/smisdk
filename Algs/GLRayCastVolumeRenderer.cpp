@@ -11,27 +11,28 @@
 // MAKES NO WARRANTY REGARDING ITS PERFORMANCE, OR ITS FITNESS FOR ANY
 // SPECIFIC USE. ENTIRE RISK TO ITS QUALITY AND PERFORMANCE IS WITH THE USER.
 //
-// Filename:	GLTextureVolumeRenderer.cpp
+// Filename:	GLRayCastVolumeRenderer.cpp
 // Author:		Prashant Chopra
 // Created:		Sunday, November 05, 2006 at 5:11:33 PM
 //
 
-#ifndef _PGGLTextureVolumeRenderer_HPP_
-#define _PGGLTextureVolumeRenderer_HPP_
+#ifndef _PGGLRayCastVolumeRenderer_HPP_
+#define _PGGLRayCastVolumeRenderer_HPP_
 //////////////////////////////////////////////////////////////////////////
 
 
-#include "Algs/GLTextureVolumeRenderer.h"
+#include "Algs/GLRayCastVolumeRenderer.h"
+
 
 namespace PGAlgs
 {	
 	
 	template <class T, class U>
-	GLTextureVolumeRenderer<T, U>::GLTextureVolumeRenderer() 
+	GLRayCastVolumeRenderer<T, U>::GLRayCastVolumeRenderer() 
 	{
 		m_textureFormat=GL_LUMINANCE;
 		m_rawFormat=GL_LUMINANCE;
-		m_numChannels=4;
+		m_numChannels=2;
 
 		m_textureFormat=GL_LUMINANCE;
 		m_rawFormat=GL_LUMINANCE;
@@ -79,7 +80,7 @@ namespace PGAlgs
 	};
 
 	template <class T, class U>
-	GLTextureVolumeRenderer<T, U>::~GLTextureVolumeRenderer(void) 
+	GLRayCastVolumeRenderer<T, U>::~GLRayCastVolumeRenderer(void) 
 	{ 
 #ifdef _USE_CG
 		disableFragmentShader();
@@ -90,7 +91,7 @@ namespace PGAlgs
 
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::SetInput(PGCore::BaseDataObject *iDataObject)
+	bool GLRayCastVolumeRenderer<T, U>::SetInput(PGCore::BaseDataObject *iDataObject)
 	{
 		bool rv = GLVolumeRenderer::SetInput(iDataObject);
 		if (!rv) return false;
@@ -98,14 +99,14 @@ namespace PGAlgs
 		PGCore::MultiDataBase<T> *inMultiVolume = (static_cast<PGCore::MultiDataBase<T> *>(m_iDataObject));
 		if (!inMultiVolume) 
 		{
-			LOG0("GLTextureVolumeRenderer:SetInput Error: failure to fetch input multivolume");
+			LOG0("GLRayCastVolumeRenderer:SetInput Error: failure to fetch input multivolume");
 			return false;
 		}
 
 		int iMultiVolumeCount = inMultiVolume->GetDataCount(kPgDataObjectTypeIsotropicVoxel3D);
 		if (iMultiVolumeCount < 1)
 		{
-			LOG0("GLTextureVolumeRenderer:SetInput Error: Needs at least one volume");
+			LOG0("GLRayCastVolumeRenderer:SetInput Error: Needs at least one volume");
 			return false;
 		}
 
@@ -125,41 +126,35 @@ namespace PGAlgs
 	};
 	
 	
-	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::reloadLUT()
-	{
-		return loadLookupTable();
-	}
-
  
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::PrepareRenderer()
+	bool GLRayCastVolumeRenderer<T, U>::PrepareRenderer()
 	{
 		if (m_externalContext)
 		{
 			if (m_hdContext == (HDC)0 || m_glContext == (HGLRC)0)
 			{
-				LOG0("GLTextureVolumeRenderer: Error: no context");
+				LOG0("GLRayCastVolumeRenderer: Error: no context");
 				return false;
 			}
 		}
 
 		if (!m_iDataObject || (m_rows*m_columns)<=0) 
 		{
-			LOG0("GLTextureVolumeRenderer: Error: no input");
+			LOG0("GLRayCastVolumeRenderer: Error: no input");
 			return false;
 		}		
 
 		PGCore::MultiDataBase<T> *inMultiVolume = (static_cast<PGCore::MultiDataBase<T> *>(m_iDataObject));
 		if (!inMultiVolume) {
-			LOG0("GLTextureVolumeRenderer:initVolumes Error: failure to fetch input multivolume");
+			LOG0("GLRayCastVolumeRenderer:initVolumes Error: failure to fetch input multivolume");
 			return false;
 		}
 
 		int iMultiVolumeCount = inMultiVolume->GetDataCount(kPgDataObjectTypeIsotropicVoxel3D);
 		if (iMultiVolumeCount < 1)
 		{
-			LOG0("GLTextureVolumeRenderer:initVolumes Error: Needs at least one volume");
+			LOG0("GLRayCastVolumeRenderer:initVolumes Error: Needs at least one volume");
 			return false;
 		}	
 
@@ -172,7 +167,7 @@ namespace PGAlgs
 			PGCore::Voxel3D< T > *inVolume = (static_cast<PGCore::Voxel3D < T > *>(inMultiVolume->GetDataObject(i)));
 			if (!inVolume) 
 			{
-				LOG1("GLTextureVolumeRenderer: Error: failure to fetch input volume %d", i);
+				LOG1("GLRayCastVolumeRenderer: Error: failure to fetch input volume %d", i);
 				return false;
 			}
 
@@ -182,7 +177,7 @@ namespace PGAlgs
 			pDimensions = inVolume->GetDimensions();
 			if (pDimensions.Z()<=0) 
 			{
-				LOG1("GLTextureVolumeRenderer: Error: empty input volume %d", i);
+				LOG1("GLRayCastVolumeRenderer: Error: empty input volume %d", i);
 				return false;
 			}
 
@@ -190,7 +185,7 @@ namespace PGAlgs
 
 			if (!volumeAccessor) 
 			{
-				LOG0("GLTextureVolumeRenderer: Error: failure to fetch input volume accessor");
+				LOG0("GLRayCastVolumeRenderer: Error: failure to fetch input volume accessor");
 				return false;
 			}
 
@@ -201,20 +196,20 @@ namespace PGAlgs
 
 			clampToNextHigherNumber(m_voxelDims[i]);
 
-			LOG3("GLTextureVolumeRenderer: Dimensions (padded): %d / %d / %d", m_voxelDims[i][0], m_voxelDims[i][1], m_voxelDims[i][2]);
+			LOG3("GLRayCastVolumeRenderer: Dimensions (padded): %d / %d / %d", m_voxelDims[i][0], m_voxelDims[i][1], m_voxelDims[i][2]);
 
 			int maxVoxelDim = max(m_voxelDims[i].X(), m_voxelDims[i].Y());
 			maxVoxelDim = max(maxVoxelDim, m_voxelDims[i].Z());
 
 			if (!initGLthread())
 			{
-				LOG0("GLTextureVolumeRenderer: Error: failed to initialize GL machine.");
+				LOG0("GLRayCastVolumeRenderer: Error: failed to initialize GL machine.");
 				return false;
 			}						
 
 			long totalTxSize =  _PG_MAX_GL_TX_XY_SIZE_*_PG_MAX_GL_TX_XY_SIZE_*m_max3DTextureSize;
 
-			LOG2("GLTextureVolumeRenderer: Maximum dimension: %d / %d", maxVoxelDim, m_max3DTextureSize);
+			LOG2("GLRayCastVolumeRenderer: Maximum dimension: %d / %d", maxVoxelDim, m_max3DTextureSize);
 			long totalVxSize =  m_voxelDims[i][0] * m_voxelDims[i][1] * m_voxelDims[i][2];
 			
 			PGCore::MetaData< T > iMetaData = inVolume->GetMetaData();
@@ -222,7 +217,9 @@ namespace PGAlgs
 			float txScaleZ = gTexScale[i].Z();
 			
 			if (totalVxSize > totalTxSize)
-			{				
+			{	
+				LOG3("WARNING: GLRayCastVolumeRenderer: Too big for total texture: %d / %d. Will reduce Z resolution by %d.", totalVxSize, totalTxSize, m_voxelDimsSkipZ[i]);
+
 				m_voxelDimsSkipZ[i]=0;						
 				int m_volDimZBck = m_voxelDims[i][2];
 				float txScaleZBck = txScaleZ;
@@ -238,7 +235,7 @@ namespace PGAlgs
 				gVolumeScope[i] = PGMath::Point3D<long>(gVolumeScope[i].X(), gVolumeScope[i].Y(), gVolumeScope[i].Z()/m_voxelDimsSkipZ[i]); 
 				gTexScale[i] = PGMath::Vector3D<float>(gTexScale[i].X(), gTexScale[i].Y(), txScaleZ);
 
-				LOG3("WARNING: GLTextureVolumeRenderer: Too big for total texture: %d / %d. Will reduce Z resolution by %d.", totalVxSize, totalTxSize, m_voxelDimsSkipZ[i]);
+				
 				//m_ready = false;
 				//return false;
 			} else
@@ -248,7 +245,7 @@ namespace PGAlgs
 
 			m_ready = true;			
 
-			LOG2("GLTextureVolumeRenderer: Needed texture size : %d, remaining: %d", totalVxSize, m_remaining3DTextureSize);			
+			LOG2("GLRayCastVolumeRenderer: Needed texture size : %d, remaining: %d", totalVxSize, m_remaining3DTextureSize);			
 			if (!m_voxelChunk[i].Alloc(totalVxSize*m_numChannels*
 #if (PG_USE_RGBA16)
 				sizeof(short)
@@ -257,7 +254,7 @@ namespace PGAlgs
 #endif
 				))
 			{
-				LOG0("GLTextureVolumeRenderer: Error: failure to allocate voxel memory");
+				LOG0("GLRayCastVolumeRenderer: Error: failure to allocate voxel memory");
 				return false;
 			}		
 
@@ -272,73 +269,128 @@ namespace PGAlgs
 			gTexScale[i] = PGMath::Vector3D<float>(sortedSpacingVec[2]/spacingVec[0], sortedSpacingVec[2]/spacingVec[1], 
 				sortedSpacingVec[2]/spacingVec[2]);		
 
-			LOG4("GLTextureVolumeRenderer: Relative scaling[%d] : %3.2f %3.2f %3.2f", i, gTexScale[i].X(), gTexScale[i].Y(), gTexScale[i].Z());
+			LOG4("GLRayCastVolumeRenderer: Relative scaling[%d] : %3.2f %3.2f %3.2f", i, gTexScale[i].X(), gTexScale[i].Y(), gTexScale[i].Z());
 			
 			gXTexRatio[i] = 1.0f; gYTexRatio[i] = 1.0f; gZTexRatio[i] = 1.0f;		
 			gXTexTrans[i] = 0.5f; gYTexTrans[i] = 0.5f; gZTexTrans[i] = 0.5f; 		
 
 			if(!init(i)) 
 			{
-				LOG1("GLTextureVolumeRenderer: Error: failure to init for volume %d", i);
+				LOG1("GLRayCastVolumeRenderer: Error: failure to init for volume %d", i);
 				return false;    
-			}
-
-#ifdef _USE_CG
-			enableFragmentShader();
-#endif
+			}			
 
 			if (!m_LuT[i]) continue;
 
-			/*
-			if (!loadVolume(i))
-			{				
-				LOG0("GLTextureVolumeRenderer: Error: failure to loadVolume");
-				return false; 
-			}*/
-
-#ifdef _USE_CG
-			cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[0]);
-			cgGLEnableTextureParameter (gCgInfo.cgTex3d);
-
-
-			loadLookupTable();
-
-
-			cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);
-			cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
-			glEnable(GL_TEXTURE_2D);	
-#endif	
+			
 
 			glEnable(GL_TEXTURE_3D);
-
+			glEnable(GL_TEXTURE_2D);	
+			
+			glBindTexture(GL_TEXTURE_3D, gTextureName[i]);
 
 #ifdef _USE_CG
+						
+			if (!loadVolume(i) || !loadLookupTable())
+			{				
+				LOG0("GLRayCastVolumeRenderer: Error: failure to loadVolume por lookup table");
+				return false; 
+			}
+
+		
+			enableFragmentShader();		
+			
 			cgGLLoadProgram(gCgInfo.fragmentProgram);
 			cgGLEnableProfile(gCgInfo.fragmentProfile);
 			cgGLBindProgram(gCgInfo.fragmentProgram);
 
+			cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[i]);
+			cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);					
+			
 			cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
 			cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
 #endif
 
-			glBindTexture(GL_TEXTURE_3D, gTextureName[i]);
+			
+			
 		}
 
 		return GLRendererBase::PrepareRenderer();		
 	}
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::Execute() 
+	bool GLRayCastVolumeRenderer<T, U>::Execute() 
 	{		
 		return false;
 	}
 
-	
+	template <class T, class U>
+	bool GLRayCastVolumeRenderer<T, U>::reloadLUT()
+	{
+		LOG0("{ GLRayCastVolumeRenderer::reloadLUT"); 
+
+		int rv2d = initLUTTex();
+		if (!rv2d)
+		{
+			LOG0("} ERROR: GLRayCastVolumeRenderer::reloadLUT"); 
+			return false;
+		}
+		
+		bool rv = false;
+#ifdef _USE_CG
+			
+			rv = loadLookupTable();
+			if (!rv)
+			{				
+				LOG0("GLRayCastVolumeRenderer: Error: failure to loadVolume por lookup table");
+				return false; 
+			}
+		
+			enableFragmentShader();		
+			
+			cgGLLoadProgram(gCgInfo.fragmentProgram);
+			cgGLEnableProfile(gCgInfo.fragmentProfile);
+			cgGLBindProgram(gCgInfo.fragmentProgram);
+
+			cgGLDisableTextureParameter (gCgInfo.cgTex3d);	
+			cgGLDisableTextureParameter (gCgInfo.cgTexColormap);
+
+			cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[0]);
+			cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);					
+			
+			cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
+			cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
+#endif
+
+		LOG0("} GLRayCastVolumeRenderer::reloadLUT"); 
+
+		return rv;
+	}
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::loadLookupTable()
+	bool GLRayCastVolumeRenderer<T, U>::loadLookupTable()
 	{
-		if (!m_ready) return false;
+		LOG2("{ GLRayCastVolumeRenderer::loadLookupTable: %d, %d", gLowerBound, gUpperBound);
+
+		if (!m_ready) 
+		{
+			LOG0("Error }  GLRayCastVolumeRenderer::loadLookupTable");
+			return false;
+		}
+
+		float wLow = float(gLowerBound)/255.0f;
+		float wHi  = float(gUpperBound)/255.0f;
+
+		m_LuT[0]->SetWindow(wLow, wHi);
+
+		Point3D<U>* m_LuTBuf = m_LuT[0]->GetBuffer();
+		if (!m_LuTBuf)
+		{
+			LOG0("GLRayCastVolumeRenderer:loadLookupTable Error: failure to fetch LUT buffer");		
+			return false;			
+		}
+
+
 		//createGauss1DFilter (tv->focusWindowSize);  
 		{
 			int j=0, i=0;    
@@ -349,8 +401,23 @@ namespace PGAlgs
 			float tfvalmaxMain = log(256.0f-(float)gLowerBound), tfvalmax = log((float)(gLowerBound-gLowerEndNoiseBound));
 			float tmainMultiplier = 128.0f/gSuperSampligFactorZ, tMultiplier = 2.0f/gSuperSampligFactorZ;
 			{
-				for (j = 0; j < 256; j++) {
-					tval = 0;							
+				for (j = 0; j < 256; j++) 
+				{					
+					for (int k=0; k<4; k++)
+					{
+						subcolormap[j][k] = m_LuTBuf[j][k];								
+					}										
+					
+					if (j>=gLowerBound && j<=gUpperBound)
+					{
+						subcolormap[j][3] = subcolormap[j][3]<<1;
+					} else
+					{
+						subcolormap[j][3] = subcolormap[j][3]>>1;
+					}
+
+					/*
+					tval = 0;
 					if (j>gLowerBound && j<255)
 					{
 						float tfval = (log((float)(j-gLowerBound+1))/tfvalmaxMain);					
@@ -368,9 +435,28 @@ namespace PGAlgs
 						subcolormap[j][0] = (unsigned char)((unsigned int)(tfval));			//(unsigned char)((unsigned int)((tfval*255.0f)));;
 						subcolormap[j][1] = (unsigned char)((unsigned int)(tfval));			//(unsigned char)((unsigned int)((tfval*255.0f)));;
 						subcolormap[j][2] = (unsigned char)((unsigned int)(tfval));			;//(unsigned char)((unsigned int)((tfval*255.0f)));;
-					}				
+					}						
 
 					subcolormap[j][3] = tval;
+					
+						
+					if (j>=gLowerBound && j<=gUpperBound)
+					{
+						for (int k=0; k<4; k++)
+						{
+							subcolormap[j][k] = m_LuTBuf[j][k];								
+						}										
+						subcolormap[j][3] = subcolormap[j][3]>>2;
+					} else
+					{
+						for (int k=0; k<4; k++)
+						{
+							subcolormap[j][k] = 32;
+						}							
+						subcolormap[j][3] = subcolormap[j][3]>>4;
+					}
+					*/
+
 				}
 			}       
 
@@ -378,6 +464,9 @@ namespace PGAlgs
 			{
 				memcpy(&(colormap[i][0][0]), &(subcolormap[0][0]), 256*4*sizeof(unsigned char));
 			}
+
+			glEnable(GL_TEXTURE_2D);
+		    glBindTexture(GL_TEXTURE_2D, gLUTName);
 
 			glTexImage2D (GL_TEXTURE_2D, 0, GL_RGBA8,
 				256, 256, 0, 
@@ -391,13 +480,17 @@ namespace PGAlgs
 
 		}
 
-		//  CheckGLErrors ();
+		logLastGlError();
+		//CheckGLErrors ();
+
+		LOG0("} GLRayCastVolumeRenderer::loadLookupTable");
+
 		return true;
 	}
 
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::loadVolume(const int iVolumeIndex/*=-1*/)
+	bool GLRayCastVolumeRenderer<T, U>::loadVolume(const int iVolumeIndex/*=-1*/)
 	{
 		if (iVolumeIndex!=-1 && iVolumeIndex>m_volumeAccessor.size()-1)
 			return false;
@@ -416,11 +509,11 @@ namespace PGAlgs
 		bool rv = false;		
 		for (int vIndex=iBeginIndex; vIndex<=iEndIndex; vIndex++)
 		{
-			//LOG2("{ GLTextureVolumeRenderer<T, U>::loadVolume(%d): HighBW mode: %d", vIndex, highBW);
+			//LOG2("{ GLRayCastVolumeRenderer<T, U>::loadVolume(%d): HighBW mode: %d", vIndex, highBW);
 			bool maskInit = m_volumeAccessor[vIndex]->GetBitVolume().IsInitialized();
 			bool rv0 = maskInit ?  loadVolumeWithMask(vIndex) : loadVolumeWithoutMask(vIndex);    
 			rv = rv0||rv;
-			//LOG3("} GLTextureVolumeRenderer<T, U>::loadVolume(%d): HighBW mode: %d, Success: %d", vIndex, highBW, rv0 ? 1 : 0);
+			//LOG3("} GLRayCastVolumeRenderer<T, U>::loadVolume(%d): HighBW mode: %d, Success: %d", vIndex, highBW, rv0 ? 1 : 0);
 		}
 		
 		return rv;
@@ -429,7 +522,7 @@ namespace PGAlgs
 
 	// use pixel buffer objects here
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::loadVolumeWithMask(const int iVolumeIndex/*=0*/)
+	bool GLRayCastVolumeRenderer<T, U>::loadVolumeWithMask(const int iVolumeIndex/*=0*/)
 	{
 		if (!m_ready) return false;
 
@@ -442,14 +535,14 @@ namespace PGAlgs
 #endif
 
 		//cout<<"Starting to initialize the texture..."<<endl;
-		LOG0("{ GLTextureVolumeRenderer::loadVolumeWithMask");
+		LOG0("{ GLRayCastVolumeRenderer::loadVolumeWithMask");
 
 		// this is where you pass in the volume
 
 		//long iSize = m_max3DTextureSize * m_max3DTextureSize * m_max3DTextureSize;//m_voxelDims.X() * m_voxelDims.Y() * m_voxelDims.Z() * sizeof(T);
 		//unsigned char *voxelArray = (unsigned char *)calloc(iSize, m_numChannels*sizeof(char));
 		//ObjectBase voxelChunk;
-		//LOG0("{ GLTextureVolumeRenderer::begin init");
+		//LOG0("{ GLRayCastVolumeRenderer::begin init");
 #if (PG_USE_RGBA16)
 		unsigned short *voxelArray = (unsigned short *)(m_voxelChunk[iVolumeIndex].GetBuffer());//voxelChunk.Alloc(iSize*m_numChannels*sizeof(char));
 		unsigned int alphaOffsetVisible=0, alphaOffsetHidden=6;
@@ -459,7 +552,7 @@ namespace PGAlgs
 #endif
 		if (!voxelArray)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch voxelArray");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch voxelArray");
 			return 0;
 		}
 
@@ -467,12 +560,12 @@ namespace PGAlgs
 		alphaOffsetVisible+= superSamplingPow;
 		alphaOffsetVisible = min(4, alphaOffsetVisible);
 		alphaOffsetVisible = max(7, alphaOffsetVisible);
-		LOG2("GLTextureVolumeRenderer: loadVolumeWithMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
+		LOG2("GLRayCastVolumeRenderer: loadVolumeWithMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
 
 
 		if (!m_volumeAccessor[iVolumeIndex]) 
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch input volume accessor");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch input volume accessor");
 			return 0;
 		}
 
@@ -481,7 +574,7 @@ namespace PGAlgs
 		defaultLuT.SetType((PGCore::ePgLUTType)0);
 		if (!m_LuT[iVolumeIndex])
 		{
-			LOG0("GLTextureVolumeRenderer: Warning: failure to fetch LUT. Will use default...");
+			LOG0("GLRayCastVolumeRenderer: Warning: failure to fetch LUT. Will use default...");
 			m_LuT[iVolumeIndex] = &defaultLuT;
 			usedDefaultLUT = true;
 			//return 0;			
@@ -492,21 +585,21 @@ namespace PGAlgs
 		defaultMaskLuT.SetType((PGCore::ePgLUTType)2);
 		if (!m_MaskLUT[iVolumeIndex])
 		{
-			LOG0("GLTextureVolumeRenderer: Warning: failure to fetch mask LUT. Will use default...");
+			LOG0("GLRayCastVolumeRenderer: Warning: failure to fetch mask LUT. Will use default...");
 			m_MaskLUT[iVolumeIndex] = &defaultMaskLuT;
 			usedDefaultMaskLUT = true;
 			//return 0;			
 		}
 
-		//LOG0("} GLTextureVolumeRenderer::end init");
+		//LOG0("} GLRayCastVolumeRenderer::end init");
 
-		//LOG0("{ GLTextureVolumeRenderer::begin apply LUT");
+		//LOG0("{ GLRayCastVolumeRenderer::begin apply LUT");
 
 		// copy LUT to local 
 		Point3D<U>* m_LuTBuf = m_LuT[iVolumeIndex]->GetBuffer();
 		if (!m_LuTBuf)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch LUT buffer");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch LUT buffer");
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;
 			if (usedDefaultMaskLUT) m_LuTBuf[iVolumeIndex] = 0;
 
@@ -516,7 +609,7 @@ namespace PGAlgs
 		Point3D<U>* m_MaskLUTBuf = m_MaskLUT[iVolumeIndex]->GetBuffer();
 		if (!m_MaskLUTBuf)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch Mask LUT buffer");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch Mask LUT buffer");
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;
 			if (usedDefaultMaskLUT) m_LuTBuf[iVolumeIndex] = 0;
 			return 0;			
@@ -556,7 +649,7 @@ namespace PGAlgs
 
 		if (range<=0) 
 		{
-			LOG0("GLTextureVolumeRenderer: Error: zero range");
+			LOG0("GLRayCastVolumeRenderer: Error: zero range");
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;
 			if (usedDefaultMaskLUT) m_LuTBuf[iVolumeIndex] = 0;
 			return false;
@@ -753,16 +846,16 @@ namespace PGAlgs
 		//	glTexImage3D  ( target , level , internalformat , 
 		//		width , height , depth , border , format , type , pixels )
 
-		//LOG0("} GLTextureVolumeRenderer::end apply LUT");
+		//LOG0("} GLRayCastVolumeRenderer::end apply LUT");
 
 
-		//LOG0("{ GLTextureVolumeRenderer::begin text init");
+		//LOG0("{ GLRayCastVolumeRenderer::begin text init");
 		if (m_externalContext)
 		{
 			if((wglMakeCurrent(m_hdContext, m_glContext)) == NULL)
 			{
 				////MessageBox::Show("wglMakeCurrent Failed");
-				LOG0("GLTextureVolumeRenderer::wglMakeCurrent Failed");
+				LOG0("GLRayCastVolumeRenderer::wglMakeCurrent Failed");
 				//return false;
 			}
 		}
@@ -806,23 +899,23 @@ namespace PGAlgs
 			return 0;
 		}
 
-		//LOG0("} GLTextureVolumeRenderer::end text init");
+		//LOG0("} GLRayCastVolumeRenderer::end text init");
 
 		//cout<<"Texture initialized..."<<endl;	
-		//LOG2("} GLTextureVolumeRenderer::loadVolume: [%d -> %d]", minTransValue, maxTransValue);
+		//LOG2("} GLRayCastVolumeRenderer::loadVolume: [%d -> %d]", minTransValue, maxTransValue);
 
 		if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;
 		if (usedDefaultMaskLUT) m_MaskLUT[iVolumeIndex] = 0;
 
 		UpdateProgress(100);
 
-		LOG0("} GLTextureVolumeRenderer::loadVolumeWithMask");
+		LOG0("} GLRayCastVolumeRenderer::loadVolumeWithMask");
 		return 1;
 	}
 
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::loadVolumeWithoutMask(const int iVolumeIndex/*=0*/)
+	bool GLRayCastVolumeRenderer<T, U>::loadVolumeWithoutMask(const int iVolumeIndex/*=0*/)
 	{	
 
 		if (!m_ready) return false;
@@ -834,14 +927,14 @@ namespace PGAlgs
 #endif
 
 		//cout<<"Starting to initialize the texture..."<<endl;
-		LOG0("{ GLTextureVolumeRenderer::loadVolumeWithoutMask");
+		LOG0("{ GLRayCastVolumeRenderer::loadVolumeWithoutMask");
 
 		// this is where you pass in the volume
 
 		//long iSize = m_max3DTextureSize * m_max3DTextureSize * m_max3DTextureSize;//m_voxelDims.X() * m_voxelDims.Y() * m_voxelDims.Z() * sizeof(T);
 		//unsigned char *voxelArray = (unsigned char *)calloc(iSize, m_numChannels*sizeof(char));
 		//ObjectBase voxelChunk;
-		//LOG0("{ GLTextureVolumeRenderer::begin init");
+		//LOG0("{ GLRayCastVolumeRenderer::begin init");
 #if (PG_USE_RGBA16)
 		unsigned short *voxelArray = (unsigned short *)(m_voxelChunk[iVolumeIndex].GetBuffer());//voxelChunk.Alloc(iSize*m_numChannels*sizeof(char));
 		unsigned int alphaOffsetVisible=2;
@@ -851,7 +944,7 @@ namespace PGAlgs
 #endif
 		if (!voxelArray)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch voxelArray");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch voxelArray");
 			return 0;
 		}
 
@@ -859,34 +952,34 @@ namespace PGAlgs
 		alphaOffsetVisible+= superSamplingPow;		
 		alphaOffsetVisible = min(4, alphaOffsetVisible);
 		alphaOffsetVisible = max(7, alphaOffsetVisible);
-		LOG2("GLTextureVolumeRenderer: loadVolumeWithoutMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
+		LOG2("GLRayCastVolumeRenderer: loadVolumeWithoutMask: SuperSamplingFac: %3.2f, superSamplingPow: %d", gSuperSampligFactorZ, superSamplingPow);
 
 		if (!m_volumeAccessor[iVolumeIndex]) 
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch input volume accessor");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch input volume accessor");
 			return 0;
 		}
 
 		bool usedDefaultLUT = false;
 		PGCore::TransferFunctionLUT<U> defaultLuT;
-		defaultLuT.SetType((PGCore::ePgLUTType)0);
+		defaultLuT.SetType((PGCore::ePgLUTType)kPgLUTTypeGrayScale);
 		if (!m_LuT[iVolumeIndex])
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch LUT");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch LUT");
 			m_LuT[iVolumeIndex] = &defaultLuT;
-			usedDefaultLUT = true;
+			//usedDefaultLUT = true;
 			//return 0;			
 		}
 
-		//LOG0("} GLTextureVolumeRenderer::end init");
+		//LOG0("} GLRayCastVolumeRenderer::end init");
 
-		//LOG0("{ GLTextureVolumeRenderer::begin apply LUT");
+		//LOG0("{ GLRayCastVolumeRenderer::begin apply LUT");
 
 		// copy LUT to local 
 		Point3D<U>* m_LuTBuf = m_LuT[iVolumeIndex]->GetBuffer();
 		if (!m_LuTBuf)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch LUT buffer");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch LUT buffer");
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 			return 0;			
 		}
@@ -895,7 +988,7 @@ namespace PGAlgs
 		Point3D<U>* m_MaskLUTBuf = m_MaskLUT[iVolumeIndex]->GetBuffer();
 		if (!m_MaskLUTBuf)
 		{
-			LOG0("GLTextureVolumeRenderer: Error: failure to fetch Mask LUT buffer");
+			LOG0("GLRayCastVolumeRenderer: Error: failure to fetch Mask LUT buffer");
 			return 0;			
 		}		
 		*/
@@ -942,7 +1035,7 @@ namespace PGAlgs
 
 		if (range<=0) 
 		{
-			LOG0("GLTextureVolumeRenderer: Error: zero range");
+			LOG0("GLRayCastVolumeRenderer: Error: zero range");
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 			return false;
 		}
@@ -1049,21 +1142,25 @@ namespace PGAlgs
 							float alphaVal = 0;
 							int j=0;
 
+#ifndef _USE_CG
 							Point3D<U>* xferLuT = m_LuTBuf;
-
-
 							{
 								xferLuT = m_LuTBuf;		
 								for (j=0; j<m_numChannels-1; j++)
 								{
 									*(pValue+j) = xferLuT[oValue][j];								
+
 								}
 								alphaVal = xferLuT[oValue][j]<<alphaOffsetVisible;
 								//alphaVal = alphaVal> >1;
 							}
-
-
-
+#else
+							for (j=0; j<m_numChannels-1; j++)
+							{
+								*(pValue+j) = oValue;								
+							}
+							alphaVal = oValue;
+#endif
 
 							//alphaVal /= (m_numChannels-1);
 
@@ -1090,7 +1187,7 @@ namespace PGAlgs
 
 								//if (m_numChannels>1)
 								{
-									
+									 
 
 									*pAlpha = 
 #if (PG_USE_RGBA16)
@@ -1098,7 +1195,12 @@ namespace PGAlgs
 #else
 										(unsigned char)
 #endif
+
+#ifndef _USE_CG
 										(alphaVal*alphaFactor); // m_LuTBuf[oValue][j]
+#else
+										oValue;
+#endif
 
 									//minTransValue = minTransValue > oValue ? oValue : minTransValue;
 									//maxTransValue = maxTransValue < oValue ? oValue : maxTransValue;
@@ -1133,22 +1235,22 @@ namespace PGAlgs
 			//memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
 		}
 
-		LOG2("GLTextureVolumeRenderer:: pOffset+gSliceSize: %d, sizeXYZ: %d\n", pOffset+gSliceSize, sizeXYZ*m_numChannels); 
+		LOG2("GLRayCastVolumeRenderer:: pOffset+gSliceSize: %d, sizeXYZ: %d\n", pOffset+gSliceSize, sizeXYZ*m_numChannels); 
 
 
 		//	glTexImage3D  ( target , level , internalformat , 
 		//		width , height , depth , border , format , type , pixels )
 
-		//LOG0("} GLTextureVolumeRenderer::end apply LUT");
+		//LOG0("} GLRayCastVolumeRenderer::end apply LUT");
 
 
-		//LOG0("{ GLTextureVolumeRenderer::begin text init");
+		//LOG0("{ GLRayCastVolumeRenderer::begin text init");
 		if (m_externalContext)
 		{
 			if((wglMakeCurrent(m_hdContext, m_glContext)) == NULL)
 			{
 				////MessageBox::Show("wglMakeCurrent Failed");
-				LOG0("GLTextureVolumeRenderer::wglMakeCurrent Failed");
+				LOG0("GLRayCastVolumeRenderer::wglMakeCurrent Failed");
 				//return false;
 			}
 		}
@@ -1175,20 +1277,20 @@ namespace PGAlgs
 			if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 			return 0;
 		}		
-		//LOG0("} GLTextureVolumeRenderer::end text init");		
+		//LOG0("} GLRayCastVolumeRenderer::end text init");		
 
 		if (usedDefaultLUT) m_LuT[iVolumeIndex] = 0;			
 
 		UpdateProgress(100);
 
 		//cout<<"Texture initialized..."<<endl;	
-		//LOG2("} GLTextureVolumeRenderer::loadVolume: [%d -> %d]", minTransValue, maxTransValue);
-		LOG4("} GLTextureVolumeRenderer::loadVolumeWithoutMask: Uploaded Vol (%d) with Dims [%d, %d, %d]", voxelArray, m_voxelDims[iVolumeIndex][0], m_voxelDims[iVolumeIndex][1], m_voxelDims[iVolumeIndex][2]/(zSkip));
+		//LOG2("} GLRayCastVolumeRenderer::loadVolume: [%d -> %d]", minTransValue, maxTransValue);
+		LOG4("} GLRayCastVolumeRenderer::loadVolumeWithoutMask: Uploaded Vol (%d) with Dims [%d, %d, %d]", voxelArray, m_voxelDims[iVolumeIndex][0], m_voxelDims[iVolumeIndex][1], m_voxelDims[iVolumeIndex][2]/(zSkip));
 		return 1;
 	}
 
-	
 
+	
 	/* 
 	* Method:
 	* 
@@ -1199,7 +1301,7 @@ namespace PGAlgs
 	*
 	*/          
 	template <class T, class U>
-	int GLTextureVolumeRenderer<T, U>::init(const int iVolumeIndex/*=0*/)
+	int GLRayCastVolumeRenderer<T, U>::init3DTex(const int iVolumeIndex=0)
 	{
 		if (iVolumeIndex>gTextureName.size()-1) return 0;
 
@@ -1241,7 +1343,7 @@ namespace PGAlgs
 				return 0;
 			}
 
-			LOG2("<%d>: Texture: %d", this, gTextureName[iVolumeIndex]);
+			LOG2("<%d>: 3D Texture: %d", this, gTextureName[iVolumeIndex]);
 
 			GLfloat bColor[4] = { 0, 0, 0, 0 };
 
@@ -1255,8 +1357,25 @@ namespace PGAlgs
 			glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 			glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
 			glTexParameterfv(GL_TEXTURE_3D, GL_TEXTURE_BORDER_COLOR, bColor);
-		}
+		}		
 
+		return 1;	
+	}
+	
+	/* 
+	* Method:
+	* 
+	* Input Parameters : 
+	* Output Parameters:
+	* 
+	* Comments : 
+	*
+	*/          
+	template <class T, class U>
+	int GLRayCastVolumeRenderer<T, U>::initLUTTex(const int iVolumeIndex=0)
+	{
+		if (iVolumeIndex>gTextureName.size()-1) return 0;
+		
 		// delete old one
 		glDeleteTextures(1, &gLUTName); 
 		{
@@ -1268,7 +1387,7 @@ namespace PGAlgs
 				return 0;
 			}
 
-			LOG2("<%d>: Texture: %d", this, gLUTName);
+			LOG2("<%d>: LUT Texture: %d", this, gLUTName);
 
 			glBindTexture (GL_TEXTURE_2D, gLUTName);
 			glTexParameteri (GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -1278,9 +1397,26 @@ namespace PGAlgs
 			glTexEnvf (GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
 		}   
 
-
-
 		return 1;	
+	}
+	
+
+	/* 
+	* Method:
+	* 
+	* Input Parameters : 
+	* Output Parameters:
+	* 
+	* Comments : 
+	*
+	*/          
+	template <class T, class U>
+	int GLRayCastVolumeRenderer<T, U>::init(const int iVolumeIndex/*=0*/)
+	{
+		int rv3d = init3DTex(iVolumeIndex);
+		int rv2d = initLUTTex(iVolumeIndex);
+
+		return (rv3d && rv2d);		
 	}
 
 
@@ -1295,7 +1431,7 @@ namespace PGAlgs
 	*
 	*/
 	template <class T, class U>
-	void GLTextureVolumeRenderer<T, U>::display()
+	void GLRayCastVolumeRenderer<T, U>::display()
 	{
 		if (!m_ready) return;
 
@@ -1400,14 +1536,14 @@ namespace PGAlgs
 		if (gFrameCount==kPgFramesToMeasure-1)  
 		{
 		float elapsedTime = gTimer.ElapsedSeconds();
-		LOG1("GLTextureVolumeRenderer: FPS: %3.6f", ((float)(kPgFramesToMeasure)/elapsedTime));		
-		//printf("GLTextureVolumeRenderer: FPS: %3.3lf!", (1000.0f/elapsedTime));		
+		LOG1("GLRayCastVolumeRenderer: FPS: %3.6f", ((float)(kPgFramesToMeasure)/elapsedTime));		
+		//printf("GLRayCastVolumeRenderer: FPS: %3.3lf!", (1000.0f/elapsedTime));		
 		}*/
 
 	}
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::UpdateRender(int iIndex=-1, bool iUpdateDisplay=0)
+	bool GLRayCastVolumeRenderer<T, U>::UpdateRender(int iIndex=-1, bool iUpdateDisplay=0)
 	{
 		if (!m_ready) return false;
 	
@@ -1420,7 +1556,7 @@ namespace PGAlgs
 	};	
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::updateRenderSync(int iIndex=-1, bool iUpdateDisplay=0)
+	bool GLRayCastVolumeRenderer<T, U>::updateRenderSync(int iIndex=-1, bool iUpdateDisplay=0)
 	{
 		bool res = loadVolume(iIndex); 
 		if (!res) return false;
@@ -1437,7 +1573,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	bool GLTextureVolumeRenderer<T, U>::updateRenderAsync(int iIndex=-1, bool iUpdateDisplay=0)
+	bool GLRayCastVolumeRenderer<T, U>::updateRenderAsync(int iIndex=-1, bool iUpdateDisplay=0)
 	{
 		LOG0("{ updateRenderAsync");
 
@@ -1489,7 +1625,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	void GLTextureVolumeRenderer<T, U>::StartExecution(void *iParam)
+	void GLRayCastVolumeRenderer<T, U>::StartExecution(void *iParam)
 	{
 		if (!iParam) return;
 
@@ -1503,20 +1639,20 @@ namespace PGAlgs
 			iParams->ioLogger->Log("} StartExecution: Error: async flag enabled");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: async flag enabled");
 			}
 			return;
 		}
 
-		GLTextureVolumeRenderer<T, U> VREngine;
+		GLRayCastVolumeRenderer<T, U> VREngine;
 		bool rv = VREngine.SetContext(iParams->m_hdContext);
 		if (!rv)
 		{
 			iParams->ioLogger->Log("} StartExecution: Error: failed to set context");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: failed to set context");
 			}
 			return;
@@ -1529,7 +1665,7 @@ namespace PGAlgs
 			iParams->ioLogger->Log("} StartExecution: Error: no data");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: no data");
 			}
 			return;
@@ -1542,7 +1678,7 @@ namespace PGAlgs
 			iParams->ioLogger->Log("} StartExecution: Error: failed to set input");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: failed to set input");
 			}
 			delete multiVolume;
@@ -1561,7 +1697,7 @@ namespace PGAlgs
 			iParams->ioLogger->Log("} StartExecution: Error: failed to PrepareRenderer");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: failed to PrepareRenderer");
 			}
 			delete multiVolume;
@@ -1579,7 +1715,7 @@ namespace PGAlgs
 			iParams->ioLogger->Log("} StartExecution: Error: failed to UpdateRender");
 			if (iParams->iParentThreadPtr)
 			{
-				GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+				GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 				iParentThreadPtr->NotifyError("Error: failed to UpdateRender");
 			}
 			delete multiVolume;
@@ -1589,11 +1725,11 @@ namespace PGAlgs
 
 		if (iParams->iParentThreadPtr)
 		{
-			GLTextureVolumeRenderer<T, U>* iParentThreadPtr = (GLTextureVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
+			GLRayCastVolumeRenderer<T, U>* iParentThreadPtr = (GLRayCastVolumeRenderer<T, U> *)(iParams->iParentThreadPtr);
 			iParentThreadPtr->NotifyFinished();
 		}
 	
-		iParams->ioLogger->Log("} GLTextureVolumeRenderer end");
+		iParams->ioLogger->Log("} GLRayCastVolumeRenderer end");
 
 		return;
 	}
@@ -1609,7 +1745,7 @@ namespace PGAlgs
 	*
 	*/
 	template <class T, class U>
-	int GLTextureVolumeRenderer<T, U>::initGLthread()
+	int GLRayCastVolumeRenderer<T, U>::initGLthread()
 	{
 		//3D texture stuff	
 		long max3DTextureSize = GLRendererBase::GetMaximum3DTextureMemory();
@@ -1635,7 +1771,7 @@ namespace PGAlgs
 
 
 	template <class T, class U>
-	void GLTextureVolumeRenderer<T, U>::renderSingleVolume(const int iVolumeIndex/*=0*/)
+	void GLRayCastVolumeRenderer<T, U>::renderSingleVolume(const int iVolumeIndex/*=0*/)
 	{
 		if (iVolumeIndex>m_volumeAccessor.size()-1)
 			return;
@@ -1648,18 +1784,21 @@ namespace PGAlgs
 		gDrSparse = zSparse/2;	
 
 		glEnable(GL_TEXTURE_3D);
+		glEnable(GL_TEXTURE_2D);
 
+		glBindTexture(GL_TEXTURE_3D, gTextureName[iVIndex]);
+		glBindTexture(GL_TEXTURE_2D, gLUTName);
 
 #ifdef _USE_CG
-		cgGLLoadProgram(gCgInfo.fragmentProgram);
+		//cgGLLoadProgram(gCgInfo.fragmentProgram);
 		cgGLEnableProfile(gCgInfo.fragmentProfile);
 		cgGLBindProgram(gCgInfo.fragmentProgram);
 
+		cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[iVolumeIndex]);
+		cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);
 		cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
-		cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
+		cgGLEnableTextureParameter (gCgInfo.cgTexColormap);				
 #endif
-
-		glBindTexture(GL_TEXTURE_3D, gTextureName[iVIndex]);
 
 		float zFac = 0.5;
 		glMatrixMode(GL_TEXTURE);
@@ -1731,7 +1870,7 @@ namespace PGAlgs
 	}
 
 	template <class T, class U>
-	void GLTextureVolumeRenderer<T, U>::renderVolume()
+	void GLRayCastVolumeRenderer<T, U>::renderVolume()
 	{
 		int i=0;
 		for (i=0; i<m_volumeAccessor.size(); i++)
@@ -1743,9 +1882,9 @@ namespace PGAlgs
 
 #ifdef _USE_CG
 	template <class T, class U>
-	int GLTextureVolumeRenderer<T, U>::enableFragmentShader ()
+	int GLRayCastVolumeRenderer<T, U>::enableFragmentShader ()
 	{
-		const char *buffer = "C:\\Work\\SVN-Local\\trunk\\Algs\\fragment.cg";
+		const char *buffer = "C:\\SW\\SMISDK\\Algs\\fragment.cg";
 		//    cgSetErrorCallback (cgErrorCallback);
 		// use ARB_fragment_profile if supported
 		if (cgGLIsProfileSupported (CG_PROFILE_FP30)) {
@@ -1815,7 +1954,7 @@ namespace PGAlgs
 
 
 	template <class T, class U>
-	void GLTextureVolumeRenderer<T, U>::disableFragmentShader ()
+	void GLRayCastVolumeRenderer<T, U>::disableFragmentShader ()
 	{
 
 		if (gCgInfo.fragmentProgram)
@@ -1830,14 +1969,13 @@ namespace PGAlgs
 #endif
 
 #ifdef _PG_GENERATE_SDK_LIBS_
-	template class GLTextureVolumeRenderer<PG_RENDERING_IN_TYPE, PG_RENDERING_OUT_TYPE>; 		
+	template class GLRayCastVolumeRenderer<PG_RENDERING_IN_TYPE, PG_RENDERING_OUT_TYPE>; 		
 #endif
 
 
 };
 
-#undef _USE_CG
 
 //////////////////////////////////////////////////////////////////////////
 // EOF
-#endif	// _PGGLTextureVolumeRenderer_HPP_
+#endif	// _PGGLRayCastVolumeRenderer_HPP_

@@ -6,7 +6,9 @@ void main(
                 out float4    color     : COLOR)
 {
     // First retrieve the voxel value at the specified coordinate
-    cmapCoord = tex3Dproj(vol, volCoord).rr;
+    //cmapCoord = tex3Dproj(vol, volCoord).rr;
+	cmapCoord = tex3D(vol, volCoord).rr;
     // Now retrieve the colormap entry (RGBA) for that value.
     color= tex2D(cmap, cmapCoord);
+	//color = tex3Dproj(vol, volCoord);
 }

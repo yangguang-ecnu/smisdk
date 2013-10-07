@@ -1,20 +1,20 @@
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPRRenderer", "MPRRenderer\MPRRenderer.vcproj", "{68374094-5842-42CB-B20F-EBA6CF16449E}"
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MPRRenderer", "MPRRenderer\MPRRenderer.vcxproj", "{68374094-5842-42CB-B20F-EBA6CF16449E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLMPRRenderer", "GLMPRRenderer\GLMPRRenderer.vcproj", "{D356DE38-A70E-49F7-BC17-B936FBB00991}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLMPRRenderer", "GLMPRRenderer\GLMPRRenderer.vcxproj", "{D356DE38-A70E-49F7-BC17-B936FBB00991}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLVolumeRenderer", "GLVolumeRenderer\GLVolumeRenderer.vcproj", "{031172DD-D65B-470A-8EFD-2C2F1893CB51}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "GLVolumeRenderer", "GLVolumeRenderer\GLVolumeRenderer.vcxproj", "{031172DD-D65B-470A-8EFD-2C2F1893CB51}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataIO", "DataIO\DataIO.vcproj", "{9F77C44B-9E82-4AE8-B546-BE870F3290F7}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DataIO", "DataIO\DataIO.vcxproj", "{9F77C44B-9E82-4AE8-B546-BE870F3290F7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convolution", "Convolution\Convolution.vcproj", "{2F0574A7-B316-4825-97AF-34BDC1F8ED87}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Convolution", "Convolution\Convolution.vcxproj", "{2F0574A7-B316-4825-97AF-34BDC1F8ED87}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EdgeDetection", "EdgeDetection\EdgeDetection.vcproj", "{CC8C67D5-9869-4843-ADBA-4B4A5EE3574A}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EdgeDetection", "EdgeDetection\EdgeDetection.vcxproj", "{CC8C67D5-9869-4843-ADBA-4B4A5EE3574A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Segmentation", "Segmentation\Segmentation.vcproj", "{25E307D8-B135-4171-925A-4333CD848851}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Segmentation", "Segmentation\Segmentation.vcxproj", "{25E307D8-B135-4171-925A-4333CD848851}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thresholding", "Thresholding\Thresholding.vcproj", "{51D115D1-0F5A-4DCA-87D0-324685FF2E02}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Thresholding", "Thresholding\Thresholding.vcxproj", "{51D115D1-0F5A-4DCA-87D0-324685FF2E02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
