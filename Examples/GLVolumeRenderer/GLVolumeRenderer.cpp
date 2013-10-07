@@ -155,12 +155,17 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	unsigned int sx = dims.X(), sy = dims.Y();
 	rv = VolumeRenderer.SetImageSize(sx, sy);
 	
+	float supFacf=4.0f;
+	PGMath::Point3D<float> supFac(supFacf, supFacf, supFacf, 1.0);
+	rv = VolumeRenderer.SetSuperSamplingFactors(supFac);
+	if (!rv) return false;
+
 	rv = VolumeRenderer.PrepareRenderer();
 	if (!rv) return false;
 
 	rv = VolumeRenderer.SetBlendWeight(0.001f, 0);
 	if (!rv) return false;
-
+	
 	rv = VolumeRenderer.SetTransferFunctionLUT(&volLuT, 0);
 	if (!rv) return false;
 

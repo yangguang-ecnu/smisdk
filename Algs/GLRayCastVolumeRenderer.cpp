@@ -414,6 +414,11 @@ namespace PGAlgs
 					} else
 					{
 						subcolormap[j][3] = subcolormap[j][3]>>1;
+						//subcolormap[j][3] = min(4, subcolormap[j][3]);
+						for (int l=1; l<3; l++)
+						{
+							subcolormap[j][l] = subcolormap[j][0];//min(64, max(128, subcolormap[j][l]));
+						}
 					}
 
 					/*
@@ -1318,7 +1323,7 @@ namespace PGAlgs
 			gDrSparse = 1.0f/m_voxelDims[iVolumeIndex][2], gDrFull = 1.0/m_voxelDims[iVolumeIndex][2];
 			gDz = 0.25f/((float)m_voxelDims[iVolumeIndex][2]/*m_max3DTextureSize*/);  
 			gDzFull = gDz/(gSuperSampligFactorZ); 	
-			gDzSparse = 2.0f*gDzFull; 	
+			gDzSparse = 4.0f*gDzFull; 	
 			gDrSparse = gDzSparse;
 			gDrFull = gDzFull;
 		}
@@ -1490,48 +1495,20 @@ namespace PGAlgs
 		glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		glMatrixMode(GL_PROJECTION); 
-		glLoadIdentity(); 
-		//gluPerspective(100.0, 1.0, 3, 10.0); 
+		glLoadIdentity(); 		
 		glFrustum(-0.5/m_zoomFactor, 0.5/m_zoomFactor, -0.5/m_zoomFactor, 0.5/m_zoomFactor, 4, 10);
+
 		glMatrixMode(GL_MODELVIEW); 
 		glLoadIdentity(); 
 		gluLookAt(0.0, 0.0, 7, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0); 
 
-		//glMatrixMode(GL_MODELVIEW);
-
-		//glLoadIdentity();
-		//glFrustum(-3*m_zoomFactor, 3*m_zoomFactor, -3*zoomFm_zoomFactoractor, 3*m_zoomFactor, 10, 100);
-
-		//gluLookAt (0.0, 0.0, 10 + m_zoomFactor, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
-
-		//	gluLookAt(gCameraCenter.X(), gCameraCenter.Y(), 
-		//		//gCameraEyeZ, 
-		//		2,
-		//		gCameraCenter.X(), gCameraCenter.Y(), 
-		//		0.0f,
-		//		//-gVolumeScope.Z(), 
-		//		0, 1, 0);	
-		//	//glPushMatrix();
-
-
-		//glRotatef(gRotation.X(), gRotation.Y(), gRotation.Z());
-		glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());
-
-		////glTranslatef(-0.5f, -0.5f, -0.5f);
-		//glRotatef(gRotation.X(), 1, 0, 0);
-		//glRotatef(gRotation.Y(), 0, 1, 0);
-		//	glRotatef(gRotation.Z(), 0, 0, 1);
-		//glTranslatef(0.5f, 0.5f, 0.5f);
-
+		glTranslatef(gTranslation[0].X(), gTranslation[0].Y(), gTranslation[0].Z());		
 		renderVolume();
-
 		renderAxisPlanes();
 
-		//glPopMatrix();
+		
 #endif
-
-		//glutSwapBuffers();	
-
+				
 		/*
 		if (gFrameCount==kPgFramesToMeasure-1)  
 		{
@@ -1781,7 +1758,7 @@ namespace PGAlgs
 		register float r=0.0f, zz=gZMin;
 		register float zSparse = (m_skipFactor==1) ? gDzFull : 2.0*m_skipFactor*gDzSparse;	
 
-		gDrSparse = zSparse/2;	
+		gDrSparse = 0.5f*zSparse;	
 
 		glEnable(GL_TEXTURE_3D);
 		glEnable(GL_TEXTURE_2D);
@@ -1820,7 +1797,7 @@ namespace PGAlgs
 		glTranslatef(-zFac, -zFac, -zFac);		
 
 		float blendValue = m_blendRatio[iVIndex];
-		float zFactor = 1.0f/float(m_zoomFactor);
+		float zFactor = 0.5f/float(m_zoomFactor);
 		float initialZ = gZMin;
 		float finalZ   = (2.0f*m_coronalCutPlanePosition);
 		float skipZ	   = zSparse*zFactor;
