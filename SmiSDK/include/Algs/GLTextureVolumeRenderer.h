@@ -54,7 +54,8 @@ namespace PGAlgs
 		virtual bool updateRenderSync(int iIndex=-1, bool iUpdateDisplay=0);
 		virtual bool updateRenderAsync(int iIndex=-1, bool iUpdateDisplay=0);
 
-	
+		virtual bool reloadLUT();
+		
 	private:
 
 		int						m_textureFormat, m_rawFormat;

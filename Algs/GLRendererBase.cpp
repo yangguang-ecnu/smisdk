@@ -314,8 +314,7 @@ namespace PGAlgs
 		{
 			GLRendererBase<T, U> *rendererPtr = (static_cast<GLRendererBase<T, U> * >(PgStaticRenderer));
 
-			int sparseFactor = (rendererPtr->GetRendererType()==kPgRendererType3D) ? 2*gSparseMode : gSparseMode;
-		
+			int sparseFactor = (rendererPtr->GetRendererType()==kPgRendererType3D) ? 2*gSparseMode : gSparseMode;		
 			rendererPtr->SetSkipFactor(sparseFactor); 			
 
 			if (state == GLUT_UP)
@@ -333,6 +332,10 @@ namespace PGAlgs
 	template <class T, class U>
 	void GLRendererBase<T, U>::MouseMotionCB(int x, int y)
 	{
+		GLRendererBase<T, U> * staticRenderer = static_cast<GLRendererBase<T, U> * >(PgStaticRenderer);
+
+		if (!staticRenderer) return;
+
 		PGMath::Vector3D<float> gRot(0, 0, 0);
 		//static float gSlicerPos = 0.0f;
 		float gSlicerPosIncr = 0.01f;
@@ -373,16 +376,16 @@ namespace PGAlgs
 			{
 				if (y > gYTemp) 
 				{
-					gSlicerPos -= gSlicerPosIncr; gSlicerPos = max(-0.5f, gSlicerPos);
-					//gTranslationStatic = PGMath::Vector3D<float>(gTranslationStatic.X(), gTranslationStatic.Y() + gTranslationIncrement, 
-					//	gTranslationStatic.Z());
+					//gSlicerPos -= gSlicerPosIncr; gSlicerPos = max(-0.5f, gSlicerPos);
+					gTranslationStatic = PGMath::Vector3D<float>(gTranslationStatic.X(), gTranslationStatic.Y() + gTranslationIncrement, 
+						gTranslationStatic.Z());
 				}
 				else	
 				{
-					gSlicerPos += gSlicerPosIncr; gSlicerPos = min(0.5f, gSlicerPos);
+					//gSlicerPos += gSlicerPosIncr; gSlicerPos = min(0.5f, gSlicerPos);
 
-					//gTranslationStatic = PGMath::Vector3D<float>(gTranslationStatic.X(), gTranslationStatic.Y() - gTranslationIncrement, 
-					//	gTranslationStatic.Z());			
+					gTranslationStatic = PGMath::Vector3D<float>(gTranslationStatic.X(), gTranslationStatic.Y() - gTranslationIncrement, 
+						gTranslationStatic.Z());			
 				}
 
 			}
@@ -432,6 +435,39 @@ namespace PGAlgs
 				gXTemp = x;
 				gYTemp = y;
 		}  	
+		else if (gMiddleDown)
+		{
+			if (abs(y - gYTemp) < abs(x - gXTemp)) 
+			{
+				if (x > gXTemp) 
+				{
+					// window - expand
+					staticRenderer->UpdateLUTParams(-1, 1);	
+				}
+				else	
+				{
+					// window - shrink
+					staticRenderer->UpdateLUTParams(1, -1);
+				}
+			} else
+			{
+				if (y > gYTemp) 
+				{
+					// level - shrink
+					staticRenderer->UpdateLUTParams(-1, -1);		
+				}
+				else	
+				{
+					// level - expand
+					staticRenderer->UpdateLUTParams(1, 1);						
+				}
+
+			}
+
+			glutPostRedisplay();
+				gXTemp = x;
+				gYTemp = y;
+		}
 
 		gRotationStatic = gRotationStatic + gRot;
 
@@ -465,9 +501,8 @@ namespace PGAlgs
 
 				case kPgRendererType3D :
 					{
-					//rendererPtr->SetTranslationUnit(gTranslationStatic.X(),
-					//	gTranslationStatic.Y(), gTranslationStatic.Z()); 
-
+						//rendererPtr->SetTranslationUnit(gTranslationStatic.X(),
+						//gTranslationStatic.Y(), gTranslationStatic.Z()); 
 					
 					rendererPtr->SetRotationAngles(gRotationStatic.X(),
 						gRotationStatic.Y(), gRotationStatic.Z()); 
@@ -506,51 +541,48 @@ namespace PGAlgs
 	template <class T, class U>
 	void GLRendererBase<T, U>::KeyPressCB(unsigned char key, int x, int y)
 	{
-		/*
-	if (key == 'q')
-	exit(0);
-	else if (key == 'r' || key == 'R') {
-	gTranslationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);
-	gRotationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);		
+		GLRendererBase<T, U> * staticRenderer = static_cast<GLRendererBase<T, U> * >(PgStaticRenderer);
 
-	glutPostRedisplay();
-	} 
-	else if (key == '>' || key == '.')
-	{
+		if (!staticRenderer) return;
 
-	if (gLowerBound<255)
-	gLowerBound = (gLowerBound+10);	
+		
 
-	#ifdef _USE_CG
-	loadLookupTable();
-	#endif
-	glutPostRedisplay();
-	}
-	else if (key == '<' || key == ',')
-	{
-	if (gLowerBound>0)
-	gLowerBound = (gLowerBound-10);
-	#ifdef _USE_CG
-	loadLookupTable();
-	#endif
-	glutPostRedisplay();
-	}
-	else if (key == '[' || key == '{')
-	{
-	gSuperSampligFactorZ-=1.0f;
-	#ifdef _USE_CG
-	loadLookupTable();
-	#endif
-	glutPostRedisplay();
-	}
-	else if (key == ']' || key == '}')
-	{
-	gSuperSampligFactorZ+=1.0f;
-	#ifdef _USE_CG
-	loadLookupTable();
-	#endif
-	glutPostRedisplay();
-		*/
+		if (key == 'q')
+			exit(0);
+		else if (key == 'r' || key == 'R') 
+		{
+			//gTranslationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);
+			//gRotationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);		
+			//glutPostRedisplay();
+		} 	else if (key == '>' || key == '.')
+		{			
+			// window - expand
+			staticRenderer->UpdateLUTParams(-1, 1);						
+			
+			glutPostRedisplay();
+		}
+		else if (key == '<' || key == ',')
+		{	
+			// window - reduce
+
+			staticRenderer->UpdateLUTParams(1, -1);						
+			glutPostRedisplay();
+		}
+		else if (key == '[' || key == '{')
+		{
+			// level - decrease
+			staticRenderer->UpdateLUTParams(-1, -1);						
+			
+			glutPostRedisplay();
+		}
+		else if (key == ']' || key == '}')
+		{
+			// level - increase
+			staticRenderer->UpdateLUTParams(1, 1);						
+			
+			glutPostRedisplay();
+		}
+
 		return;
 	}
 
@@ -608,8 +640,8 @@ namespace PGAlgs
 	{
 		int argc = iVolumeIndex;
 		char *argv[] = {"SMISDK GLRenderer"};
-		int sx = max(256, m_columns);
-		int sy = max(256, m_rows);
+		int sx = max(_PG_GLUT_WIN_SZ_, m_columns);
+		int sy = max(_PG_GLUT_WIN_SZ_, m_rows);
 
 		m_glutInitialized = false;
 		if (!m_externalContext)

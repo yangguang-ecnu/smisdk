@@ -48,7 +48,7 @@ namespace PGAlgs
 
 		gSparseMode=1;	
 		gRotate = 5.0f;
-		gLowerBound = 100; gLowerEndNoiseBound = 25;
+		gLowerBound = 60; gLowerEndNoiseBound = 25; gUpperBound = 100;
 		gSuperSampligFactorZ = 4.0f;	
 
 		Clear();		
@@ -158,6 +158,18 @@ namespace PGAlgs
 		return true;		
 	};
 	
+	template <class T, class U>
+	bool GLVolumeRenderer<T, U>::UpdateLUTParams(const int iLowIncr, const int iHighIncr)
+	{
+		gLowerBound += iLowIncr;
+		gUpperBound += iHighIncr;
+
+		LOG2("GLVolumeRenderer::UpdateLUTParams: %d, %d\n", gLowerBound, gUpperBound); 
+				
+		// upper bound ignored for now		
+		return this->reloadLUT();
+	}
+
 	template <class T, class U>
 	bool GLVolumeRenderer<T, U>::SetTransferFunctionLUT(PGCore::TransferFunctionLUT<U> *iLUT, const int iRendererIndex=0) 
 	{ 

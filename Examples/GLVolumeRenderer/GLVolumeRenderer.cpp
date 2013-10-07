@@ -29,7 +29,7 @@
 //**************************************************************************/
 #include "Core/Logger.h"
 #include "IO/IODicom3D.h"
-#include "Algs/GLTextureVolumeRenderer.h"
+#include "Algs/GLRayCastVolumeRenderer.h"
 #include <string>
 #include <vector>
 
@@ -109,7 +109,7 @@ bool ReadImages(const std::vector<std::string>& iFileNames,
 		ioParams.SetAutoSkipFlag(false);//true); // let the reader decide how much to skip
 		ioParams.SetSourceFormat(PGIO::kPgIOSourceFormatDICOM);
 
-		pImgIO3D.SetByteLimitInKB(4*64000);// 64MB limit, beyond which data will be skipped
+		pImgIO3D.SetByteLimitInKB(16*64000);// MB limit, beyond which data will be skipped
 		
 		if (!pImgIO3D.Read(&ioVolume, ioParams, &ioAttributes))
 		{
@@ -140,17 +140,17 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	iMultiVolume.AddDataObject(static_cast<PGCore::BaseDataObject *> (&voxelDataPrimary));
 	
 	// create renderer here
-	PGAlgs::GLTextureVolumeRenderer<short, unsigned char> VolumeRenderer;
+	PGAlgs::GLRayCastVolumeRenderer<short, unsigned char> VolumeRenderer;
 	rv = VolumeRenderer.SetInput(static_cast<PGCore::BaseDataObject *> (&iMultiVolume));
 	if (!rv) return false;
 	
 	// how much to skip in sparse mode
-	VolumeRenderer.SetSkipFactor(1);
+	VolumeRenderer.SetSkipFactor(4);
 
 	// create lookup table
-	PGCore::TransferFunctionLUT<unsigned char> volLuT;
-	volLuT.SetType(PGCore::kPgLUTTypeVIBGYOR);
-	volLuT.SetWindow(0.15f, 0.45f);
+	PGCore::TransferFunctionLUT<unsigned char> volLuT(PGCore::kPgLUTTypeIronHot, 256);	
+	volLuT.SetWindow(0.33f, 0.45f);
+	volLuT.SetTransparencyFlag(true);
 
 	unsigned int sx = dims.X(), sy = dims.Y();
 	rv = VolumeRenderer.SetImageSize(sx, sy);
@@ -158,7 +158,7 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	rv = VolumeRenderer.PrepareRenderer();
 	if (!rv) return false;
 
-	rv = VolumeRenderer.SetBlendWeight(0.05f, 0);
+	rv = VolumeRenderer.SetBlendWeight(0.001f, 0);
 	if (!rv) return false;
 
 	rv = VolumeRenderer.SetTransferFunctionLUT(&volLuT, 0);

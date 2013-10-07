@@ -21,8 +21,9 @@
 //////////////////////////////////////////////////////////////////////////
 //#define _USE_GLEW "_USE_GLEW"
 #define _PG_GLSL_VR_ 1
-#define _PG_MAX_GL_TX_SIZE_ 512
+#define _PG_MAX_GL_TX_SIZE_ 1024
 #define _PG_MAX_GL_TX_XY_SIZE_ 256
+#define _PG_GLUT_WIN_SZ_ 512
 
 #include "DeviceRendererBase.h"
 #include "VoxelToMPRRenderer.h"
@@ -102,10 +103,12 @@ namespace PGAlgs
 
 		virtual bool SetSuperSamplingFactors(const PGMath::Point3D<float>& iSamplingFactors) { return false; };
 
+		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr) { LOG0("GLRendererBase::UpdateLUTParams"); return true; };
+
 	protected:				
 		int						m_skipFactor;
 		int						m_max3DTextureSize;//KB
-		long					m_remaining3DTextureSize;//KB
+		long					m_remaining3DTextureSize;//KB		
 
 		PGMath::Vector3D<float>	gTranslation[2];
 		PGMath::Vector3D<float>	gRotation[2];
