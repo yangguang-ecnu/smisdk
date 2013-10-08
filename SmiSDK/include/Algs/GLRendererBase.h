@@ -21,7 +21,7 @@
 //////////////////////////////////////////////////////////////////////////
 //#define _USE_GLEW "_USE_GLEW"
 #define _PG_GLSL_VR_ 1
-#define _PG_MAX_GL_TX_SIZE_ 1024
+#define _PG_MAX_GL_TX_SIZE_ 1560
 #define _PG_MAX_GL_TX_XY_SIZE_ 256
 #define _PG_GLUT_WIN_SZ_ 800
 
@@ -103,7 +103,7 @@ namespace PGAlgs
 
 		virtual bool SetSuperSamplingFactors(const PGMath::Point3D<float>& iSamplingFactors) { return false; };
 
-		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr) { LOG0("GLRendererBase::UpdateLUTParams"); return true; };
+		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr, const int iLowGradIncr, const int iHighGradIncr) { LOG0("GLRendererBase::UpdateLUTParams"); return true; };
 
 	protected:				
 		int						m_skipFactor;

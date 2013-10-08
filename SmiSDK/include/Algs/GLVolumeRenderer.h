@@ -109,7 +109,7 @@ public:
 
 		virtual void Clear();
 
-		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr);
+		virtual bool UpdateLUTParams(const int iLowIncr, const int iHighIncr, const int iLowGradIncr, const int iHighGradIncr);
 		
 	protected:
 
@@ -138,7 +138,7 @@ public:
 		int						gXDown, gXUp, gYDown, gYUp, gXTemp, gYTemp;
 		float					gCameraNear, gCameraFar, gCameraEyeZ;
 		float					gDzFull, gDzSparse, gRotate;
-		unsigned int			gLowerBound, gUpperBound, gLowerEndNoiseBound;
+		unsigned int			gLowerBound, gUpperBound, gLowerEndNoiseBound, gGradLowerBound, gGradUpperBound;
 		float					gSuperSampligFactorZ;
 		
 		

@@ -70,7 +70,7 @@ namespace PGAlgs
 		virtual void StartExecution(void *iParams);
 
 	protected:
-		PGAlgs::CgInfo					gCgInfo;
+		PGAlgs::CgInfo					gCgXferFnInfo;		
 
 		virtual void display();
 
@@ -112,8 +112,10 @@ namespace PGAlgs
 
 #ifdef _USE_CG
 		// cg specific code
-		int		enableFragmentShader ();
-		void	disableFragmentShader ();
+		int		enableFragmentShader (const char *iProgramFile /* program file */, PGAlgs::CgInfo& ioCgInfo);
+		void	disableFragmentShader (PGAlgs::CgInfo& ioCgInfo);
+
+		int initFragmentShader_LUT ();		
 #endif
 	};
 };

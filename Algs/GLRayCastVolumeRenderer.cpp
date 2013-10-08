@@ -32,7 +32,7 @@ namespace PGAlgs
 	{
 		m_textureFormat=GL_LUMINANCE;
 		m_rawFormat=GL_LUMINANCE;
-		m_numChannels=2;
+		m_numChannels=4;
 
 		m_textureFormat=GL_LUMINANCE;
 		m_rawFormat=GL_LUMINANCE;
@@ -73,6 +73,10 @@ namespace PGAlgs
 
 		gLUTName=0; 
 		
+		gCgXferFnInfo.fragmentProgram = NULL;
+		gCgXferFnInfo.cgTex3d = NULL;
+		gCgXferFnInfo.cgTexColormap = NULL;
+
 		//gTextureName.clear();
 		//gTexScale.clear();
 		//gXTexTrans.clear(); gYTexTrans.clear(); gZTexTrans.clear();
@@ -83,7 +87,7 @@ namespace PGAlgs
 	GLRayCastVolumeRenderer<T, U>::~GLRayCastVolumeRenderer(void) 
 	{ 
 #ifdef _USE_CG
-		disableFragmentShader();
+		disableFragmentShader(gCgXferFnInfo);
 #endif
 		m_voxelChunk[0].Clear();
 		m_voxelChunk[1].Clear();
@@ -295,20 +299,10 @@ namespace PGAlgs
 			{				
 				LOG0("GLRayCastVolumeRenderer: Error: failure to loadVolume por lookup table");
 				return false; 
-			}
-
-		
-			enableFragmentShader();		
+			}	
+				
+			initFragmentShader_LUT();		
 			
-			cgGLLoadProgram(gCgInfo.fragmentProgram);
-			cgGLEnableProfile(gCgInfo.fragmentProfile);
-			cgGLBindProgram(gCgInfo.fragmentProgram);
-
-			cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[i]);
-			cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);					
-			
-			cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
-			cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
 #endif
 
 			
@@ -328,13 +322,6 @@ namespace PGAlgs
 	bool GLRayCastVolumeRenderer<T, U>::reloadLUT()
 	{
 		LOG0("{ GLRayCastVolumeRenderer::reloadLUT"); 
-
-		int rv2d = initLUTTex();
-		if (!rv2d)
-		{
-			LOG0("} ERROR: GLRayCastVolumeRenderer::reloadLUT"); 
-			return false;
-		}
 		
 		bool rv = false;
 #ifdef _USE_CG
@@ -342,24 +329,17 @@ namespace PGAlgs
 			rv = loadLookupTable();
 			if (!rv)
 			{				
-				LOG0("GLRayCastVolumeRenderer: Error: failure to loadVolume por lookup table");
+				LOG0("GLRayCastVolumeRenderer: Error: failure to loadVolume for lookup table");
 				return false; 
 			}
-		
-			enableFragmentShader();		
+					
+			int ret = initFragmentShader_LUT();
+			if (!ret)
+			{
+				LOG0("GLRayCastVolumeRenderer: Error: failure to initFragmentShader_LUT");
+				return false; 
+			}
 			
-			cgGLLoadProgram(gCgInfo.fragmentProgram);
-			cgGLEnableProfile(gCgInfo.fragmentProfile);
-			cgGLBindProgram(gCgInfo.fragmentProgram);
-
-			cgGLDisableTextureParameter (gCgInfo.cgTex3d);	
-			cgGLDisableTextureParameter (gCgInfo.cgTexColormap);
-
-			cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[0]);
-			cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);					
-			
-			cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
-			cgGLEnableTextureParameter (gCgInfo.cgTexColormap);
 #endif
 
 		LOG0("} GLRayCastVolumeRenderer::reloadLUT"); 
@@ -370,7 +350,7 @@ namespace PGAlgs
 	template <class T, class U>
 	bool GLRayCastVolumeRenderer<T, U>::loadLookupTable()
 	{
-		LOG2("{ GLRayCastVolumeRenderer::loadLookupTable: %d, %d", gLowerBound, gUpperBound);
+		LOG4("{ GLRayCastVolumeRenderer::loadLookupTable: %d, %d, %d, %d", gLowerBound, gUpperBound, gGradLowerBound, gGradUpperBound);
 
 		if (!m_ready) 
 		{
@@ -394,13 +374,23 @@ namespace PGAlgs
 		//createGauss1DFilter (tv->focusWindowSize);  
 		{
 			int j=0, i=0;    
-			unsigned char colormap[256][256][4],
-				subcolormap[256][4]; 
-			unsigned char tval=0;
-			if (gSuperSampligFactorZ<0.0001f) gSuperSampligFactorZ = 1.0f;
-			float tfvalmaxMain = log(256.0f-(float)gLowerBound), tfvalmax = log((float)(gLowerBound-gLowerEndNoiseBound));
-			float tmainMultiplier = 128.0f/gSuperSampligFactorZ, tMultiplier = 2.0f/gSuperSampligFactorZ;
+			unsigned char colormap[256][256][4], subcolormap[256][4]; 
+
+			for (i=0; i<256; i++) // i == rows, along the gradient axis. Each row fills scalar values along 'j' axis
 			{
+				memset(&(subcolormap[0][0]), 0, 256*4*sizeof(unsigned char));
+
+				int gradVisMultiplier=2;
+				// check if gradient values are within bounds
+				/*if (i<gGradLowerBound || i>gGradUpperBound)
+				{
+					//memcpy(&(colormap[i][0][0]), &(subcolormap[0][0]), 256*4*sizeof(unsigned char));
+					//continue;
+					
+					gradVisMultiplier=4;			
+				}*/	
+
+				// fill in a new row for the current 'i' or gradient value
 				for (j = 0; j < 256; j++) 
 				{					
 					for (int k=0; k<4; k++)
@@ -408,67 +398,17 @@ namespace PGAlgs
 						subcolormap[j][k] = m_LuTBuf[j][k];								
 					}										
 					
-					if (j>=gLowerBound && j<=gUpperBound)
+					if ((j>=gLowerBound && j<=gUpperBound) && (i>=gGradLowerBound && i<=gGradUpperBound))
 					{
-						subcolormap[j][3] = subcolormap[j][3]<<1;
+						//subcolormap[j][3] = subcolormap[j][3]<<1;
 					} else
 					{
-						subcolormap[j][3] = subcolormap[j][3]>>1;
-						//subcolormap[j][3] = min(4, subcolormap[j][3]);
-						for (int l=1; l<3; l++)
-						{
-							subcolormap[j][l] = subcolormap[j][0];//min(64, max(128, subcolormap[j][l]));
-						}
-					}
-
-					/*
-					tval = 0;
-					if (j>gLowerBound && j<255)
-					{
-						float tfval = (log((float)(j-gLowerBound+1))/tfvalmaxMain);					
-						tval = (unsigned char)((unsigned int)(tfval*tmainMultiplier));					
-						subcolormap[j][0] = (unsigned char)((unsigned int)((tfval*253.0f)));;
-						subcolormap[j][1] = (unsigned char)((unsigned int)((tfval*200.0f)));;
-						subcolormap[j][2] = (unsigned char)((unsigned int)((tfval*150.0f)));;
-
-					} else if (j<gLowerBound && j>gLowerEndNoiseBound)
-					{
-						float tfval = tMultiplier*(log((float)(j-gLowerEndNoiseBound+1))/tfvalmax);	
-						tval = (unsigned char)((unsigned int)(tfval));			
-
-						tfval = 75.0f + 180.0f*((float)(j-gLowerEndNoiseBound+1)/(float)(gLowerBound-gLowerEndNoiseBound+1));	
-						subcolormap[j][0] = (unsigned char)((unsigned int)(tfval));			//(unsigned char)((unsigned int)((tfval*255.0f)));;
-						subcolormap[j][1] = (unsigned char)((unsigned int)(tfval));			//(unsigned char)((unsigned int)((tfval*255.0f)));;
-						subcolormap[j][2] = (unsigned char)((unsigned int)(tfval));			;//(unsigned char)((unsigned int)((tfval*255.0f)));;
-					}						
-
-					subcolormap[j][3] = tval;
-					
-						
-					if (j>=gLowerBound && j<=gUpperBound)
-					{
-						for (int k=0; k<4; k++)
-						{
-							subcolormap[j][k] = m_LuTBuf[j][k];								
-						}										
-						subcolormap[j][3] = subcolormap[j][3]>>2;
-					} else
-					{
-						for (int k=0; k<4; k++)
-						{
-							subcolormap[j][k] = 32;
-						}							
-						subcolormap[j][3] = subcolormap[j][3]>>4;
-					}
-					*/
-
+						subcolormap[j][3] = subcolormap[j][3]>>(gradVisMultiplier);						
+					}					
 				}
-			}       
 
-			for (i=0; i<256; i++)
-			{
-				memcpy(&(colormap[i][0][0]), &(subcolormap[0][0]), 256*4*sizeof(unsigned char));
-			}
+				memcpy(&(colormap[i][0][0]), &(subcolormap[0][0]), 256*4*sizeof(unsigned char));				
+			}       
 
 			glEnable(GL_TEXTURE_2D);
 		    glBindTexture(GL_TEXTURE_2D, gLUTName);
@@ -485,8 +425,7 @@ namespace PGAlgs
 
 		}
 
-		logLastGlError();
-		//CheckGLErrors ();
+		logLastGlError();		
 
 		LOG0("} GLRayCastVolumeRenderer::loadLookupTable");
 
@@ -675,6 +614,7 @@ namespace PGAlgs
 		}
 
 
+		
 		register int zSkip = (m_skipFactor==1) ? 1 : 1;
 
 		int totalZ = m_voxelDims[iVolumeIndex][2];
@@ -919,6 +859,13 @@ namespace PGAlgs
 	}
 
 
+
+
+
+
+
+
+
 	template <class T, class U>
 	bool GLRayCastVolumeRenderer<T, U>::loadVolumeWithoutMask(const int iVolumeIndex/*=0*/)
 	{	
@@ -1018,6 +965,7 @@ namespace PGAlgs
 		maxTransValue = maxTransValue==-1 ? (lutDim-1) : maxTransValue;
 		*/
 
+		unsigned char lowGradVal=255, highGradVal=0;
 		long pOffset=0, sizeXY = m_voxelDims[iVolumeIndex][0]*m_voxelDims[iVolumeIndex][1], sizeXYZ = sizeXY*m_voxelDims[iVolumeIndex][2];		
 		
 		PGMath::Point3D<long> iDims;
@@ -1160,11 +1108,15 @@ namespace PGAlgs
 								//alphaVal = alphaVal> >1;
 							}
 #else
-							for (j=0; j<m_numChannels-1; j++)
+							// use R to store 
+							for (j=0; j<1/*m_numChannels-1*/; j++)
 							{
 								*(pValue+j) = oValue;								
 							}
-							alphaVal = oValue;
+
+							// use GBA to store normal
+							// alphaVal = oValue;
+							//PGMath::Vector3D<float> gradVec = gradient(x, y, zOrg);
 #endif
 
 							//alphaVal /= (m_numChannels-1);
@@ -1174,18 +1126,39 @@ namespace PGAlgs
 							//alphaVal = alphaVal < 0 ? 0 : alphaVal;
 
 
-							//if (m_numChannels>1)
+							if (m_numChannels>1)
 							{
 
-								//#define _USE_GRADIENT 					
-#ifdef _USE_GRADIENT
-								PGMath::Vector3D<float> gradVec = gradient(x, y, zOrg);
-								if ( gradVec.Length()> 0.1f && (oValue >  130))
+#define _USE_GRADIENT_VR_ 					
+#ifdef _USE_GRADIENT_VR_
+								PGMath::Vector3D<float> gradVec(0, 0, 0);
+								m_voxel3DList[iVolumeIndex]->GetVolumeAccessor()->GetGradient(x, y, zOrg, gradVec);
+
+								float normV[3] = {0, 0, 0};
+
+								if ( gradVec.Length()> 0.01f && *(pValue)>5)
 								{
-									float gradVal = gradVec.Length()-0.1f;
+									gradVec.Normalize();									
+
+									normV[0] = gradVec.X();
+									normV[1] = gradVec.Y();
+									normV[2] = gradVec.Z();									
+
+									//float gradVal = gradVec.Length()-0.1f;
 									//*pAlpha = (unsigned char)floor(gradVal*255.0f);
-									*pValue = (unsigned char)floor(gradVal*255.0f);
+									//*pValue = (unsigned char)floor(gradVal*255.0f);
 								}
+								
+								// GBA: grad
+								for (j=1; j<m_numChannels; j++)
+								{
+									*(pValue+j) = min( max(0, (unsigned char)((int (255.0*normV[j-1]+0.5f)))), 255);	
+
+									lowGradVal  = *(pValue+j) < lowGradVal  ? *(pValue+j) : lowGradVal;
+									highGradVal = *(pValue+j) > highGradVal ? *(pValue+j) : highGradVal;
+								}
+
+
 #else							
 								//maxVal=max(maxVal, xferLuT[oValue][0]+xferLuT[oValue][1]+xferLuT[oValue][2]);
 								//maxAlpha=max(maxAlpha, alphaVal*alphaFactor);
@@ -1211,6 +1184,7 @@ namespace PGAlgs
 									//maxTransValue = maxTransValue < oValue ? oValue : maxTransValue;
 								}
 #endif
+#undef _USE_GRADIENT_VR_
 							}
 
 						}
@@ -1240,7 +1214,8 @@ namespace PGAlgs
 			//memset(voxelArray+(m_voxelDims[iVolumeIndex][2]-1)*iSliceSize, 0,  gSliceSize);	
 		}
 
-		LOG2("GLRayCastVolumeRenderer:: pOffset+gSliceSize: %d, sizeXYZ: %d\n", pOffset+gSliceSize, sizeXYZ*m_numChannels); 
+		LOG4("GLRayCastVolumeRenderer:: pOffset+gSliceSize: %d, sizeXYZ: %d, Grad (%d, %d)\n", pOffset+gSliceSize, sizeXYZ*m_numChannels,
+			lowGradVal, highGradVal); 
 
 
 		//	glTexImage3D  ( target , level , internalformat , 
@@ -1514,7 +1489,7 @@ namespace PGAlgs
 		{
 		float elapsedTime = gTimer.ElapsedSeconds();
 		LOG1("GLRayCastVolumeRenderer: FPS: %3.6f", ((float)(kPgFramesToMeasure)/elapsedTime));		
-		//printf("GLRayCastVolumeRenderer: FPS: %3.3lf!", (1000.0f/elapsedTime));		
+		//LOG0("GLRayCastVolumeRenderer: FPS: %3.3lf!", (1000.0f/elapsedTime));		
 		}*/
 
 	}
@@ -1767,14 +1742,14 @@ namespace PGAlgs
 		glBindTexture(GL_TEXTURE_2D, gLUTName);
 
 #ifdef _USE_CG
-		//cgGLLoadProgram(gCgInfo.fragmentProgram);
-		cgGLEnableProfile(gCgInfo.fragmentProfile);
-		cgGLBindProgram(gCgInfo.fragmentProgram);
+		//cgGLLoadProgram(gCgXferFnInfo.fragmentProgram);
+		cgGLEnableProfile(gCgXferFnInfo.fragmentProfile);
+		cgGLBindProgram(gCgXferFnInfo.fragmentProgram);
 
-		cgGLSetTextureParameter (gCgInfo.cgTex3d, gTextureName[iVolumeIndex]);
-		cgGLSetTextureParameter (gCgInfo.cgTexColormap, gLUTName);
-		cgGLEnableTextureParameter (gCgInfo.cgTex3d);	
-		cgGLEnableTextureParameter (gCgInfo.cgTexColormap);				
+		cgGLSetTextureParameter (gCgXferFnInfo.cgTex3d, gTextureName[iVolumeIndex]);
+		cgGLSetTextureParameter (gCgXferFnInfo.cgTexColormap, gLUTName);
+		cgGLEnableTextureParameter (gCgXferFnInfo.cgTex3d);	
+		cgGLEnableTextureParameter (gCgXferFnInfo.cgTexColormap);				
 #endif
 
 		float zFac = 0.5;
@@ -1826,17 +1801,21 @@ namespace PGAlgs
 					glBegin(GL_QUADS);
 					glTexCoord3f(0.0, gYTexRatio[iVIndex], gZTexRatio[iVIndex]); 
 					glVertex3f( gXMin, gYMin, zz); 
-
+					//glMultiTexCoord3f(GL_TEXTURE2_ARB, gXMin - lightpos[0], gYMin - lightpos[1], zz - lightpos[2]);
+					
 					glTexCoord3f(gXTexRatio[iVIndex], gYTexRatio[iVIndex], gZTexRatio[iVIndex]); 
 					glVertex3f( gXMax, gYMin, zz); 
+					//glMultiTexCoord3f(GL_TEXTURE2_ARB, gXMax - lightpos[0], gYMin - lightpos[1], zz - lightpos[2]);
 
 					glTexCoord3f(gXTexRatio[iVIndex], 0.0, gZTexRatio[iVIndex]); 
 					glVertex3f( gXMax, gYMax, zz); 
+					//glMultiTexCoord3f(GL_TEXTURE2_ARB, gXMax - lightpos[0], gYMax - lightpos[1], zz - lightpos[2]);
 
 					glTexCoord3f(0.0, 0.0, gZTexRatio[iVIndex]); 
 					glVertex3f( gXMin, gYMax, zz); 
+					//glMultiTexCoord3f(GL_TEXTURE2_ARB, gXMin - lightpos[0], gYMax - lightpos[1], zz - lightpos[2]);
+					
 					glEnd();
-
 
 					r += gDrSparse;				
 				}			
@@ -1859,89 +1838,130 @@ namespace PGAlgs
 
 #ifdef _USE_CG
 	template <class T, class U>
-	int GLRayCastVolumeRenderer<T, U>::enableFragmentShader ()
+	int GLRayCastVolumeRenderer<T, U>::enableFragmentShader (const char *iProgramFile /* program file */, PGAlgs::CgInfo& ioCgInfo)
 	{
-		const char *buffer = "C:\\SW\\SMISDK\\Algs\\fragment.cg";
-		//    cgSetErrorCallback (cgErrorCallback);
-		// use ARB_fragment_profile if supported
-		if (cgGLIsProfileSupported (CG_PROFILE_FP30)) {
-			gCgInfo.fragmentProfile = CG_PROFILE_FP30;
-			printf ("\nCG profile: CG_PROFILE_FP30\n");
-		} else if (cgGLIsProfileSupported (CG_PROFILE_ARBFP1)) {
-			gCgInfo.fragmentProfile = CG_PROFILE_ARBFP1;
-			printf ("\nCG profile: CG_PROFILE_ARBFP1\n");
-		} else if (cgGLIsProfileSupported (CG_PROFILE_FP20)) {
-			gCgInfo.fragmentProfile = CG_PROFILE_FP20;
-			printf ("\nCG profile: CG_PROFILE_FP20\n");
-		} else {
-			printf ("Fragment programming extensions (GL_NV_register_combiners2, "
-				"GL_NV_fragment_program, or GL_ARB_fragment_program) not "
-				"supported, exiting...\n");
-			//        ckfree ((void *) buffer);
-			return 0;//TCL_ERROR;
-		}
-
-		// first load the basic fragment program
-		//sprintf (buffer, "%s/vptogl1.0/scripts/fragment.cg", getenv ("VP_LIB"));
-		//sprintf (buffer, "%s/vptogl1.0/scripts/fragment.cg", getenv ("VP_LIB"));
-		gCgInfo.shaderContext = cgCreateContext ();
-		if (gCgInfo.shaderContext == NULL)
+		if (!iProgramFile) 
 		{
-			printf("Failed To Create Cg Context");
-			return 0;								// We Cannot Continue
-		}
-
-		gCgInfo.fragmentProgram = cgCreateProgramFromFile (gCgInfo.shaderContext,
-			CG_SOURCE, buffer, gCgInfo.fragmentProfile, NULL, NULL);
-
-		if (gCgInfo.fragmentProgram == NULL)
-		{
-			// We Need To Determine What Went Wrong
-			CGerror Error = cgGetError();
-
-			// Show A Message Box Explaining What Went Wrong
-			printf(cgGetErrorString(Error));
-			getchar();
-			return 0;								// We Cannot Continue
-		}
-
-
-		cgGLLoadProgram (gCgInfo.fragmentProgram);
-
-		gCgInfo.cgTex3d = cgGetNamedParameter (gCgInfo.fragmentProgram, "vol");
-		if (!gCgInfo.cgTex3d) {
-			printf ("Unable to retrieve \"vol\" parameter...\n");
-		}
-
-		gCgInfo.cgTexColormap =
-			cgGetNamedParameter (gCgInfo.fragmentProgram, "cmap");
-		if (!gCgInfo.cgTexColormap) {
-			printf ("Unable to retrieve \"cmap\" parameter...\n");
-		}
-
-		if (!gCgInfo.cgTex3d || !gCgInfo.cgTexColormap) {
-			printf ("Unable to retrieve program parameters...\n");
-			//  ckfree ((void *) buffer);
+			printf ("\nERROR CG program not found!\n");
 			return 0;
 		}
+		
+		if (ioCgInfo.fragmentProgram == NULL)
+		{
+			//    cgSetErrorCallback (cgErrorCallback);
+			// use ARB_fragment_profile if supported
+			if (cgGLIsProfileSupported (CG_PROFILE_FP30)) {
+				ioCgInfo.fragmentProfile = CG_PROFILE_FP30;
+				printf ("\nCG profile: CG_PROFILE_FP30\n");
+			} else if (cgGLIsProfileSupported (CG_PROFILE_ARBFP1)) {
+				ioCgInfo.fragmentProfile = CG_PROFILE_ARBFP1;
+				printf ("\nCG profile: CG_PROFILE_ARBFP1\n");
+			} else if (cgGLIsProfileSupported (CG_PROFILE_FP20)) {
+				ioCgInfo.fragmentProfile = CG_PROFILE_FP20;
+				printf ("\nCG profile: CG_PROFILE_FP20\n");
+			} else {
+				printf ("Fragment programming extensions (GL_NV_register_combiners2, "
+					"GL_NV_fragment_program, or GL_ARB_fragment_program) not "
+					"supported, exiting...\n");
+				//        ckfree ((void *) buffer);
+				return 0;//TCL_ERROR;
+			}
 
-		//  ckfree ((void *) buffer);
+			// first load the basic fragment program
+			//sprintf (buffer, "%s/vptogl1.0/scripts/fragment.cg", getenv ("VP_LIB"));
+			//sprintf (buffer, "%s/vptogl1.0/scripts/fragment.cg", getenv ("VP_LIB"));
+			ioCgInfo.shaderContext = cgCreateContext ();
+			if (ioCgInfo.shaderContext == NULL)
+			{
+				LOG0("Failed To Create Cg Context");
+				return 0;								// We Cannot Continue
+			}
+
+			ioCgInfo.fragmentProgram = cgCreateProgramFromFile (ioCgInfo.shaderContext,
+				CG_SOURCE, iProgramFile, ioCgInfo.fragmentProfile, NULL, NULL);
+
+			if (ioCgInfo.fragmentProgram == NULL)
+			{
+				// We Need To Determine What Went Wrong
+				CGerror Error = cgGetError();
+
+				// Show A Message Box Explaining What Went Wrong
+				LOG0((char *)cgGetErrorString(Error));
+				getchar();
+				return 0;								// We Cannot Continue
+			}
+		}
+
+		cgGLLoadProgram (ioCgInfo.fragmentProgram);
+
 		return 1;
 	}
 
+	template <class T, class U>
+	int GLRayCastVolumeRenderer<T, U>::initFragmentShader_LUT ()
+	{
+		int ret = enableFragmentShader("C:\\SW\\SMISDK\\Algs\\fragment.cg", gCgXferFnInfo);	
+		if (!ret) 
+		{
+			LOG0("initFragmentShader_LUT ERROR: unable to enableFragmentShader!\n");
+			return 0;
+		}
+		
+
+		if (!gCgXferFnInfo.cgTex3d || !gCgXferFnInfo.cgTexColormap) 
+		{
+			gCgXferFnInfo.cgTex3d = cgGetNamedParameter (gCgXferFnInfo.fragmentProgram, "vol");
+			if (!gCgXferFnInfo.cgTex3d) {
+				printf ("Unable to retrieve \"vol\" parameter...\n");
+			}
+
+			gCgXferFnInfo.cgTexColormap =
+				cgGetNamedParameter (gCgXferFnInfo.fragmentProgram, "cmap");
+			if (!gCgXferFnInfo.cgTexColormap) {
+				printf ("Unable to retrieve \"cmap\" parameter...\n");
+			}
+
+			if (!gCgXferFnInfo.cgTex3d || !gCgXferFnInfo.cgTexColormap) {
+				printf ("Unable to retrieve program parameters...\n");
+				//  ckfree ((void *) buffer);
+				return 0;
+			}
+
+			cgGLLoadProgram(gCgXferFnInfo.fragmentProgram);
+			cgGLEnableProfile(gCgXferFnInfo.fragmentProfile);
+			cgGLBindProgram(gCgXferFnInfo.fragmentProgram);
+
+			cgGLDisableTextureParameter (gCgXferFnInfo.cgTex3d);	
+			cgGLDisableTextureParameter (gCgXferFnInfo.cgTexColormap);
+
+			cgGLSetTextureParameter (gCgXferFnInfo.cgTex3d, gTextureName[0]);
+			cgGLSetTextureParameter (gCgXferFnInfo.cgTexColormap, gLUTName);					
+			
+			cgGLEnableTextureParameter (gCgXferFnInfo.cgTex3d);	
+			cgGLEnableTextureParameter (gCgXferFnInfo.cgTexColormap);				
+		}
+
+		
+		
+		
+		return 1;
+	}
+
+	
+
 
 	template <class T, class U>
-	void GLRayCastVolumeRenderer<T, U>::disableFragmentShader ()
+	void GLRayCastVolumeRenderer<T, U>::disableFragmentShader (PGAlgs::CgInfo& ioCgInfo)
 	{
 
-		if (gCgInfo.fragmentProgram)
-			cgDestroyProgram (gCgInfo.fragmentProgram);
-		if (gCgInfo.fragmentSlicerProgram)
-			cgDestroyProgram (gCgInfo.fragmentSlicerProgram);
-		if (gCgInfo.shaderContext)
-			cgDestroyContext (gCgInfo.shaderContext);
+		if (ioCgInfo.fragmentProgram)
+			cgDestroyProgram (ioCgInfo.fragmentProgram);
+		if (ioCgInfo.fragmentSlicerProgram)
+			cgDestroyProgram (ioCgInfo.fragmentSlicerProgram);
+		if (ioCgInfo.shaderContext)
+			cgDestroyContext (ioCgInfo.shaderContext);
 
-		printf("\nFragment shader disabled..\n\n");
+		LOG0("\nFragment shader disabled..\n\n");
 	}
 #endif
 
