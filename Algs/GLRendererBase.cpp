@@ -442,24 +442,24 @@ namespace PGAlgs
 				if (x > gXTemp) 
 				{
 					// window - expand
-					staticRenderer->UpdateLUTParams(-1, 1);	
+					staticRenderer->UpdateLUTParams(-1, 1, 0, 0);	
 				}
 				else	
 				{
 					// window - shrink
-					staticRenderer->UpdateLUTParams(1, -1);
+					staticRenderer->UpdateLUTParams(1, -1, 0, 0);
 				}
 			} else
 			{
 				if (y > gYTemp) 
 				{
 					// level - shrink
-					staticRenderer->UpdateLUTParams(-1, -1);		
+					staticRenderer->UpdateLUTParams(-1, -1, 0, 0);		
 				}
 				else	
 				{
 					// level - expand
-					staticRenderer->UpdateLUTParams(1, 1);						
+					staticRenderer->UpdateLUTParams(1, 1, 0, 0);						
 				}
 
 			}
@@ -557,7 +557,7 @@ namespace PGAlgs
 		} 	else if (key == '>' || key == '.')
 		{			
 			// window - expand
-			staticRenderer->UpdateLUTParams(-1, 1);						
+			staticRenderer->UpdateLUTParams(0, 0, -10, 10);						
 			
 			glutPostRedisplay();
 		}
@@ -565,20 +565,20 @@ namespace PGAlgs
 		{	
 			// window - reduce
 
-			staticRenderer->UpdateLUTParams(1, -1);						
+			staticRenderer->UpdateLUTParams(0, 0, 10, -10);						
 			glutPostRedisplay();
 		}
 		else if (key == '[' || key == '{')
 		{
 			// level - decrease
-			staticRenderer->UpdateLUTParams(-1, -1);						
+			staticRenderer->UpdateLUTParams(0, 0, -10, -10);						
 			
 			glutPostRedisplay();
 		}
 		else if (key == ']' || key == '}')
 		{
 			// level - increase
-			staticRenderer->UpdateLUTParams(1, 1);						
+			staticRenderer->UpdateLUTParams(0, 0, 10, 10);						
 			
 			glutPostRedisplay();
 		}
