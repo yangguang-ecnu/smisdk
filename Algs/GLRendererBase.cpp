@@ -551,9 +551,9 @@ namespace PGAlgs
 			exit(0);
 		else if (key == 'r' || key == 'R') 
 		{
-			//gTranslationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);
-			//gRotationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);		
-			//glutPostRedisplay();
+			gTranslationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);
+			gRotationStatic = PGMath::Vector3D<float>(0.0f, 0.0f, 0.0f);		
+			glutPostRedisplay();
 		} 	else if (key == '>' || key == '.')
 		{			
 			// window - expand

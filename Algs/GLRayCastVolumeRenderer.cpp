@@ -20,6 +20,7 @@
 #define _PGGLRayCastVolumeRenderer_HPP_
 //////////////////////////////////////////////////////////////////////////
 
+#define _USE_GRADIENT_VR_
 
 #include "Algs/GLRayCastVolumeRenderer.h"
 
@@ -398,9 +399,13 @@ namespace PGAlgs
 						subcolormap[j][k] = m_LuTBuf[j][k];								
 					}										
 					
-					if ((j>=gLowerBound && j<=gUpperBound) && (i>=gGradLowerBound && i<=gGradUpperBound))
+					if ((j>=gLowerBound && j<=gUpperBound) 
+#ifdef _USE_GRADIENT_VR_
+						//&& (i>=gGradLowerBound && i<=gGradUpperBound)
+#endif
+						)
 					{
-						//subcolormap[j][3] = subcolormap[j][3]<<1;
+						subcolormap[j][3] = subcolormap[j][3]<<2;
 					} else
 					{
 						subcolormap[j][3] = subcolormap[j][3]>>(gradVisMultiplier);						
@@ -1059,7 +1064,7 @@ namespace PGAlgs
 #if (PG_USE_RGBA16)
 					unsigned short* pValue = (unsigned short* )(oBuffer);
 #else
-					unsigned char* pValue = (unsigned char* )(oBuffer);
+					char* pValue = (char* )(oBuffer);
 #endif
 					
 					for (int y=0; y<m_voxelDims[iVolumeIndex][1]; y++, yOffset+=m_max3DTextureSize, yBufOffset+=m_voxelDims[iVolumeIndex][0]) 
@@ -1079,7 +1084,7 @@ namespace PGAlgs
 #if (PG_USE_RGBA16)
 							unsigned short* pAlpha = pValue + m_numChannels-1;
 #else
-							unsigned char* pAlpha = pValue + m_numChannels-1;
+							char* pAlpha = pValue + m_numChannels-1;
 #endif
 							unsigned int oValue = (unsigned int)(rangeInv*( (float)(val-rangeMin) ));
 
@@ -1129,34 +1134,39 @@ namespace PGAlgs
 							if (m_numChannels>1)
 							{
 
-#define _USE_GRADIENT_VR_ 					
 #ifdef _USE_GRADIENT_VR_
 								PGMath::Vector3D<float> gradVec(0, 0, 0);
-								m_voxel3DList[iVolumeIndex]->GetVolumeAccessor()->GetGradient(x, y, zOrg, gradVec);
+								m_voxel3DList[iVolumeIndex]->GetVolumeAccessor()->GetGradient(y, x, zOrg, gradVec);
 
 								float normV[3] = {0, 0, 0};
 
-								if ( gradVec.Length()> 0.01f && *(pValue)>5)
+								if ( gradVec.Length()> 10.0f && *(pValue)>5)
 								{
-									gradVec.Normalize();									
-
+									//gradVec.Normalize();									
 									normV[0] = gradVec.X();
 									normV[1] = gradVec.Y();
-									normV[2] = gradVec.Z();									
-
-									//float gradVal = gradVec.Length()-0.1f;
-									//*pAlpha = (unsigned char)floor(gradVal*255.0f);
-									//*pValue = (unsigned char)floor(gradVal*255.0f);
+									normV[2] = gradVec.Z();																		
 								}
 								
 								// GBA: grad
 								for (j=1; j<m_numChannels; j++)
 								{
-									*(pValue+j) = min( max(0, (unsigned char)((int (255.0*normV[j-1]+0.5f)))), 255);	
+									//*(pValue+j) = min( max(0, (unsigned char)((int (254.0*normV[j-1]+0.5f)))), 255);	
+									*(pValue+j) = (char)(normV[j-1]);
 
 									lowGradVal  = *(pValue+j) < lowGradVal  ? *(pValue+j) : lowGradVal;
 									highGradVal = *(pValue+j) > highGradVal ? *(pValue+j) : highGradVal;
+
+									/*if (j==(m_numChannels-1) && gradVec.Length()> 10.0f)
+									{
+										LOG3("GLRayCastVolumeRenderer:: GradP (%d, %d, %d)\n", *(pValue+1), *(pValue+2), *(pValue+3));
+									}*/
 								}
+
+								/*if (m_numChannels==4 && gradVec.Length()> 10.0f) 
+								{
+									LOG3("GLRayCastVolumeRenderer:: Grad (%d, %d, %d)\n", (int)gradVec.X(), (int)gradVec.Y(), (int)gradVec.Z());									
+								}*/
 
 
 #else							
@@ -1184,7 +1194,7 @@ namespace PGAlgs
 									//maxTransValue = maxTransValue < oValue ? oValue : maxTransValue;
 								}
 #endif
-#undef _USE_GRADIENT_VR_
+
 							}
 
 						}
@@ -1972,6 +1982,7 @@ namespace PGAlgs
 
 };
 
+#undef _USE_GRADIENT_VR_
 
 //////////////////////////////////////////////////////////////////////////
 // EOF
