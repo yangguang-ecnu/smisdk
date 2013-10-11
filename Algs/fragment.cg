@@ -7,45 +7,52 @@ void main(
 				)
 {    
 	float3 normal = tex3D(vol, volCoord).gba; 	
-	float grad = clamp(length(normal), 0.0, 255.0);		
+	float grad = length(normal);//clamp(length(normal), 0.0, 255.0);		
 	cmapCoord = float2(tex3D(vol, volCoord).r, grad);
 
 	float4 tempcolor= tex2D(cmap, cmapCoord);
 	
 	float3 normalf  = normalize(normal);				
 	float3 vxPosition = normalize(volCoord);
-	float3 lightPosition = float3 (-1.0, 0.0, 0.0);	
-	float3 eyePosition = float3 (1.0, 1.0, 1.0);	
+	float3 lightPosition = float3 (1.0, 1.0, 1.0);	
+	float3 eyePosition = float3 (0, 0, 1.0);	
 	float3 lightVec  = normalize(lightPosition - vxPosition);   	
-	float3 lightColor = float3 (128.0, 128.0, 128.0);
+	float3 lightColor = float3 (255.0, 255.0, 255.0);
 
 	float3 Kd = float3 (0.5, 0.5, 0.5);	
-	float diffuseLight = clamp(dot(normalf, lightVec), 1, 0);//clamp(dot(normalf, lightVec), 1, 0);		
-	float3 diffuse = float3 (diffuseLight, diffuseLight, diffuseLight);
+	float diffuseLight = abs (dot(normalf, lightVec));//clamp(dot(normalf, lightVec), 1, 0);		
+	diffuseLight = min(1.0, max(0.05, diffuseLight));
+
+	float3 diffuse = Kd*tempcolor.xyz*diffuseLight;
+	//float3 (diffuseLight, diffuseLight, diffuseLight);
 	//Kd*lightColor.xyz*diffuseLight;
 	
 	// Compute the emissive term			
-	float3 emissiveColor = float3 (0.9, 0.8, 0.5);  
+	float3 emissiveColor = float3 (0.05, 0.05, 0.05);  
 	float3 Ke = float3 (0.01, 0.01, 0.01);
 	float3 emissive = Ke*emissiveColor;
 
 	// Compute the ambient term
-	float3 globalAmbient = float3 (0.9, 0.9, 0.9);
-	float3 Ka = float3 (0.1, 0.1, 0.1);
+	float3 globalAmbient = float3 (1.28, 1.28, 1.28);
+	float3 Ka = float3 (0.05, 0.05, 0.05);
 	float3 ambient = Ka*globalAmbient;
 
 	// Compute the specular term	
-	/*
-	float3 Ks = float3 (1, 1, 1);
-	float shininess = 1.0f;
+	
+	float3 Ks = float3 (0.05, 0.05, 0.05);
+	float shininess = 10.0f;
 	float3 V = normalize(eyePosition - vxPosition);
 	float3 H = normalize(lightVec + V);
-	float specularLight = pow(max(dot(N, H), 0), shininess);
-	if (diffuseLight <= 0) specularLight = 0;
-	float3 specular = Ks*lightColor*specularLight;
-	*/
 	
-	color.xyz = diffuse;//ambient + emissive + diffuse;// + specular; 
+	float specularLight = pow(abs(dot(normalf, H)), shininess);;//pow(max(dot(N, H), 0), shininess);
+	//if (diffuseLight <= 0) specularLight = 0;
+	float3 specular = Ks*lightColor*specularLight;
+	
+	
+	float3 Kc = float3 (0.5, 0.5, 0.5);
+	
+
+	color.xyz = Kc*tempcolor.xyz + diffuse;// + ambient + emissive + specular; 
 	color.w = tempcolor.w;  
 }
 

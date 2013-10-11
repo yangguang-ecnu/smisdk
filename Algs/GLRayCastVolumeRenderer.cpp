@@ -70,8 +70,9 @@ namespace PGAlgs
 		}
 
 		gDrSparse = 1.0f; gDrFull = 1.0f;  
-		gDz = 1.0f;//, gDzFull = 1.0f, gDzSparse = 8.0f; 	
-
+		gDz = 1.0f;
+		gDzFull = 1.0f;
+		gDzSparse = 8.0f; 	
 		gLUTName=0; 
 		
 		gCgXferFnInfo.fragmentProgram = NULL;
@@ -381,7 +382,7 @@ namespace PGAlgs
 			{
 				memset(&(subcolormap[0][0]), 0, 256*4*sizeof(unsigned char));
 
-				int gradVisMultiplier=2;
+				int gradVisMultiplier=1;
 				// check if gradient values are within bounds
 				/*if (i<gGradLowerBound || i>gGradUpperBound)
 				{
@@ -405,10 +406,10 @@ namespace PGAlgs
 #endif
 						)
 					{
-						subcolormap[j][3] = subcolormap[j][3]<<2;
+						subcolormap[j][3] = subcolormap[j][3];//<<(2*gradVisMultiplier);
 					} else
 					{
-						subcolormap[j][3] = subcolormap[j][3]>>(gradVisMultiplier);						
+						subcolormap[j][3] = subcolormap[j][3]>>(2*gradVisMultiplier);						
 					}					
 				}
 
@@ -1306,9 +1307,9 @@ namespace PGAlgs
 			gXTexTrans[iVolumeIndex] = 0.5f*(1.0 - gVolumeScope[iVolumeIndex].X()/((float)m_voxelDims[iVolumeIndex][0]));
 			//gDrSparse = 1.0f/gVolumeScope.Z(), gDrFull = 1.0/gVolumeScope.Z();
 			gDrSparse = 1.0f/m_voxelDims[iVolumeIndex][2], gDrFull = 1.0/m_voxelDims[iVolumeIndex][2];
-			gDz = 0.25f/((float)m_voxelDims[iVolumeIndex][2]/*m_max3DTextureSize*/);  
+			gDz = 0.5f/((float)m_voxelDims[iVolumeIndex][2]/*m_max3DTextureSize*/);  
 			gDzFull = gDz/(gSuperSampligFactorZ); 	
-			gDzSparse = 4.0f*gDzFull; 	
+			gDzSparse = 8.0f*gDzFull; 	
 			gDrSparse = gDzSparse;
 			gDrFull = gDzFull;
 		}
@@ -1740,8 +1741,10 @@ namespace PGAlgs
 
 		int iVIndex = iVolumeIndex;
 		
+		//printf("GLRayCastVolumeRenderer: skip%d\n", m_skipFactor); 
+
 		register float r=0.0f, zz=gZMin;
-		register float zSparse = (m_skipFactor==1) ? gDzFull : 2.0*m_skipFactor*gDzSparse;	
+		register float zSparse = (m_skipFactor==1) ? gDzFull : gDzSparse;	
 
 		gDrSparse = 0.5f*zSparse;	
 
@@ -1751,8 +1754,7 @@ namespace PGAlgs
 		glBindTexture(GL_TEXTURE_3D, gTextureName[iVIndex]);
 		glBindTexture(GL_TEXTURE_2D, gLUTName);
 
-#ifdef _USE_CG
-		//cgGLLoadProgram(gCgXferFnInfo.fragmentProgram);
+#ifdef _USE_CG		
 		cgGLEnableProfile(gCgXferFnInfo.fragmentProfile);
 		cgGLBindProgram(gCgXferFnInfo.fragmentProgram);
 
@@ -1785,7 +1787,7 @@ namespace PGAlgs
 		float zFactor = 0.5f/float(m_zoomFactor);
 		float initialZ = gZMin;
 		float finalZ   = (2.0f*m_coronalCutPlanePosition);
-		float skipZ	   = zSparse*zFactor;
+		float skipZ	   = zSparse;//*zFactor;
 
 		blendValue = iVolumeIndex ? min(1, 4*blendValue) : blendValue;
 		initialZ = iVolumeIndex ? (finalZ-skipZ) : initialZ;
