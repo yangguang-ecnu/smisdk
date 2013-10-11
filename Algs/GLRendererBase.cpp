@@ -314,8 +314,9 @@ namespace PGAlgs
 		{
 			GLRendererBase<T, U> *rendererPtr = (static_cast<GLRendererBase<T, U> * >(PgStaticRenderer));
 
-			int sparseFactor = (rendererPtr->GetRendererType()==kPgRendererType3D) ? 2*gSparseMode : gSparseMode;		
-			rendererPtr->SetSkipFactor(sparseFactor); 			
+			//int sparseFactor = (rendererPtr->GetRendererType()==kPgRendererType3D) ? gSparseMode : gSparseMode;	
+			//LOG1("Sparse factor: %d\n", gSparseMode);
+			rendererPtr->SetSkipFactor(gSparseMode); 			
 
 			if (state == GLUT_UP)
 			{

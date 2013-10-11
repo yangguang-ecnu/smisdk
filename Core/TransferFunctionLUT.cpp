@@ -301,24 +301,39 @@ namespace PGCore
 		int i=0;
 		Point3D<T> *buf = m_image.GetBuffer();
 
-		// black->violet
-		int offsetA1 = m_dimBy6,
-			offsetA2 = 2*m_dimBy6,
-			offsetA3 = 3*m_dimBy6,
-			offsetA4 = 4*m_dimBy6,
-			offsetA5 = 5*m_dimBy6;
+		
+		int m_dimBy6By2 = m_dimBy6/2;
+
+		int offsetA1 = m_dimBy6By2,
+			offsetA2 = 2*m_dimBy6By2,
+			offsetA3 = 3*m_dimBy6By2,
+			offsetA4 = 4*m_dimBy6By2,
+			offsetA5 = 5*m_dimBy6By2,
+			offsetA6 = 6*m_dimBy6By2,
+			offsetA7 = 7*m_dimBy6By2,
+			offsetA8 = 8*m_dimBy6By2,
+			offsetA9 = 9*m_dimBy6By2,
+			offsetA10 = 10*m_dimBy6By2,
+			offsetA11 = 11*m_dimBy6By2;
+
 		int offset = m_windowLow,
 			offset1 = m_windowLow+offsetA1,
 			offset2 = m_windowLow+offsetA2,
 			offset3 = m_windowLow+offsetA3,
 			offset4 = m_windowLow+offsetA4,
-			offset5 = m_windowLow+offsetA5;		
+			offset5 = m_windowLow+offsetA5,
+			offset6 = m_windowLow+offsetA6,
+			offset7 = m_windowLow+offsetA7,
+			offset8 = m_windowLow+offsetA8,
+			offset9 = m_windowLow+offsetA9,
+			offset10 = m_windowLow+offsetA10,
+			offset11 = m_windowLow+offsetA11;		
 
-		float tstep = (1.0f)/(float)(m_dimBy6);
-		float invExp = float(m_maxOutValue) / (exp(1.0f) - 1.0f);
-		float tstepBig = (1.0f)/(float)(m_dimBy6);;
+		float tstep = (1.0f)/(float)(m_dimBy6By2);
+		float invExp = float(0.005*m_maxOutValue) / (exp(1.0f) - 1.0f);
+		float tstepBig = (1.0f)/(float)(m_dimBy6By2);;
 
-		for (i=0; i<m_dimBy6; i++)
+		for (i=0; i<m_dimBy6By2; i++)
 		{
 			float e = exp(((float)i)*tstep) - 1.0f;
 			e *= invExp;
@@ -329,12 +344,11 @@ namespace PGCore
 
 			//T posValue = (T)((((float)i)*tstep)),
 			//	negValue = (T)(m_maxOutValue-(T)posValue);
-
-
+			
 			// black to red
 			if (i+offset < GetDimension())
 			{
-				float eb = exp(((float)i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp( ( (float)i )*tstepBig ) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -342,8 +356,7 @@ namespace PGCore
 				buf[i+offset] = Point3D<T>( 
 					posValue,
 					0, 
-					0, 
-					//m_maxOutValue
+					0, 					
 					m_transparencyFlag ? i : posValueAlpha		
 					);
 			}
@@ -353,7 +366,7 @@ namespace PGCore
 			// red to orange
 			if (i+offset1 < GetDimension())
 			{
-				float eb = exp(((float)offsetA1+i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp((float)(offsetA1+i)*tstepBig) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -370,7 +383,7 @@ namespace PGCore
 			// orange to yellow
 			if (i+offset2 < GetDimension())
 			{
-				float eb = exp(((float)offsetA2+i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp((float)(offsetA2+i)*tstepBig) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -378,8 +391,7 @@ namespace PGCore
 				buf[i+offset2] = Point3D<T>( 
 					m_maxOutValue, 
 					m_maxOutValue/2 + posValue/2, 
-					0,
-					//m_maxOutValue
+					0,					
 					m_transparencyFlag ? offsetA2+i : posValueAlpha		
 					);
 			}
@@ -387,7 +399,7 @@ namespace PGCore
 			// yellow to pink
 			if (i+offset3 < GetDimension())
 			{
-				float eb = exp(((float)offsetA3+i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp((float)((offsetA3+i))*tstepBig) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -395,8 +407,7 @@ namespace PGCore
 				buf[i+offset3] = Point3D<T>( 
 					m_maxOutValue, 
 					m_maxOutValue, 
-					posValue/2,
-					//m_maxOutValue
+					posValue/2,					
 					m_transparencyFlag ? offsetA3+i : posValueAlpha		
 					);
 			}
@@ -404,7 +415,7 @@ namespace PGCore
 			// pink to white
 			if (i+offset4 < GetDimension())
 			{
-				float eb = exp(((float)offsetA4+i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp((float)((offsetA4+i))*tstepBig) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -412,15 +423,15 @@ namespace PGCore
 				buf[i+offset4] = Point3D<T>( 
 					m_maxOutValue, 
 					m_maxOutValue, 
-					m_maxOutValue/2 + posValue/2,
-					//m_maxOutValue
+					m_maxOutValue/2 + posValue/2,					
 					m_transparencyFlag ? offsetA4+i : posValueAlpha		
 					);
 			}
 
+			// full white
 			if (i+offset5 < GetDimension())
 			{
-				float eb = exp(((float)offsetA5+i)*tstepBig) - 1.0f; eb *= invExp;
+				float eb = exp((float)((offsetA5+i))*tstepBig) - 1.0f; eb *= invExp;
 				int posValueAlpha = (int)( eb );
 				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
 				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
@@ -429,22 +440,102 @@ namespace PGCore
 					m_maxOutValue, 
 					m_maxOutValue, 
 					m_maxOutValue,
-					m_transparencyFlag ? 0 : m_maxOutValue					
-					//offsetA5+i
+					m_transparencyFlag ? offsetA5+i : posValueAlpha										
 					);
 			}
+
+			// white to pink - reverse
+			if (i+offset6 < GetDimension())
+			{
+				float eb = exp((float)(GetDimension()-(offsetA6+i))*tstepBig) - 1.0f; eb *= invExp;
+				int posValueAlpha = (int)( eb );
+				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
+				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
+
+				buf[i+offset6] = Point3D<T>( 
+					m_maxOutValue, 
+					m_maxOutValue, 
+					m_maxOutValue, //m_maxOutValue/2 + (m_maxOutValue-posValue)/2,					
+					m_transparencyFlag ? offsetA6+i : posValueAlpha		
+					);
+			}
+
+			// pink to yellow - reverse
+			if (i+offset7 < GetDimension())
+			{
+				float eb = exp((float)(GetDimension()-(offsetA7+i))*tstepBig) - 1.0f; eb *= invExp;
+				int posValueAlpha = (int)( eb );
+				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
+				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
+
+				buf[i+offset7] = Point3D<T>( 
+					m_maxOutValue, 
+					m_maxOutValue, 
+					m_maxOutValue, // (m_maxOutValue-posValue)/2,
+					m_transparencyFlag ? offsetA7+i : posValueAlpha		
+					);
+			}
+
+			// yellow to orange - reverse
+			if (i+offset8 < GetDimension())
+			{
+				float eb = exp((float)(GetDimension()-(offsetA8+i))*tstepBig) - 1.0f; eb *= invExp;
+				int posValueAlpha = (int)( eb );
+				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
+				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
+
+				buf[i+offset8] = Point3D<T>( 
+					m_maxOutValue, 
+					m_maxOutValue, //m_maxOutValue/2 + (m_maxOutValue-posValue)/2, 
+					m_maxOutValue, //0,					
+					m_transparencyFlag ? offsetA8+i : posValueAlpha		
+					);
+			}
+
+			// orange to red - reverse
+			if (i+offset9 < GetDimension())
+			{
+				float eb = exp((float)(GetDimension()-(offsetA9+i))*tstepBig) - 1.0f; eb *= invExp;
+				int posValueAlpha = (int)( eb );
+				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
+				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
+
+				buf[i+offset9] = Point3D<T>( 
+					m_maxOutValue,
+					m_maxOutValue, //(m_maxOutValue-posValue)/2, 
+					m_maxOutValue, //0, 					
+					m_transparencyFlag ? offsetA9+i : posValueAlpha		
+					);
+			}
+
+			// red to black - reverse
+			if (i+offset10 < GetDimension())
+			{
+				float eb = exp( (float)(GetDimension()-(offsetA10+i))*tstepBig ) - 1.0f; eb *= invExp;
+				int posValueAlpha = (int)( eb );
+				posValueAlpha = posValueAlpha < 0 ? 0 : posValueAlpha;
+				posValueAlpha = posValueAlpha > m_maxOutValue ? m_maxOutValue : posValueAlpha;
+
+				buf[i+offset10] = Point3D<T>( 
+					m_maxOutValue, //m_maxOutValue-posValue,
+					m_maxOutValue, //0, 
+					m_maxOutValue, //0, 					
+					m_transparencyFlag ? offsetA10+i : posValueAlpha		
+					);
+			}
+
 
 		}
 
 
-		for (i=offset5+m_dimBy6; i<GetDimension(); i++)
+		for (i=offset11+m_dimBy6By2; i<GetDimension(); i++)
 		{
 			buf[i] = Point3D<T>( 
 				m_maxOutValue, 
 				m_maxOutValue, 
 				m_maxOutValue,
-				//m_maxOutValue
-				m_transparencyFlag ? m_maxOutValue : 0					
+				// m_maxOutValue
+				m_transparencyFlag ? offset11+i : 0					
 				);
 		}
 

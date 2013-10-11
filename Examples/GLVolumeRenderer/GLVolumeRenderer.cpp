@@ -110,7 +110,8 @@ bool ReadImages(const std::vector<std::string>& iFileNames,
 		ioParams.SetSourceFormat(PGIO::kPgIOSourceFormatDICOM);
 
 		pImgIO3D.SetByteLimitInKB(16*64000);// MB limit, beyond which data will be skipped
-		
+		pImgIO3D.SetSmoothFlag(true);
+
 		if (!pImgIO3D.Read(&ioVolume, ioParams, &ioAttributes))
 		{
 			volumeLogger.Log("ReadImages: Error: read failed");				
@@ -142,20 +143,17 @@ bool RenderVolume(PGCore::Volume<short>& ioVolume,
 	// create renderer here
 	PGAlgs::GLRayCastVolumeRenderer<short, unsigned char> VolumeRenderer;
 	rv = VolumeRenderer.SetInput(static_cast<PGCore::BaseDataObject *> (&iMultiVolume));
-	if (!rv) return false;
-	
-	// how much to skip in sparse mode
-	VolumeRenderer.SetSkipFactor(4);
+	if (!rv) return false;	
 
 	// create lookup table
 	PGCore::TransferFunctionLUT<unsigned char> volLuT(PGCore::kPgLUTTypeIronHot, 256);	
 	volLuT.SetWindow(0.33f, 0.45f);
-	volLuT.SetTransparencyFlag(true);
+	volLuT.SetTransparencyFlag(false);
 
 	unsigned int sx = dims.X(), sy = dims.Y();
 	rv = VolumeRenderer.SetImageSize(sx, sy);
 	
-	float supFacf=4.0f;
+	float supFacf=2.0f;
 	PGMath::Point3D<float> supFac(supFacf, supFacf, supFacf, 1.0);
 	rv = VolumeRenderer.SetSuperSamplingFactors(supFac);
 	if (!rv) return false;
